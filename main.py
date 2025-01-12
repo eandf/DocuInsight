@@ -5,6 +5,37 @@ import json
 import os
 
 
+def generate_iframe_html(url):
+    html_template = f"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iframe Example</title>
+    <style>
+        html, body {{
+            margin: 0;
+            height: 100%;
+        }}
+        iframe {{
+            width: 100%;
+            height: 100%;
+            border: 5px solid limegreen; /* Bright green border */
+            box-sizing: border-box; /* Ensures border is included in dimensions */
+        }}
+    </style>
+</head>
+<body>
+    <iframe src="{url}">
+        Your browser does not support iframes.
+    </iframe>
+</body>
+</html>
+""".strip()
+    return html_template
+
+
 def load_json(file_path):
     with open(file_path, "r", encoding="utf-8") as file:
         data = json.load(file)
@@ -55,13 +86,13 @@ def extract_area_of_interest(user_input):
 
 # main function calls
 
+print("USER INPUT")
+print("==========")
 term = input("Term: ")
-
 glf_value = extract_geo_location(input("Geolocation: "))
 area_interest = extract_area_of_interest(input("Area Of Interest: "))
 
 params = {"type": "people", "page": 1, "limit": 100, "prOverallScore": ["4to5"]}
-
 if glf_value != None:
     params["geoLocationFacet"] = [glf_value]
 if area_interest != None:
@@ -73,12 +104,19 @@ json_data = json.dumps(params)
 encoded_params = base64.b64encode(json_data.encode()).decode()
 url = f"https://www.martindale.com/search/attorneys/?params={encoded_params}"
 
+print("\nIFRAME HTML CODE")
+print("================")
+print("```")
+print(generate_iframe_html(url))
+print("```")
+print("\nPARAMETERS")
+print("==========")
+print(json.dumps(params, indent=4))
+print("\nGENERATED URL")
+print("=============")
+print(url)
+
 try:
     os.system(f"open {url}")
 except:
     pass
-
-print("PARAMETERS:")
-print(json.dumps(params, indent=4))
-print("URL:")
-print(url)
