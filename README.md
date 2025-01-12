@@ -2,7 +2,7 @@
 
 ## About
 
-A simple tool that allows you to search though Martindale by taking your input, building that url for Martindale, and searching/running that url in the browser on the Martindale webstie.
+A simple tool that allows you to search though [Martindale](https://www.martindale.com/) by taking your input, building that url for Martindale, and searching/running that url in the browser on the Martindale webstie.
 
 ## Dateset Links
 
