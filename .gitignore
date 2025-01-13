@@ -2,4 +2,5 @@
 env/
 .env
 node_modules/
+code_dump_*.txt
 

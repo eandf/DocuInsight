@@ -1,4 +1,4 @@
-const util = require("./index");
+const util = require("./martindale");
 
 /**
  * Gathers user inputs for term, geolocations, and areas of interest.
