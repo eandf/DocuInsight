@@ -2662,7 +2662,9 @@ function extractAreaOfInterest(userInput) {
  * @param {string[]} areaInterestInputs - Array of area of interest inputs.
  * @returns {object} - An object containing the generated URL and parameters.
  */
-function generateMartindaleURL(term, geoLocationInputs, areaInterestInputs) {
+function generateMartindaleURL(functionParams) {
+  let {term, geoLocationInputs, areaInterestInputs} = functionParams
+
   // Process geolocations
   const glfValues = geoLocationInputs
     .map((input) => extractGeoLocation(input))

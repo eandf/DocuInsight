@@ -54,11 +54,13 @@ function gatherUserInputs(callback) {
 gatherUserInputs((inputs) => {
   const { term, geoLocationInputs, areaInterestInputs } = inputs;
 
-  const { url, params } = util.generateMartindaleURL(
+  const functionInput = {
     term,
     geoLocationInputs,
     areaInterestInputs,
-  );
+  };
+
+  const { url, params } = util.generateMartindaleURL(functionInput);
 
   console.log("\nGenerated URL:");
   console.log(url);
