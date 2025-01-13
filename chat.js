@@ -28,14 +28,37 @@ const tools = [
           geoLocationInputs: {
             type: "array",
             items: { type: "string" },
-            description: "List of geographic locations (e.g., 'Denver, CO').",
+            description:
+              "List of geographic locations (e.g., 'Denver, CO', 'Colorado', etc).",
             example: ["Denver, CO", "Los Angeles, CA"],
           },
           areaInterestInputs: {
             type: "array",
             items: { type: "string" },
-            description: "List of legal practice areas (e.g., 'Real Estate').",
-            example: martindale.areasOfPractice,
+            description:
+              "List of legal practice areas (e.g., 'Real Estate', 'Divorce', 'Civil Litigation', 'Family Law', 'Wills and Probate', 'Criminal Law', 'Estate Planning', 'Bankruptcy', 'Landlord and Tenant Law', 'Trusts and Estates', 'Immigration', 'Social Security Disability', 'Medical Malpractice', 'Labor and Employment', 'Personal Injury', 'Traffic Violations', 'DUI and DWI', 'General Practice', 'Lottery Law', 'Property Damage', etc).",
+            example: [
+              "Real Estate",
+              "Divorce",
+              "Civil Litigation",
+              "Family Law",
+              "Wills and Probate",
+              "Criminal Law",
+              "Estate Planning",
+              "Bankruptcy",
+              "Landlord and Tenant Law",
+              "Trusts and Estates",
+              "Immigration",
+              "Social Security Disability",
+              "Medical Malpractice",
+              "Labor and Employment",
+              "Personal Injury",
+              "Traffic Violations",
+              "DUI and DWI",
+              "General Practice",
+              "Lottery Law",
+              "Property Damage",
+            ],
           },
         },
         required: ["term", "geoLocationInputs"],
@@ -113,7 +136,7 @@ async function main() {
     {
       role: "system",
       content:
-        "You are an AI assistant that helps users find legal resources. When using the Martindale URL generator, always explain what the URL will help them find and provide context about the search results they can expect. Make sure to format the URL as a clickable link and encourage users to review multiple attorneys to find the best fit for their needs.",
+        "You are an AI assistant that helps users find legal resources. When using the Martindale URL generator, always explain what the URL will help them find and provide context about the search results they can expect. Make sure to format the URL as a clickable link and encourage users to review multiple attorneys to find the best fit for their needs. KEEP YOUR ANSWERS SHORT AND TOO THE POINTS!",
     },
   ];
 
