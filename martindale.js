@@ -2663,7 +2663,19 @@ function extractAreaOfInterest(userInput) {
  * @returns {object} - An object containing the generated URL and parameters.
  */
 function generateMartindaleURL(functionParams) {
-  let {term, geoLocationInputs, areaInterestInputs} = functionParams
+  let { term, geoLocationInputs, areaInterestInputs } = functionParams;
+
+  if (term === undefined) {
+    term = "";
+  }
+
+  if (geoLocationInputs === undefined) {
+    geoLocationInputs = [];
+  }
+
+  if (areaInterestInputs === undefined) {
+    areaInterestInputs = [];
+  }
 
   // Process geolocations
   const glfValues = geoLocationInputs
@@ -2696,7 +2708,8 @@ function generateMartindaleURL(functionParams) {
   const encodedParams = Buffer.from(jsonData).toString("base64");
   const url = `https://www.martindale.com/search/attorneys/?params=${encodedParams}`;
 
-  return { url, params };
+  // return { url, params };
+  return url;
 }
 
 module.exports = {

@@ -1,6 +1,6 @@
 const OpenAI = require("openai");
 const readline = require("readline");
-const martindale = require("./martindale");
+const martindale = require("./martindale")
 
 // Initialize the OpenAI client
 const client = new OpenAI();
@@ -14,48 +14,38 @@ const tools = [
     type: "function",
     function: {
       name: "generateMartindaleURL",
-      description:
-        "Generates a URL for the Martindale search engine to find lawyers based on specific search criteria. This tool allows users to provide parameters such as search terms, geographic locations, and areas of legal interest, facilitating tailored and efficient searches. Martindale-Hubbell is renowned for its comprehensive lawyer directory, offering peer and client review ratings to help users select qualified legal professionals. Use this function to create a precise search URL for accessing lawyer information on platforms like Martindale.com.",
+      description: "Generates a URL for the Martindale search engine to find lawyers based on specific search criteria. This tool allows users to provide parameters such as search terms, geographic locations, and areas of legal interest, facilitating tailored and efficient searches.",
       parameters: {
         type: "object",
         properties: {
           term: {
             type: "string",
-            description:
-              "A keyword or phrase used to refine the lawyer search.",
-            example: "real estate",
+            description: "A keyword or phrase used to refine the lawyer search.",
+            example: "real estate"
           },
           geoLocationInputs: {
             type: "array",
             items: { type: "string" },
-            description:
-              "List of strings representing geographic locations limited to states and cities in the United States of America (USA).",
-            examples: [
-              "Colorado, U.S.A",
-              "New York",
-              "Denver, CO",
-              "New York City, NY",
-              "Los Angeles, CA",
-            ],
+            description: "List of geographic locations (e.g., 'Denver, CO').",
+            example: ["Denver, CO", "Los Angeles, CA"]
           },
           areaInterestInputs: {
             type: "array",
             items: { type: "string" },
-            description:
-              "List of legal practice areas for filtering lawyer results.",
-            examples: martindale.areasOfPractice,
-          },
+            description: "List of legal practice areas (e.g., 'Real Estate').",
+            example: martindale.areasOfPractice
+          }
         },
-        required: [],
-        additionalProperties: false,
-      },
-    },
-  },
+        required: ["term", "geoLocationInputs"],
+        additionalProperties: false
+      }
+    }
+  }
 ];
 
 // Dictionary of available functions
 const availableFunctions = {
-  generateMartindaleURL: martindale.generateMartindaleURL,
+  generateMartindaleURL: martindale.generateMartindaleURL
 };
 
 // Create readline interface for user input
@@ -158,13 +148,13 @@ async function main() {
             const functionArgs = JSON.parse(toolCall.function.arguments);
             try {
               // Call the function and get the response
-              const functionResponse = functionToCall(functionArgs.location);
+              const functionResponse = functionToCall(functionArgs);
               console.log(`\nFunction Response: ${functionResponse}`);
 
               // Add function response to history
               conversationHistory.push({
                 role: "function",
-                name: "get_weather",
+                name: functionName,
                 content: functionResponse,
               });
 
