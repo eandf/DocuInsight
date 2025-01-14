@@ -2706,6 +2706,8 @@ function generateMartindaleURL(functionParams, returnParams = false) {
 
   const jsonData = JSON.stringify(params);
   const encodedParams = Buffer.from(jsonData).toString("base64");
+
+  // (1-14-2025) currently this is the root URL for Martin-Dale
   const url = `https://www.martindale.com/search/attorneys/?params=${encodedParams}`;
 
   if (returnParams) {
@@ -2720,3 +2722,67 @@ module.exports = {
   areasOfPractice,
   generateMartindaleURL,
 };
+
+// NOTE: This script section executes only when the script is run directly (not when imported as a module)!
+if (require.main == module) {
+  function gatherUserInputs(callback) {
+    const readline = require("readline").createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+
+    const questions = [
+      "Term: ",
+      "Geolocations (separated by '|'): ",
+      "Areas Of Interest (separated by '|'): ",
+    ];
+    const inputs = {};
+    let index = 0;
+
+    function askQuestion() {
+      readline.question(questions[index], (answer) => {
+        if (index === 0) {
+          inputs.term = answer.trim();
+        } else if (index === 1) {
+          // split by '|', trim whitespace, and filter out empty strings
+          inputs.geoLocationInputs = answer
+            .split("|")
+            .map((s) => s.trim())
+            .filter((s) => s.length > 0);
+        } else if (index === 2) {
+          // split by '|', trim whitespace, and filter out empty strings
+          inputs.areaInterestInputs = answer
+            .split("|")
+            .map((s) => s.trim())
+            .filter((s) => s.length > 0);
+        }
+        index++;
+        if (index < questions.length) {
+          askQuestion();
+        } else {
+          readline.close();
+          callback(inputs);
+        }
+      });
+    }
+
+    askQuestion();
+  }
+
+  gatherUserInputs((inputs) => {
+    const { term, geoLocationInputs, areaInterestInputs } = inputs;
+
+    const functionInput = {
+      term,
+      geoLocationInputs,
+      areaInterestInputs,
+    };
+
+    const { url, params } = generateMartindaleURL(functionInput, true);
+
+    console.log("\nGenerated URL:");
+    console.log(url);
+    console.log("\nParameters:");
+    console.log(JSON.stringify(params, null, 4));
+  });
+}
