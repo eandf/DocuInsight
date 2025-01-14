@@ -1,0 +1,44 @@
+erDiagram
+    users ||--o{ jobs : "owns"
+    jobs ||--o| reports : "has one"
+    reports ||--o| jobs : "has one"
+    
+    users {
+        UUID id PK
+        string email UK
+        string sub UK
+        string name
+        string given_name
+        string family_name
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    jobs {
+        UUID id PK
+        UUID user_id FK
+        string docu_sign_account_id
+        string docu_sign_template_id
+        string bucket_url
+        string file_name
+        string file_hash
+        UUID report_id FK "Unique"
+        boolean report_generated
+        string signing_url
+        jsonb recipients
+        timestamp send_at
+        jsonb errors
+        enum status "queued|running|completed|failed|canceled|retrying"
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    reports {
+        UUID id PK
+        UUID job_id FK "Unique"
+        jsonb final_report
+        jsonb trace_back
+        string version
+        timestamp created_at
+        timestamp updated_at
+    }

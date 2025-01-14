@@ -1,0 +1,12 @@
+{
+  "name": "meme",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.47.10",
+    "express": "^4.21.2",
+    "uuid": "^11.0.4"
+  }
+}
