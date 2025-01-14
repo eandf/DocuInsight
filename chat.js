@@ -85,6 +85,8 @@ function askQuestion(question) {
 }
 
 async function processCompletion(messages, toolCalls = [], responseText = "") {
+  console.log("\n\n>>>>> A CALL WAS MADE TO OPENAI'S API <<<<<\n\n");
+
   try {
     // Send the messages to the model with streaming enabled
     const stream = await client.chat.completions.create({
@@ -143,8 +145,13 @@ async function main() {
     let toolChatOutput = undefined;
 
     while (true) {
-      // Get user input
-      let userInput = await askQuestion("You: ");
+      let userInput = undefined;
+      if (toolChatOutput === undefined) {
+        userInput = await askQuestion("You: ");
+      } else {
+        userInput = toolChatOutput;
+        toolChatOutput = undefined;
+      }
 
       // Check for exit command
       if (userInput.toLowerCase() === "exit") {
@@ -182,17 +189,8 @@ async function main() {
                 content: functionResponse,
               });
 
-              // Get final response after function call
-              const { responseText: finalResponse } =
-                await processCompletion(conversationHistory);
-
-              // Add final response to history
-              conversationHistory.push({
-                role: "assistant",
-                content: finalResponse,
-              });
-
-              // toolChatOutput = `The user inputted this: ${userInput} \n\nAnd `
+              toolChatOutput = `The user inputted this: ${userInput} \n\nAnd the following tool was called: ${JSON.stringify(toolCall.function)} \n\nKnowing this, can you review the original user input and answer it again with this given context after the tool calling`;
+              continue;
             } catch (e) {
               console.error(`Error executing tool call: ${e}`);
             }
