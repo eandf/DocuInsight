@@ -91,7 +91,6 @@ async function processCompletion(messages, toolCalls = [], responseText = "") {
       model: MAIN_LLM_MODEL,
       messages,
       tools,
-      tool_choice: "auto", // Explicitly enable tool choice
       stream: true,
     });
 
@@ -131,23 +130,21 @@ async function processCompletion(messages, toolCalls = [], responseText = "") {
 }
 
 async function main() {
-  // Initialize conversation history with updated system message
+  // Initialize conversation history
   const conversationHistory = [
     {
       role: "system",
       content:
-        "You are an AI assistant that helps users find legal resources. When using the Martindale URL generator, always explain what the URL will help them find and provide context about the search results they can expect. Make sure to format the URL as a clickable link and encourage users to review multiple attorneys to find the best fit for their needs. KEEP YOUR ANSWERS SHORT AND TOO THE POINTS!",
+        "You are an AI assistant that helps users find legal resources. When using the Martindale URL generator, always explain what the URL will help them find and provide context about the search results they can expect. Make sure to format the URL as a clickable link and encourage users to review multiple attorneys to find the best fit for their needs. KEEP YOUR ANSWERS SHORT AND TOO THE POINTS",
     },
   ];
 
-  console.log(
-    'Legal Resource Assistant initialized. Type "exit" to end the conversation.\n',
-  );
-
   try {
+    let toolChatOutput = undefined;
+
     while (true) {
       // Get user input
-      const userInput = await askQuestion("You: ");
+      let userInput = await askQuestion("You: ");
 
       // Check for exit command
       if (userInput.toLowerCase() === "exit") {
@@ -158,50 +155,12 @@ async function main() {
       // Add user message to history
       conversationHistory.push({ role: "user", content: userInput });
 
-      // Process initial completion with tool_choice enabled
-      const stream = await client.chat.completions.create({
-        model: MAIN_LLM_MODEL,
-        messages: conversationHistory,
-        tools,
-        tool_choice: "auto", // Explicitly enable tool choice
-        stream: true,
-      });
-
-      let responseText = "";
-      let toolCalls = [];
-
-      // Process the streaming response
-      for await (const chunk of stream) {
-        if (chunk.choices[0]?.delta?.content) {
-          responseText += chunk.choices[0].delta.content;
-          process.stdout.write(chunk.choices[0].delta.content);
-        }
-
-        if (chunk.choices[0]?.delta?.tool_calls) {
-          const deltaToolCalls = chunk.choices[0].delta.tool_calls;
-          for (const toolCall of deltaToolCalls) {
-            if (toolCalls.length <= toolCall.index) {
-              toolCalls.push({
-                id: "",
-                type: "function",
-                function: { name: "", arguments: "" },
-              });
-            }
-
-            const tc = toolCalls[toolCall.index];
-            if (toolCall.id) tc.id += toolCall.id;
-            if (toolCall.function?.name)
-              tc.function.name += toolCall.function.name;
-            if (toolCall.function?.arguments)
-              tc.function.arguments += toolCall.function.arguments;
-          }
-        }
-      }
+      // Process initial completion
+      const { responseText, toolCalls } =
+        await processCompletion(conversationHistory);
 
       // Add assistant's response to history
-      if (responseText) {
-        conversationHistory.push({ role: "assistant", content: responseText });
-      }
+      conversationHistory.push({ role: "assistant", content: responseText });
 
       // If tool calls are detected, execute them
       if (toolCalls.length > 0) {
@@ -214,26 +173,26 @@ async function main() {
               // Call the function and get the response
               const functionResponse = functionToCall(functionArgs);
 
-              // Add function response to history with better formatting
+              console.log(`\n---> Function Response: ${functionResponse}`);
+
+              // Add function response to history
               conversationHistory.push({
                 role: "function",
-                name: functionName,
-                content: `Generated Search URL: ${functionResponse}`,
+                name: "generateMartindaleURL",
+                content: functionResponse,
               });
 
               // Get final response after function call
               const { responseText: finalResponse } =
                 await processCompletion(conversationHistory);
 
-              if (finalResponse) {
-                console.log("\n" + finalResponse);
+              // Add final response to history
+              conversationHistory.push({
+                role: "assistant",
+                content: finalResponse,
+              });
 
-                // Add final response to history
-                conversationHistory.push({
-                  role: "assistant",
-                  content: finalResponse,
-                });
-              }
+              // toolChatOutput = `The user inputted this: ${userInput} \n\nAnd `
             } catch (e) {
               console.error(`Error executing tool call: ${e}`);
             }
