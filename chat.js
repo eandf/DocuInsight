@@ -1,5 +1,6 @@
-const OpenAI = require("openai");
 const readline = require("readline");
+const OpenAI = require("openai");
+
 const martindale = require("./martindale");
 
 // Initialize the OpenAI client
@@ -7,7 +8,7 @@ const client = new OpenAI();
 
 // Global variables
 const MAIN_LLM_MODEL = "gpt-4o-mini";
-const MAIN_LLM_MODEL_TOKEN_LIMIT = 150;
+const MAIN_LLM_MODEL_TOKEN_LIMIT = 128_000;
 
 // Define the tools
 const tools = [
@@ -153,16 +154,6 @@ async function main() {
     let toolChatOutput = undefined;
 
     while (true) {
-      console.log("\n-----");
-      console.log(estimateTokens(JSON.stringify(conversationHistory)));
-      console.log(MAIN_LLM_MODEL_TOKEN_LIMIT);
-      console.log(
-        estimateTokens(JSON.stringify(conversationHistory)) >=
-          MAIN_LLM_MODEL_TOKEN_LIMIT,
-      );
-      console.log("\n-----");
-
-      // trim chat history if needed
       if (
         estimateTokens(JSON.stringify(conversationHistory)) >=
         Math.floor(MAIN_LLM_MODEL_TOKEN_LIMIT * 0.85)
