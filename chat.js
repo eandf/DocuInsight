@@ -85,7 +85,7 @@ function askQuestion(question) {
 }
 
 async function processCompletion(messages, toolCalls = [], responseText = "") {
-  console.log("\n\n>>>>> A CALL WAS MADE TO OPENAI'S API <<<<<\n\n");
+  // console.log("\n\n>>>>> A CALL WAS MADE TO OPENAI'S API <<<<<\n\n");
 
   try {
     // Send the messages to the model with streaming enabled
@@ -148,6 +148,7 @@ async function main() {
       let userInput = undefined;
       if (toolChatOutput === undefined) {
         userInput = await askQuestion("You: ");
+        console.log();
       } else {
         userInput = toolChatOutput;
         toolChatOutput = undefined;
@@ -180,8 +181,6 @@ async function main() {
               // Call the function and get the response
               const functionResponse = functionToCall(functionArgs);
 
-              console.log(`\n---> Function Response: ${functionResponse}`);
-
               // Add function response to history
               conversationHistory.push({
                 role: "function",
@@ -189,7 +188,7 @@ async function main() {
                 content: functionResponse,
               });
 
-              toolChatOutput = `The user inputted this: ${userInput} \n\nAnd the following tool was called: ${JSON.stringify(toolCall.function)} \n\nKnowing this, can you review the original user input and answer it again with this given context after the tool calling`;
+              toolChatOutput = `As the user inputted this: ${userInput} \n\nAnd the following tool was called: ${JSON.stringify(toolCall.function)} \n\nKnowing this, can you review the original user input and answer it again with this given context after the tool calling`;
               continue;
             } catch (e) {
               console.error(`Error executing tool call: ${e}`);
@@ -198,7 +197,9 @@ async function main() {
         }
       }
 
-      console.log("\n"); // Add spacing between interactions
+      if (responseText.endsWith("\n") === false && responseText.length > 0) {
+        console.log("\n");
+      }
     }
   } catch (error) {
     console.error("Error in main:", error);
