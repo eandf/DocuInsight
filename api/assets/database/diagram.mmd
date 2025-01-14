@@ -36,6 +36,7 @@ erDiagram
     reports {
         UUID id PK
         UUID job_id FK "Unique"
+        text contract_content
         jsonb final_report
         jsonb trace_back
         string version

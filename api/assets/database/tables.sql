@@ -48,6 +48,7 @@ CREATE TABLE jobs (
 CREATE TABLE reports (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     job_id UUID UNIQUE,
+    contract_content TEXT,
     final_report JSONB,
     trace_back JSONB,
     version VARCHAR(50),
