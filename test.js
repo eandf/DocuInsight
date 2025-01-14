@@ -60,7 +60,7 @@ gatherUserInputs((inputs) => {
     areaInterestInputs,
   };
 
-  const { url, params } = util.generateMartindaleURL(functionInput);
+  const { url, params } = util.generateMartindaleURL(functionInput, true);
 
   console.log("\nGenerated URL:");
   console.log(url);
