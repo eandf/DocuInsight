@@ -7,6 +7,7 @@ const client = new OpenAI();
 
 // Global variables
 const MAIN_LLM_MODEL = "gpt-4o-mini";
+const MAIN_LLM_MODEL_TOKEN_LIMIT = 128_000;
 
 // Define the tools
 const tools = [
@@ -131,20 +132,37 @@ async function processCompletion(messages, toolCalls = [], responseText = "") {
   }
 }
 
+function estimateTokens(text) {
+  // NOTE: this follows the idea of the "Word-based Rule of Thumb". For the GPT models, a common English text, one token generally corresponds to around 3/4 of a word
+  // NOTE: this calculation is not accurate but it's good enough. Using tiktoken would be more accurate but it would add massive delays per response
+  const wordCount = text.trim().split(/\s+/).length;
+  return Math.round(wordCount * 1.33);
+}
+
 async function main() {
+  const systemMessage = {
+    role: "system",
+    content:
+      "You are an AI assistant that helps users find legal resources. When using the Martindale URL generator, always explain what the URL will help them find and provide context about the search results they can expect. Make sure to format the URL as a clickable link and encourage users to review multiple attorneys to find the best fit for their needs. KEEP YOUR ANSWERS SHORT AND TOO THE POINTS",
+  };
+
   // Initialize conversation history
-  const conversationHistory = [
-    {
-      role: "system",
-      content:
-        "You are an AI assistant that helps users find legal resources. When using the Martindale URL generator, always explain what the URL will help them find and provide context about the search results they can expect. Make sure to format the URL as a clickable link and encourage users to review multiple attorneys to find the best fit for their needs. KEEP YOUR ANSWERS SHORT AND TOO THE POINTS",
-    },
-  ];
+  const conversationHistory = [JSON.parse(JSON.stringify(systemMessage))];
 
   try {
     let toolChatOutput = undefined;
 
     while (true) {
+      // trim chat history if needed
+      if (
+        estimateTokens(JSON.stringify(conversationHistory)) >=
+        MAIN_LLM_MODEL_TOKEN_LIMIT
+      ) {
+        let halfIndex = Math.floor(conversationHistory.length / 2);
+        conversationHistory.splice(0, halfIndex);
+        conversationHistory.unshift(JSON.parse(JSON.stringify(systemMessage)));
+      }
+
       let userInput = undefined;
       if (toolChatOutput === undefined) {
         userInput = await askQuestion("You: ");
