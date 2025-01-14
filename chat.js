@@ -7,7 +7,7 @@ const client = new OpenAI();
 
 // Global variables
 const MAIN_LLM_MODEL = "gpt-4o-mini";
-const MAIN_LLM_MODEL_TOKEN_LIMIT = 128_000;
+const MAIN_LLM_MODEL_TOKEN_LIMIT = 150;
 
 // Define the tools
 const tools = [
@@ -153,14 +153,30 @@ async function main() {
     let toolChatOutput = undefined;
 
     while (true) {
+      console.log("\n-----");
+      console.log(estimateTokens(JSON.stringify(conversationHistory)));
+      console.log(MAIN_LLM_MODEL_TOKEN_LIMIT);
+      console.log(
+        estimateTokens(JSON.stringify(conversationHistory)) >=
+          MAIN_LLM_MODEL_TOKEN_LIMIT,
+      );
+      console.log("\n-----");
+
       // trim chat history if needed
       if (
         estimateTokens(JSON.stringify(conversationHistory)) >=
-        MAIN_LLM_MODEL_TOKEN_LIMIT
+        Math.floor(MAIN_LLM_MODEL_TOKEN_LIMIT * 0.85)
       ) {
-        let halfIndex = Math.floor(conversationHistory.length / 2);
-        conversationHistory.splice(0, halfIndex);
-        conversationHistory.unshift(JSON.parse(JSON.stringify(systemMessage)));
+        while (
+          estimateTokens(JSON.stringify(conversationHistory)) >
+          MAIN_LLM_MODEL_TOKEN_LIMIT
+        ) {
+          if (conversationHistory.length > 1) {
+            conversationHistory.splice(1, 1);
+          } else {
+            break;
+          }
+        }
       }
 
       let userInput = undefined;
