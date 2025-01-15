@@ -434,71 +434,6 @@ app.post("/jobs", upload.single("file"), async (req, res) => {
   }
 });
 
-// DELETE /jobs - Delete a job row and its associated PDF
-app.delete("/jobs", async (req, res) => {
-  try {
-    const { id } = req.body;
-
-    // 1) Validate that 'id' is provided
-    if (!id) {
-      return res.status(400).json({ error: "Missing required field: 'id'." });
-    }
-
-    // 2) Retrieve the job to get file details
-    const { data: job, error: fetchError } = await supabase
-      .from("jobs")
-      .select("file_name")
-      .eq("id", id)
-      .single();
-
-    if (fetchError) {
-      console.error("Error fetching job:", fetchError);
-      if (
-        fetchError.code === "PGRST116" ||
-        fetchError.message === "No rows found"
-      ) {
-        // Adjust based on actual error
-        return res.status(404).json({ error: "Job not found." });
-      } else {
-        return res.status(400).json({ error: "Error fetching job." });
-      }
-    }
-
-    // 3) Delete the job row from the database
-    const { data: deletedJob, error: deleteError } = await supabase
-      .from("jobs")
-      .delete()
-      .eq("id", id)
-      .select("*"); // To return the deleted row
-
-    if (deleteError) {
-      console.error("Error deleting job:", deleteError);
-      return res.status(400).json({ error: deleteError.message });
-    }
-
-    // 4) If the job had an associated file, delete it from Supabase Storage
-    if (deletedJob && deletedJob.length > 0 && deletedJob[0].file_name) {
-      const filePath = `pdfs/${deletedJob[0].file_name}`;
-
-      const { error: storageRemoveError } = await supabase.storage
-        .from("contracts") // Ensure consistent bucket name
-        .remove([filePath]);
-
-      if (storageRemoveError) {
-        console.error("Error removing file from storage:", storageRemoveError);
-        // Optionally, you can notify or log this error further
-        // For now, we'll proceed to respond successfully
-      }
-    }
-
-    // 5) Respond with success message
-    return res.json({ message: "Job deleted successfully." });
-  } catch (err) {
-    console.error("Unexpected error [DELETE /jobs]:", err);
-    return res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
 // PUT /jobs - Update specific fields of a job row
 app.put("/jobs", async (req, res) => {
   try {
@@ -595,6 +530,71 @@ app.put("/jobs", async (req, res) => {
     return res.json(updatedJob);
   } catch (err) {
     console.error("Unexpected error [PUT /jobs]:", err);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// DELETE /jobs - Delete a job row and its associated PDF
+app.delete("/jobs", async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    // 1) Validate that 'id' is provided
+    if (!id) {
+      return res.status(400).json({ error: "Missing required field: 'id'." });
+    }
+
+    // 2) Retrieve the job to get file details
+    const { data: job, error: fetchError } = await supabase
+      .from("jobs")
+      .select("file_name")
+      .eq("id", id)
+      .single();
+
+    if (fetchError) {
+      console.error("Error fetching job:", fetchError);
+      if (
+        fetchError.code === "PGRST116" ||
+        fetchError.message === "No rows found"
+      ) {
+        // Adjust based on actual error
+        return res.status(404).json({ error: "Job not found." });
+      } else {
+        return res.status(400).json({ error: "Error fetching job." });
+      }
+    }
+
+    // 3) Delete the job row from the database
+    const { data: deletedJob, error: deleteError } = await supabase
+      .from("jobs")
+      .delete()
+      .eq("id", id)
+      .select("*"); // To return the deleted row
+
+    if (deleteError) {
+      console.error("Error deleting job:", deleteError);
+      return res.status(400).json({ error: deleteError.message });
+    }
+
+    // 4) If the job had an associated file, delete it from Supabase Storage
+    if (deletedJob && deletedJob.length > 0 && deletedJob[0].file_name) {
+      const filePath = `pdfs/${deletedJob[0].file_name}`;
+
+      const { error: storageRemoveError } = await supabase.storage
+        .from("contracts") // Ensure consistent bucket name
+        .remove([filePath]);
+
+      if (storageRemoveError) {
+        console.error("Error removing file from storage:", storageRemoveError);
+        // Optionally, you can notify or log this error further
+        // For now, we'll proceed to respond successfully
+      }
+    }
+
+    // 5) Respond with success message
+    return res.json({ message: "Job deleted successfully." });
+  } catch (err) {
+    console.error("Unexpected error [DELETE /jobs]:", err);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 });
