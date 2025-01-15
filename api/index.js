@@ -1,3 +1,5 @@
+import multer from "multer";
+import crypto from "crypto";
 import express from "express";
 import { createClient } from "@supabase/supabase-js";
 import {
@@ -12,6 +14,7 @@ const supabase = createClient(
   process.env.SUPABASE_KEY,
 );
 
+const upload = multer({ storage: multer.memoryStorage() });
 const app = express();
 const port = 3000;
 
@@ -258,6 +261,110 @@ app.delete("/users", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// POST /jobs - Create a new job row, upload PDF, store file info in DB
+app.post("/jobs", upload.single("file"), async (req, res) => {
+  try {
+    // 1) Extract JSON fields from the request body (besides the file)
+    const {
+      user_id,
+      docu_sign_account_id,
+      docu_sign_template_id,
+      signing_url,
+      recipients
+    } = req.body;
+
+    // Validate required fields
+    if (!user_id) {
+      return res.status(400).json({ error: "Missing required field: 'user_id'." });
+    }
+
+    // Prepare variables for file-related columns
+    let fileName = null;
+    let fileHash = null;
+    let bucketURL = null;
+
+    // 2) If a file was uploaded, handle it
+    if (req.file) {
+      // Compute a hash of the file buffer
+      fileHash = crypto
+        .createHash("sha256")
+        .update(req.file.buffer)
+        .digest("hex")
+        .substring(0, 16); 
+      // substring(0,16) just to shorten the hash in the filename (optional)
+
+      // Construct a unique path in the bucket. E.g.: "pdfs/originalName_hash.pdf"
+      fileName = `${req.file.originalname.replace(/\.[^/.]+$/, "")}_${fileHash}.pdf`;
+      const storageFilePath = `pdfs/${fileName}`;
+
+      // Attempt to upload to Supabase storage (upsert=false to catch duplicates)
+      const { data: storageData, error: storageError } = await supabase.storage
+        .from("contracts") // your bucket name
+        .upload(storageFilePath, req.file.buffer, {
+          upsert: false, // If false, an error occurs if file already exists
+          contentType: "application/pdf",
+        });
+
+      if (storageError) {
+        // If it's a duplicate error or any other storage error, return early
+        console.error("Storage upload error:", storageError);
+        return res.status(400).json({ error: storageError.message });
+      }
+
+      // Optionally build a public URL if your bucket is public, or store the path
+      const { data: publicURLData } = supabase.storage
+        .from("documents")
+        .getPublicUrl(storageFilePath);
+
+      bucketURL = publicURLData.publicUrl; 
+      // or, if not public, just store "pdfs/<fileName>" so you can refer to it later
+    }
+
+    // 3) Insert a new row into the "jobs" table
+    const { data: newJob, error: insertError } = await supabase
+      .from("jobs")
+      .insert([
+        {
+          user_id,
+          docu_sign_account_id,
+          docu_sign_template_id,
+          bucket_url: bucketURL,
+          file_name: fileName,
+          file_hash: fileHash,
+          signing_url: signing_url,
+          recipients: recipients,
+          errors: {},
+          // Additional columns here...
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+      ])
+      .select("*");
+
+    if (insertError) {
+      console.error("Error inserting job:", insertError);
+
+      // If insertion failed, consider deleting the file from storage if it was uploaded.
+      if (fileName) {
+        await supabase.storage
+          .from("documents")
+          .remove([`pdfs/${fileName}`]);
+      }
+
+      return res.status(400).json({ error: insertError.message });
+    }
+
+    // 4) Respond with the newly inserted job row
+    return res.status(201).json(newJob);
+  } catch (err) {
+    console.error("Unexpected error [POST /jobs]:", err);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
