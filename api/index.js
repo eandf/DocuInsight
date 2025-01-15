@@ -264,10 +264,10 @@ app.delete("/users", async (req, res) => {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// POST /jobs - Create a new job row, optionally uploading a PDF if not already existing
+// POST /jobs - Create a new job row, optionally uploading PDF if not already existing
 app.post("/jobs", upload.single("file"), async (req, res) => {
   try {
-    // 1) Extract JSON fields from the request body (besides the file)
+    // 1) Extract JSON fields from the request body (excluding the file)
     const {
       user_id,
       docu_sign_account_id,
@@ -276,82 +276,114 @@ app.post("/jobs", upload.single("file"), async (req, res) => {
       recipients,
     } = req.body;
 
-    // Validate required fields
-    if (!user_id) {
-      return res
-        .status(400)
-        .json({ error: "Missing required field: 'user_id'." });
+    // 2) Validate required fields
+    const requiredFields = ["user_id"];
+    const missingFields = requiredFields.filter((field) => !req.body[field]);
+
+    if (missingFields.length > 0) {
+      return res.status(400).json({
+        error: `Missing required field(s): ${missingFields.join(", ")}.`,
+      });
     }
 
-    // Prepare variables for file-related columns
+    // 3) Check that the user exists in the "users" table
+    const { data: userRecord, error: userError } = await supabase
+      .from("users")
+      .select("id")
+      .eq("id", user_id)
+      .single();
+
+    if (userError) {
+      console.error("User check error:", userError);
+      // Supabase returns a specific error code for no data found
+      // Adjust based on actual Supabase error code for "no data found"
+      if (
+        userError.code === "PGRST116" ||
+        userError.message === "No rows found"
+      ) {
+        return res.status(404).json({
+          error: "User does not exist. Provide a valid 'user_id'.",
+        });
+      } else {
+        return res.status(400).json({
+          error: "Error checking user existence.",
+        });
+      }
+    }
+
+    // 4) Prepare variables for file-related columns
     let fileName = null;
     let fileHash = null;
     let bucketURL = null;
 
-    // 2) If a file was uploaded, handle it
+    // 5) If a file was uploaded, handle it
     if (req.file) {
-      // Compute a hash of the file buffer
-      fileHash = crypto
-        .createHash("sha256")
-        .update(req.file.buffer)
-        .digest("hex")
-        .substring(0, 16);
-      // substring(0,16) just to shorten the hash in the filename (optional)
+      // 5.1) Validate MIME type to ensure it's a PDF
+      if (req.file.mimetype !== "application/pdf") {
+        return res.status(400).json({ error: "Only PDF files are allowed." });
+      }
 
-      // Before uploading, check if a job row with this file_hash already exists
+      // 5.2) Compute a full MD5 hash of the file buffer
+      fileHash = crypto.createHash("md5").update(req.file.buffer).digest("hex");
+      // No truncation to ensure uniqueness
+
+      // 5.3) Check if a file with the same hash already exists in the "jobs" table
       const { data: existingJob, error: existingJobError } = await supabase
         .from("jobs")
-        .select("file_name, bucket_url, file_hash")
+        .select("file_name, bucket_url")
         .eq("file_hash", fileHash)
-        .maybeSingle();
-      // maybeSingle() returns either one record or null, but no error if multiple
+        .maybeSingle(); // Retrieves one record or null
 
       if (existingJobError) {
         console.error("Error checking existing file hash:", existingJobError);
-        return res.status(400).json({ error: existingJobError.message });
+        return res.status(400).json({ error: "Error checking existing file." });
       }
 
       if (existingJob) {
-        // If we found a job that has this exact file_hash,
-        // we assume the file is already uploaded and just reuse its info.
+        // File already exists; reuse its information
         console.log(
           `File with hash ${fileHash} already exists. Reusing existing file.`,
         );
         fileName = existingJob.file_name;
         bucketURL = existingJob.bucket_url;
       } else {
-        // No existing job matches this file_hash, so proceed with a fresh upload
-
-        // Construct a unique path in the bucket. E.g.: "pdfs/originalName_hash.pdf"
-        fileName = `${req.file.originalname.replace(/\.[^/.]+$/, "")}_${fileHash}.pdf`;
+        // 5.4) Construct a unique filename and upload to Supabase Storage
+        // Sanitize the original filename to remove any unwanted characters
+        const originalNameSanitized = req.file.originalname
+          .replace(/\.[^/.]+$/, "")
+          .replace(/[^a-zA-Z0-9-_]/g, "_");
+        fileName = `${originalNameSanitized}_${fileHash}.pdf`;
         const storageFilePath = `pdfs/${fileName}`;
 
-        // Attempt to upload to Supabase storage (upsert=false to catch duplicates)
-        const { data: storageData, error: storageError } =
-          await supabase.storage
-            .from("contracts") // your bucket name
-            .upload(storageFilePath, req.file.buffer, {
-              upsert: false, // If false, an error occurs if file already exists
-              contentType: "application/pdf",
-            });
+        // Attempt to upload to Supabase Storage (upsert=false to prevent overwriting)
+        const { error: storageError } = await supabase.storage
+          .from("contracts") // Consistent bucket name
+          .upload(storageFilePath, req.file.buffer, {
+            upsert: false, // Prevent overwriting existing files
+            contentType: "application/pdf",
+          });
 
         if (storageError) {
-          // If it's a duplicate error or any other storage error, return early
           console.error("Storage upload error:", storageError);
           return res.status(400).json({ error: storageError.message });
         }
 
-        // Optionally build a public URL if your bucket is public, or store the path
-        // NOTE: you used 'documents' in the snippet for getPublicUrl, so be consistent with your actual bucket name
-        const { data: publicURLData } = supabase.storage
-          .from("contracts")
-          .getPublicUrl(storageFilePath);
+        // 5.5) Generate the public URL (ensure "contracts" bucket is public or handle accordingly)
+        const { data: publicURLData, error: publicURLError } =
+          await supabase.storage
+            .from("contracts") // Consistent bucket name
+            .getPublicUrl(storageFilePath);
+
+        if (publicURLError) {
+          console.error("Error generating public URL:", publicURLError);
+          return res.status(400).json({ error: "Error generating file URL." });
+        }
 
         bucketURL = publicURLData.publicUrl;
       }
     }
 
-    // 3) Insert a new row into the "jobs" table
+    // 6) Insert a new row into the "jobs" table
     const { data: newJob, error: insertError } = await supabase
       .from("jobs")
       .insert([
@@ -363,8 +395,9 @@ app.post("/jobs", upload.single("file"), async (req, res) => {
           file_name: fileName,
           file_hash: fileHash,
           signing_url: signing_url,
-          recipients: recipients,
-          errors: {},
+          recipients: recipients ? JSON.parse(recipients) : null, // Ensure recipients is JSON
+          errors: {}, // Initialize as empty object
+          status: "queued", // Set default status
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         },
@@ -374,18 +407,26 @@ app.post("/jobs", upload.single("file"), async (req, res) => {
     if (insertError) {
       console.error("Error inserting job:", insertError);
 
-      // If insertion failed, optionally delete the file from storage if we uploaded it
-      // and if there's no other job referencing that file.
-      // (In a multi-tenant scenario, be careful with auto-deletes here.)
-      if (fileName) {
-        // Example naive clean-up:
-        await supabase.storage.from("contracts").remove([`pdfs/${fileName}`]);
+      // 7) If insertion failed, delete the uploaded file from storage if it was newly uploaded
+      if (fileName && !existingJob) {
+        // Only delete if we uploaded the file just now
+        const { error: removeError } = await supabase.storage
+          .from("contracts") // Consistent bucket name
+          .remove([`pdfs/${fileName}`]);
+
+        if (removeError) {
+          console.error(
+            "Error removing file from storage after failed DB insert:",
+            removeError,
+          );
+          // Optionally handle this scenario further (e.g., notify admins)
+        }
       }
 
       return res.status(400).json({ error: insertError.message });
     }
 
-    // 4) Respond with the newly inserted job row
+    // 8) Respond with the newly inserted job row
     return res.status(201).json(newJob);
   } catch (err) {
     console.error("Unexpected error [POST /jobs]:", err);
