@@ -2710,6 +2710,8 @@ function generateMartindaleURL(functionParams, returnParams = false) {
   // (1-14-2025) currently this is the root URL for Martin-Dale
   const url = `https://www.martindale.com/search/attorneys/?params=${encodedParams}`;
 
+  // console.log(`\n${JSON.stringify(params, null, indent=4)}\n`)
+
   if (returnParams) {
     return { url, params };
   } else {
