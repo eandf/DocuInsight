@@ -1,7 +1,7 @@
+import { createClient } from "@supabase/supabase-js";
+import express from "express";
 import multer from "multer";
 import crypto from "crypto";
-import express from "express";
-import { createClient } from "@supabase/supabase-js";
 import {
   parseSelect,
   parseLimit,
@@ -16,7 +16,6 @@ const supabase = createClient(
 
 const upload = multer({ storage: multer.memoryStorage() });
 const app = express();
-const port = 3000;
 
 // middleware to parse json bodies
 app.use(express.json());
@@ -222,6 +221,80 @@ app.post("/users", async (req, res) => {
   }
 });
 
+// PUT /users - Update user details (excluding 'id' and 'sub')
+app.put("/users", async (req, res) => {
+  try {
+    const { id, email, name, given_name, family_name, sub, ...rest } = req.body;
+
+    // 1) Validate that 'id' is provided
+    if (!id) {
+      return res.status(400).json({ error: "Missing required field: 'id'." });
+    }
+
+    // 2) Prevent modification of 'id' and 'sub'
+    if (sub !== undefined) {
+      return res
+        .status(400)
+        .json({ error: "Modification of 'sub' is not allowed." });
+    }
+
+    // 3) Check for unexpected fields
+    const allowedFields = ["email", "name", "given_name", "family_name"];
+    const unexpectedFields = Object.keys(rest);
+    if (unexpectedFields.length > 0) {
+      return res.status(400).json({
+        error: `Unexpected field(s): ${unexpectedFields.join(", ")}.`,
+      });
+    }
+
+    // 4) Prepare fields to update
+    const fieldsToUpdate = {};
+    if (email !== undefined) fieldsToUpdate.email = email;
+    if (name !== undefined) fieldsToUpdate.name = name;
+    if (given_name !== undefined) fieldsToUpdate.given_name = given_name;
+    if (family_name !== undefined) fieldsToUpdate.family_name = family_name;
+
+    // If no updatable fields are provided, respond accordingly
+    if (Object.keys(fieldsToUpdate).length === 0) {
+      return res
+        .status(400)
+        .json({ error: "No valid fields provided for update." });
+    }
+
+    // 5) Update the 'updated_at' timestamp
+    fieldsToUpdate.updated_at = new Date().toISOString();
+
+    // 6) Attempt to update the user in the database
+    const { data: updatedUser, error: updateError } = await supabase
+      .from("users")
+      .update(fieldsToUpdate)
+      .eq("id", id)
+      .select("*");
+
+    if (updateError) {
+      console.error("Error updating user:", updateError);
+
+      // Handle unique constraint violation for 'email'
+      if (updateError.code === "23505") {
+        // PostgreSQL unique_violation error code
+        return res.status(400).json({ error: "Email already exists." });
+      }
+
+      return res.status(400).json({ error: updateError.message });
+    }
+
+    if (!updatedUser || updatedUser.length === 0) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    // 7) Respond with the updated user
+    return res.json(updatedUser);
+  } catch (err) {
+    console.error("Unexpected error [PUT /users]:", err);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 // DELETE /users
 app.delete("/users", async (req, res) => {
   try {
@@ -262,7 +335,7 @@ app.delete("/users", async (req, res) => {
   }
 });
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////[JOBS_NONE_GET_ENDPOINTS]/////////////////////////////////////////////
 
 // POST /jobs - Create a new job row, optionally uploading PDF if not already existing
 app.post("/jobs", upload.single("file"), async (req, res) => {
@@ -633,6 +706,7 @@ app.delete("/jobs", async (req, res) => {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
