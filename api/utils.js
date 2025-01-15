@@ -108,5 +108,11 @@ function applySupabaseFilters(dbQuery, queryObj) {
   return dbQuery;
 }
 
+// TODO: (1-15-2025) proper authentication needs to be done here with DocuSign!
+function userAuth(headers) {
+  const authHeader = headers["authorization"];
+  return true;
+}
+
 // export all functions in utils
-export { parseSelect, parseLimit, parseQuery, applySupabaseFilters };
+export { parseSelect, parseLimit, parseQuery, applySupabaseFilters, userAuth };

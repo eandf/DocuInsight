@@ -7,6 +7,7 @@ import {
   parseLimit,
   parseQuery,
   applySupabaseFilters,
+  userAuth,
 } from "./utils.js";
 
 const supabase = createClient(
@@ -31,6 +32,12 @@ app.use(express.json());
  */
 app.get("/users", async (req, res) => {
   try {
+    if (userAuth(req.headers) == false) {
+      return res
+        .status(401)
+        .json({ error: "user does not have access to the API" });
+    }
+
     const { select, limit, query } = req.query;
 
     // parse each param
@@ -73,6 +80,12 @@ app.get("/users", async (req, res) => {
  */
 app.get("/jobs", async (req, res) => {
   try {
+    if (userAuth(req.headers) == false) {
+      return res
+        .status(401)
+        .json({ error: "user does not have access to the API" });
+    }
+
     const { select, limit, query } = req.query;
 
     const columns = parseSelect(select);
@@ -109,6 +122,12 @@ app.get("/jobs", async (req, res) => {
  */
 app.get("/reports", async (req, res) => {
   try {
+    if (userAuth(req.headers) == false) {
+      return res
+        .status(401)
+        .json({ error: "user does not have access to the API" });
+    }
+
     const { select, limit, query } = req.query;
 
     const columns = parseSelect(select);
@@ -136,16 +155,17 @@ app.get("/reports", async (req, res) => {
   }
 });
 
-/** Root route just to verify the server is running */
-app.get("/", (req, res) => {
-  res.send("Welcome To The Middle API For DocuInsight!");
-});
-
 ////////////////////////////////////////////[USERS_NONE_GET_ENDPOINTS]////////////////////////////////////////////
 
 // POST /users
 app.post("/users", async (req, res) => {
   try {
+    if (userAuth(req.headers) == false) {
+      return res
+        .status(401)
+        .json({ error: "user does not have access to the API" });
+    }
+
     const { id, email, name, given_name, family_name, sub } = req.body;
 
     // Validate essential fields (adjust as needed for your use case)
@@ -224,6 +244,12 @@ app.post("/users", async (req, res) => {
 // PUT /users - Update user details (excluding 'id' and 'sub')
 app.put("/users", async (req, res) => {
   try {
+    if (userAuth(req.headers) == false) {
+      return res
+        .status(401)
+        .json({ error: "user does not have access to the API" });
+    }
+
     const { id, email, name, given_name, family_name, sub, ...rest } = req.body;
 
     // 1) Validate that 'id' is provided
@@ -298,6 +324,12 @@ app.put("/users", async (req, res) => {
 // DELETE /users
 app.delete("/users", async (req, res) => {
   try {
+    if (userAuth(req.headers) == false) {
+      return res
+        .status(401)
+        .json({ error: "user does not have access to the API" });
+    }
+
     const { id, sub } = req.body;
     if (!id && !sub) {
       return res
@@ -340,6 +372,12 @@ app.delete("/users", async (req, res) => {
 // POST /jobs - Create a new job row, optionally uploading PDF if not already existing
 app.post("/jobs", upload.single("file"), async (req, res) => {
   try {
+    if (userAuth(req.headers) == false) {
+      return res
+        .status(401)
+        .json({ error: "user does not have access to the API" });
+    }
+
     // 1) Extract JSON fields from the request body (excluding the file)
     const {
       user_id,
@@ -510,6 +548,12 @@ app.post("/jobs", upload.single("file"), async (req, res) => {
 // PUT /jobs - Update specific fields of a job row
 app.put("/jobs", async (req, res) => {
   try {
+    if (userAuth(req.headers) == false) {
+      return res
+        .status(401)
+        .json({ error: "user does not have access to the API" });
+    }
+
     const {
       id,
       report_generated,
@@ -610,6 +654,12 @@ app.put("/jobs", async (req, res) => {
 // DELETE /jobs - Delete a job row and its associated PDF if no other jobs reference it
 app.delete("/jobs", async (req, res) => {
   try {
+    if (userAuth(req.headers) == false) {
+      return res
+        .status(401)
+        .json({ error: "user does not have access to the API" });
+    }
+
     const { id } = req.body;
 
     // 1) Validate that 'id' is provided
