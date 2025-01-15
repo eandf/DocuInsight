@@ -754,6 +754,162 @@ app.delete("/jobs", async (req, res) => {
   }
 });
 
+///////////////////////////////////////////[REPORTS_NONE_GET_ENDPOINTS]///////////////////////////////////////////
+
+// POST /reports - Create a new report
+app.post("/reports", async (req, res) => {
+  try {
+    if (!userAuth(req.headers)) {
+      return res.status(401).json({ error: "Unauthorized access." });
+    }
+
+    const { job_id, contract_content, final_report, trace_back, version } =
+      req.body;
+
+    // Validate required fields
+    if (!job_id || !contract_content || !version) {
+      return res.status(400).json({
+        error:
+          "Missing required fields: 'job_id', 'contract_content', or 'version'.",
+      });
+    }
+
+    // Check if the job exists
+    const { data: job, error: jobError } = await supabase
+      .from("jobs")
+      .select("id")
+      .eq("id", job_id)
+      .single();
+
+    if (jobError) {
+      console.error("Job check error:", jobError);
+      return res.status(404).json({ error: "Associated job not found." });
+    }
+
+    // Create the new report
+    const { data: newReport, error: insertError } = await supabase
+      .from("reports")
+      .insert([
+        {
+          job_id,
+          contract_content,
+          final_report: final_report || {},
+          trace_back: trace_back || {},
+          version,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+      ])
+      .select("*");
+
+    if (insertError) {
+      console.error("Error creating report:", insertError);
+      return res.status(400).json({ error: insertError.message });
+    }
+
+    return res.status(201).json(newReport);
+  } catch (err) {
+    console.error("Unexpected error [POST /reports]:", err);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// PUT /reports - Update report details
+app.put("/reports", async (req, res) => {
+  try {
+    if (!userAuth(req.headers)) {
+      return res.status(401).json({ error: "Unauthorized access." });
+    }
+
+    const { id, contract_content, final_report, trace_back, version } =
+      req.body;
+
+    // Validate that 'id' is provided
+    if (!id) {
+      return res.status(400).json({ error: "Missing required field: 'id'." });
+    }
+
+    // Prepare fields to update
+    const fieldsToUpdate = {};
+    if (contract_content !== undefined)
+      fieldsToUpdate.contract_content = contract_content;
+    if (final_report !== undefined) fieldsToUpdate.final_report = final_report;
+    if (trace_back !== undefined) fieldsToUpdate.trace_back = trace_back;
+    if (version !== undefined) fieldsToUpdate.version = version;
+
+    // If no fields provided
+    if (Object.keys(fieldsToUpdate).length === 0) {
+      return res
+        .status(400)
+        .json({ error: "No valid fields provided for update." });
+    }
+
+    // Update the 'updated_at' timestamp
+    fieldsToUpdate.updated_at = new Date().toISOString();
+
+    // Attempt to update the report
+    const { data: updatedReport, error: updateError } = await supabase
+      .from("reports")
+      .update(fieldsToUpdate)
+      .eq("id", id)
+      .select("*");
+
+    if (updateError) {
+      console.error("Error updating report:", updateError);
+      return res.status(400).json({ error: updateError.message });
+    }
+
+    if (!updatedReport || updatedReport.length === 0) {
+      return res.status(404).json({ error: "Report not found." });
+    }
+
+    return res.json(updatedReport);
+  } catch (err) {
+    console.error("Unexpected error [PUT /reports]:", err);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// DELETE /reports - Delete a report by id
+app.delete("/reports", async (req, res) => {
+  try {
+    if (!userAuth(req.headers)) {
+      return res.status(401).json({ error: "Unauthorized access." });
+    }
+
+    const { id } = req.body;
+
+    // Validate that 'id' is provided
+    if (!id) {
+      return res.status(400).json({ error: "Missing required field: 'id'." });
+    }
+
+    // Delete the report
+    const { data: deletedReport, error: deleteError } = await supabase
+      .from("reports")
+      .delete()
+      .eq("id", id)
+      .select("*");
+
+    if (deleteError) {
+      console.error("Error deleting report:", deleteError);
+      return res.status(400).json({ error: deleteError.message });
+    }
+
+    if (!deletedReport || deletedReport.length === 0) {
+      return res.status(404).json({ error: "Report not found." });
+    }
+
+    return res.json({
+      message: "Report deleted successfully.",
+      data: deletedReport,
+    });
+  } catch (err) {
+    console.error("Unexpected error [DELETE /reports]:", err);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const port = process.env.PORT || 3000;
