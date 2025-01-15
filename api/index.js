@@ -534,7 +534,7 @@ app.put("/jobs", async (req, res) => {
   }
 });
 
-// DELETE /jobs - Delete a job row and its associated PDF
+// DELETE /jobs - Delete a job row and its associated PDF if no other jobs reference it
 app.delete("/jobs", async (req, res) => {
   try {
     const { id } = req.body;
@@ -547,7 +547,7 @@ app.delete("/jobs", async (req, res) => {
     // 2) Retrieve the job to get file details
     const { data: job, error: fetchError } = await supabase
       .from("jobs")
-      .select("file_name")
+      .select("file_name, file_hash")
       .eq("id", id)
       .single();
 
@@ -564,6 +564,8 @@ app.delete("/jobs", async (req, res) => {
       }
     }
 
+    const { file_name: fileName, file_hash: fileHash } = job;
+
     // 3) Delete the job row from the database
     const { data: deletedJob, error: deleteError } = await supabase
       .from("jobs")
@@ -576,23 +578,53 @@ app.delete("/jobs", async (req, res) => {
       return res.status(400).json({ error: deleteError.message });
     }
 
-    // 4) If the job had an associated file, delete it from Supabase Storage
-    if (deletedJob && deletedJob.length > 0 && deletedJob[0].file_name) {
-      const filePath = `pdfs/${deletedJob[0].file_name}`;
+    // 4) If the job had an associated file, check if other jobs reference it
+    if (fileHash) {
+      // Count how many jobs still reference this file_hash
+      const { count, error: countError } = await supabase
+        .from("jobs")
+        .select("*", { count: "exact", head: true })
+        .eq("file_hash", fileHash);
 
-      const { error: storageRemoveError } = await supabase.storage
-        .from("contracts") // Ensure consistent bucket name
-        .remove([filePath]);
+      if (countError) {
+        console.error("Error counting file references:", countError);
+        // Proceeding without deleting the file to prevent accidental deletions
+      } else if (count === 0) {
+        // No other jobs reference this file; safe to delete the PDF
+        const filePath = `pdfs/${fileName}`;
 
-      if (storageRemoveError) {
-        console.error("Error removing file from storage:", storageRemoveError);
-        // Optionally, you can notify or log this error further
-        // For now, we'll proceed to respond successfully
+        const { error: storageRemoveError } = await supabase.storage
+          .from("contracts") // Ensure consistent bucket name
+          .remove([filePath]);
+
+        if (storageRemoveError) {
+          console.error(
+            "Error removing file from storage:",
+            storageRemoveError,
+          );
+          // Optionally, you can notify or log this error further
+          // For now, we'll respond with a partial success message
+          return res.status(500).json({
+            message: "Job deleted, but failed to delete the associated PDF.",
+            deletedJob: deletedJob[0],
+            error: storageRemoveError.message,
+          });
+        }
+
+        // File deleted successfully
+        return res.json({
+          message: "Job and associated PDF deleted successfully.",
+          deletedJob: deletedJob[0],
+        });
       }
     }
 
-    // 5) Respond with success message
-    return res.json({ message: "Job deleted successfully." });
+    // 5) If other jobs reference the file, do not delete the PDF
+    return res.json({
+      message:
+        "Job deleted successfully. Associated PDF is still referenced by other jobs.",
+      deletedJob: deletedJob[0],
+    });
   } catch (err) {
     console.error("Unexpected error [DELETE /jobs]:", err);
     return res.status(500).json({ error: "Internal Server Error" });
