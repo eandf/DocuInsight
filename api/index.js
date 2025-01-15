@@ -264,7 +264,7 @@ app.delete("/users", async (req, res) => {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// POST /jobs - Create a new job row, upload PDF, store file info in DB
+// POST /jobs - Create a new job row, optionally uploading a PDF if not already existing
 app.post("/jobs", upload.single("file"), async (req, res) => {
   try {
     // 1) Extract JSON fields from the request body (besides the file)
@@ -273,12 +273,14 @@ app.post("/jobs", upload.single("file"), async (req, res) => {
       docu_sign_account_id,
       docu_sign_template_id,
       signing_url,
-      recipients
+      recipients,
     } = req.body;
 
     // Validate required fields
     if (!user_id) {
-      return res.status(400).json({ error: "Missing required field: 'user_id'." });
+      return res
+        .status(400)
+        .json({ error: "Missing required field: 'user_id'." });
     }
 
     // Prepare variables for file-related columns
@@ -293,34 +295,60 @@ app.post("/jobs", upload.single("file"), async (req, res) => {
         .createHash("sha256")
         .update(req.file.buffer)
         .digest("hex")
-        .substring(0, 16); 
+        .substring(0, 16);
       // substring(0,16) just to shorten the hash in the filename (optional)
 
-      // Construct a unique path in the bucket. E.g.: "pdfs/originalName_hash.pdf"
-      fileName = `${req.file.originalname.replace(/\.[^/.]+$/, "")}_${fileHash}.pdf`;
-      const storageFilePath = `pdfs/${fileName}`;
+      // Before uploading, check if a job row with this file_hash already exists
+      const { data: existingJob, error: existingJobError } = await supabase
+        .from("jobs")
+        .select("file_name, bucket_url, file_hash")
+        .eq("file_hash", fileHash)
+        .maybeSingle();
+      // maybeSingle() returns either one record or null, but no error if multiple
 
-      // Attempt to upload to Supabase storage (upsert=false to catch duplicates)
-      const { data: storageData, error: storageError } = await supabase.storage
-        .from("contracts") // your bucket name
-        .upload(storageFilePath, req.file.buffer, {
-          upsert: false, // If false, an error occurs if file already exists
-          contentType: "application/pdf",
-        });
-
-      if (storageError) {
-        // If it's a duplicate error or any other storage error, return early
-        console.error("Storage upload error:", storageError);
-        return res.status(400).json({ error: storageError.message });
+      if (existingJobError) {
+        console.error("Error checking existing file hash:", existingJobError);
+        return res.status(400).json({ error: existingJobError.message });
       }
 
-      // Optionally build a public URL if your bucket is public, or store the path
-      const { data: publicURLData } = supabase.storage
-        .from("documents")
-        .getPublicUrl(storageFilePath);
+      if (existingJob) {
+        // If we found a job that has this exact file_hash,
+        // we assume the file is already uploaded and just reuse its info.
+        console.log(
+          `File with hash ${fileHash} already exists. Reusing existing file.`,
+        );
+        fileName = existingJob.file_name;
+        bucketURL = existingJob.bucket_url;
+      } else {
+        // No existing job matches this file_hash, so proceed with a fresh upload
 
-      bucketURL = publicURLData.publicUrl; 
-      // or, if not public, just store "pdfs/<fileName>" so you can refer to it later
+        // Construct a unique path in the bucket. E.g.: "pdfs/originalName_hash.pdf"
+        fileName = `${req.file.originalname.replace(/\.[^/.]+$/, "")}_${fileHash}.pdf`;
+        const storageFilePath = `pdfs/${fileName}`;
+
+        // Attempt to upload to Supabase storage (upsert=false to catch duplicates)
+        const { data: storageData, error: storageError } =
+          await supabase.storage
+            .from("contracts") // your bucket name
+            .upload(storageFilePath, req.file.buffer, {
+              upsert: false, // If false, an error occurs if file already exists
+              contentType: "application/pdf",
+            });
+
+        if (storageError) {
+          // If it's a duplicate error or any other storage error, return early
+          console.error("Storage upload error:", storageError);
+          return res.status(400).json({ error: storageError.message });
+        }
+
+        // Optionally build a public URL if your bucket is public, or store the path
+        // NOTE: you used 'documents' in the snippet for getPublicUrl, so be consistent with your actual bucket name
+        const { data: publicURLData } = supabase.storage
+          .from("contracts")
+          .getPublicUrl(storageFilePath);
+
+        bucketURL = publicURLData.publicUrl;
+      }
     }
 
     // 3) Insert a new row into the "jobs" table
@@ -337,7 +365,6 @@ app.post("/jobs", upload.single("file"), async (req, res) => {
           signing_url: signing_url,
           recipients: recipients,
           errors: {},
-          // Additional columns here...
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         },
@@ -347,11 +374,12 @@ app.post("/jobs", upload.single("file"), async (req, res) => {
     if (insertError) {
       console.error("Error inserting job:", insertError);
 
-      // If insertion failed, consider deleting the file from storage if it was uploaded.
+      // If insertion failed, optionally delete the file from storage if we uploaded it
+      // and if there's no other job referencing that file.
+      // (In a multi-tenant scenario, be careful with auto-deletes here.)
       if (fileName) {
-        await supabase.storage
-          .from("documents")
-          .remove([`pdfs/${fileName}`]);
+        // Example naive clean-up:
+        await supabase.storage.from("contracts").remove([`pdfs/${fileName}`]);
       }
 
       return res.status(400).json({ error: insertError.message });
@@ -364,7 +392,6 @@ app.post("/jobs", upload.single("file"), async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
