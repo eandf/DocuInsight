@@ -4,6 +4,10 @@
 
 This repo contains test code and/or components for the DocuInsight project
 
+## Notes
+
+- View Database Diagram Live: https://mermaid-js.github.io/mermaid-live-editor/
+
 ## Projects
 
 ### bot
