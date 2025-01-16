@@ -35,7 +35,7 @@ const tvly = tavily({ apiKey: process.env.TAVILY_API_KEY });
  * @param {number} maxTokens - Sets the maximum number of tokens for the response.
  *   - Default is undefined, allowing up to 4000 tokens.
  */
-async function tavilySearch(
+async function rawTavilySearch(
   query,
   searchDepth = "advanced",
   topic = "general",
@@ -76,84 +76,21 @@ async function tavilySearch(
   };
 }
 
-// main function calls
-
-x = {
-  type: "function",
-  function: {
-    name: "tavilySearch",
-    description: "Performs a search using the Tavily client with customizable options, providing comprehensive results tailored to specified parameters.",
-    parameters: {
-      type: "object",
-      properties: {
-        query: {
-          type: "string",
-          description: "The search query string.",
-          example: "Who is Leo Messi?",
-        },
-        searchDepth: {
-          type: "string",
-          description: "Determines the thoroughness of the search.",
-          enum: ["basic", "advanced"],
-          default: "advanced",
-        },
-        topic: {
-          type: "string",
-          description: "Specifies the category of the search, influencing the search agent used.",
-          enum: ["general", "news"],
-          default: "general",
-        },
-        days: {
-          type: "number",
-          description: "Sets the time frame for search results in days. Only applicable for news topic.",
-          default: 7,
-        },
-        maxResults: {
-          type: "number",
-          description: "Limits the maximum number of search results returned.",
-          default: 10,
-        },
-        includeImages: {
-          type: "boolean",
-          description: "Includes a list of related images.",
-          default: true,
-        },
-        includeImageDescriptions: {
-          type: "boolean",
-          description: "Adds descriptive text for each image when includeImages is true.",
-          default: true,
-        },
-        includeAnswer: {
-          type: "boolean",
-          description: "Includes a short answer to the query.",
-          default: true,
-        },
-        includeRawContent: {
-          type: "boolean",
-          description: "Includes the cleaned and parsed HTML content of each search result.",
-          default: false,
-        },
-        includeDomains: {
-          type: "array",
-          items: { type: "string" },
-          description: "An array of specific domains to include in the search results.",
-        },
-        excludeDomains: {
-          type: "array",
-          items: { type: "string" },
-          description: "An array of specific domains to exclude from the search results.",
-        },
-        maxTokens: {
-          type: "number",
-          description: "Sets the maximum number of tokens for the response.",
-        },
-      },
-      required: ["query"],
-      additionalProperties: false,
-    },
-  },
+async function tavilySearch(parameters) {
+  return await rawTavilySearch(
+    parameters.query,
+    parameters.searchDepth,
+    parameters.topic,
+    parameters.days,
+    parameters.maxResults,
+    parameters.includeImages,
+    parameters.includeImageDescriptions,
+    parameters.includeAnswer,
+    parameters.includeRawContent,
+    parameters.includeDomains,
+    parameters.excludeDomains,
+    parameters.maxTokens,
+  );
 }
 
-tavilySearch("Moo Deng").then((result) =>
-  console.log(JSON.stringify(result, null, 4)),
-);
+export { tavilySearch };

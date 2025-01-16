@@ -1,6 +1,8 @@
 import readline from "readline";
+import axios from "axios";
 import OpenAI from "openai";
 import { generateMartindaleURL } from "./martindale.js";
+import { tavilySearch } from "./search.js";
 
 // Initialize the OpenAI client
 const client = new OpenAI();
@@ -67,11 +69,95 @@ const tools = [
       },
     },
   },
+  {
+    type: "function",
+    function: {
+      name: "tavilySearch",
+      description:
+        "Performs a search using the Tavily client with customizable options, providing comprehensive results tailored to specified parameters.",
+      parameters: {
+        type: "object",
+        properties: {
+          query: {
+            type: "string",
+            description: "The search query string.",
+            example: "Who is Leo Messi?",
+          },
+          searchDepth: {
+            type: "string",
+            description: "Determines the thoroughness of the search.",
+            enum: ["basic", "advanced"],
+            default: "advanced",
+          },
+          topic: {
+            type: "string",
+            description:
+              "Specifies the category of the search, influencing the search agent used.",
+            enum: ["general", "news"],
+            default: "general",
+          },
+          days: {
+            type: "number",
+            description:
+              "Sets the time frame for search results in days. Only applicable for news topic.",
+            default: 7,
+          },
+          maxResults: {
+            type: "number",
+            description:
+              "Limits the maximum number of search results returned.",
+            default: 10,
+          },
+          includeImages: {
+            type: "boolean",
+            description: "Includes a list of related images.",
+            default: true,
+          },
+          includeImageDescriptions: {
+            type: "boolean",
+            description:
+              "Adds descriptive text for each image when includeImages is true.",
+            default: true,
+          },
+          includeAnswer: {
+            type: "boolean",
+            description: "Includes a short answer to the query.",
+            default: true,
+          },
+          includeRawContent: {
+            type: "boolean",
+            description:
+              "Includes the cleaned and parsed HTML content of each search result.",
+            default: false,
+          },
+          includeDomains: {
+            type: "array",
+            items: { type: "string" },
+            description:
+              "An array of specific domains to include in the search results.",
+          },
+          excludeDomains: {
+            type: "array",
+            items: { type: "string" },
+            description:
+              "An array of specific domains to exclude from the search results.",
+          },
+          maxTokens: {
+            type: "number",
+            description: "Sets the maximum number of tokens for the response.",
+          },
+        },
+        required: ["query"],
+        additionalProperties: false,
+      },
+    },
+  },
 ];
 
 // Dictionary of available functions
 const availableFunctions = {
   generateMartindaleURL: generateMartindaleURL,
+  tavilySearch: tavilySearch,
 };
 
 // Create readline interface for user input
@@ -86,13 +172,21 @@ function askQuestion(question) {
 }
 
 async function processCompletion(messages, toolCalls = [], responseText = "") {
-  // console.log("\n\n>>>>> A CALL WAS MADE TO OPENAI'S API <<<<<\n\n");
-
   try {
     // Send the messages to the model with streaming enabled
     const stream = await client.chat.completions.create({
       model: MAIN_LLM_MODEL,
-      messages,
+
+      messages: messages.map((msg) => ({
+        role: msg.role,
+        // NOTE: (1-16-2025) convert function response content to string if it's not already
+        content:
+          typeof msg.content === "string"
+            ? msg.content
+            : JSON.stringify(msg.content),
+        ...(msg.name && { name: msg.name }), // Only include name if it exists
+      })),
+
       tools,
       stream: true,
     });
@@ -139,11 +233,33 @@ function estimateTokens(text) {
   return Math.round(wordCount * 1.33);
 }
 
+// TODO: this is not dangerous but it's far from secure, we need to look into using "Browser Geolocation API" instead
+async function getLocation() {
+  try {
+    const response = await axios.get("http://ip-api.com/json/");
+    if (response.data.status === "success") {
+      const location = response.data;
+      const content = {
+        city: location.city,
+        region: location.region,
+        country: location.country,
+        // lat: location.lat,
+        // lon: location.lon
+      };
+      return JSON.stringify(content);
+    }
+  } catch (error) {
+    return "?";
+  }
+}
+
 async function main() {
+  const currentUTC = `${new Date().toISOString()} UTC ISO (24-hours)`;
+  const location = await getLocation();
+
   const systemMessage = {
     role: "system",
-    content:
-      "You are an AI assistant that helps users find legal resources. When using the Martindale URL generator, always explain what the URL will help them find and provide context about the search results they can expect. Make sure to format the URL as a clickable link and encourage users to review multiple attorneys to find the best fit for their needs. KEEP YOUR ANSWERS SHORT AND TOO THE POINTS",
+    content: `You are an AI assistant that helps users find legal resources. When using the Martindale URL generator, always explain what the URL will help them find and provide context about the search results they can expect. Make sure to format the URL as a clickable link and encourage users to review multiple attorneys to find the best fit for their needs. KEEP YOUR ANSWERS SHORT AND TOO THE POINTS. Also NOTE, that use's time is ${currentUTC} and they are located at: ${location}`,
   };
 
   // Initialize conversation history
@@ -153,6 +269,7 @@ async function main() {
     let toolChatOutput = undefined;
 
     while (true) {
+      // Token management
       if (
         estimateTokens(JSON.stringify(conversationHistory)) >=
         Math.floor(MAIN_LLM_MODEL_TOKEN_LIMIT * 0.85)
@@ -202,14 +319,13 @@ async function main() {
             const functionToCall = availableFunctions[functionName];
             const functionArgs = JSON.parse(toolCall.function.arguments);
             try {
-              // Call the function and get the response
-              const functionResponse = functionToCall(functionArgs);
+              const functionResponse = await functionToCall(functionArgs);
 
-              // Add function response to history
+              // Add function response to history as a string
               conversationHistory.push({
                 role: "function",
-                name: "generateMartindaleURL",
-                content: functionResponse,
+                name: functionName,
+                content: JSON.stringify(functionResponse),
               });
 
               toolChatOutput = `As the user inputted this: ${userInput} \n\nAnd the following tool was called: ${JSON.stringify(toolCall.function)} \n\nKnowing this, can you review the original user input and answer it again with this given context after the tool calling`;
@@ -221,7 +337,7 @@ async function main() {
         }
       }
 
-      if (responseText.endsWith("\n") === false && responseText.length > 0) {
+      if (!responseText.endsWith("\n") && responseText.length > 0) {
         console.log("\n");
       }
     }
