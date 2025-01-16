@@ -1,7 +1,6 @@
-const readline = require("readline");
-const OpenAI = require("openai");
-
-const martindale = require("./martindale");
+import readline from "readline";
+import OpenAI from "openai";
+import { generateMartindaleURL } from "./martindale.js";
 
 // Initialize the OpenAI client
 const client = new OpenAI();
@@ -72,7 +71,7 @@ const tools = [
 
 // Dictionary of available functions
 const availableFunctions = {
-  generateMartindaleURL: martindale.generateMartindaleURL,
+  generateMartindaleURL: generateMartindaleURL,
 };
 
 // Create readline interface for user input
