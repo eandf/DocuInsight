@@ -40,7 +40,7 @@ async function rawTavilySearch(
   searchDepth = "advanced",
   topic = "general",
   days = 7,
-  maxResults = 3,
+  maxResults = 10,
   includeImages = true,
   includeImageDescriptions = true,
   includeAnswer = true,
@@ -77,6 +77,16 @@ async function rawTavilySearch(
 }
 
 async function tavilySearch(parameters) {
+  // (1-17-2025) hard-coded limit to prevent long processing time
+  parameters.searchDepth = "basic";
+  parameters.maxResults = 2;
+  parameters.includeImageDescriptions = false;
+  parameters.includeAnswer = false;
+  parameters.includeRawContent = false;
+  parameters.includeDomains = undefined;
+  parameters.excludeDomains = undefined;
+  parameters.maxTokens = undefined;
+
   return await rawTavilySearch(
     parameters.query,
     parameters.searchDepth,
@@ -129,7 +139,7 @@ const searchToolDescription = {
         maxResults: {
           type: "number",
           description: "Limits the maximum number of search results returned.",
-          default: 3,
+          default: 10,
         },
         includeImages: {
           type: "boolean",
