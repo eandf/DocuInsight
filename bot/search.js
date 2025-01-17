@@ -93,4 +93,87 @@ async function tavilySearch(parameters) {
   );
 }
 
-export { tavilySearch };
+const searchToolDescription = {
+  type: "function",
+  function: {
+    name: "tavilySearch",
+    description:
+      "Performs a search using the Tavily client with customizable options, providing comprehensive results tailored to specified parameters.",
+    parameters: {
+      type: "object",
+      properties: {
+        query: {
+          type: "string",
+          description: "The search query string.",
+          example: "Who is Leo Messi?",
+        },
+        searchDepth: {
+          type: "string",
+          description: "Determines the thoroughness of the search.",
+          enum: ["basic", "advanced"],
+          default: "advanced",
+        },
+        topic: {
+          type: "string",
+          description:
+            "Specifies the category of the search, influencing the search agent used.",
+          enum: ["general", "news"],
+          default: "general",
+        },
+        days: {
+          type: "number",
+          description:
+            "Sets the time frame for search results in days. Only applicable for news topic.",
+          default: 7,
+        },
+        maxResults: {
+          type: "number",
+          description: "Limits the maximum number of search results returned.",
+          default: 3,
+        },
+        includeImages: {
+          type: "boolean",
+          description: "Includes a list of related images.",
+          default: true,
+        },
+        includeImageDescriptions: {
+          type: "boolean",
+          description:
+            "Adds descriptive text for each image when includeImages is true.",
+          default: true,
+        },
+        includeAnswer: {
+          type: "boolean",
+          description: "Includes a short answer to the query.",
+          default: true,
+        },
+        includeRawContent: {
+          type: "boolean",
+          description:
+            "Includes the cleaned and parsed HTML content of each search result.",
+          default: false,
+        },
+        includeDomains: {
+          type: "array",
+          items: { type: "string" },
+          description:
+            "An array of specific domains to include in the search results.",
+        },
+        excludeDomains: {
+          type: "array",
+          items: { type: "string" },
+          description:
+            "An array of specific domains to exclude from the search results.",
+        },
+        maxTokens: {
+          type: "number",
+          description: "Sets the maximum number of tokens for the response.",
+        },
+      },
+      required: ["query"],
+      additionalProperties: false,
+    },
+  },
+};
+
+export { tavilySearch, searchToolDescription };

@@ -2719,4 +2719,65 @@ function generateMartindaleURL(functionParams, returnParams = false) {
   }
 }
 
-export { usaStatesAndCities, areasOfPractice, generateMartindaleURL };
+const martindaleToolDescription = {
+  type: "function",
+  function: {
+    name: "generateMartindaleURL",
+    description:
+      "Generates a URL for the Martindale search engine to find lawyers based on specific search criteria. This tool allows users to provide parameters such as search terms, geographic locations, and areas of legal interest, facilitating tailored and efficient searches.",
+    parameters: {
+      type: "object",
+      properties: {
+        term: {
+          type: "string",
+          description: "A keyword or phrase used to refine the lawyer search.",
+          example: "real estate",
+        },
+        geoLocationInputs: {
+          type: "array",
+          items: { type: "string" },
+          description:
+            "List of geographic locations (e.g., 'Denver, CO', 'Colorado', etc).",
+          example: ["Denver, CO", "Los Angeles, CA"],
+        },
+        areaInterestInputs: {
+          type: "array",
+          items: { type: "string" },
+          description:
+            "List of legal practice areas (e.g., 'Real Estate', 'Divorce', 'Civil Litigation', 'Family Law', 'Wills and Probate', 'Criminal Law', 'Estate Planning', 'Bankruptcy', 'Landlord and Tenant Law', 'Trusts and Estates', 'Immigration', 'Social Security Disability', 'Medical Malpractice', 'Labor and Employment', 'Personal Injury', 'Traffic Violations', 'DUI and DWI', 'General Practice', 'Lottery Law', 'Property Damage', etc).",
+          example: [
+            "Real Estate",
+            "Divorce",
+            "Civil Litigation",
+            "Family Law",
+            "Wills and Probate",
+            "Criminal Law",
+            "Estate Planning",
+            "Bankruptcy",
+            "Landlord and Tenant Law",
+            "Trusts and Estates",
+            "Immigration",
+            "Social Security Disability",
+            "Medical Malpractice",
+            "Labor and Employment",
+            "Personal Injury",
+            "Traffic Violations",
+            "DUI and DWI",
+            "General Practice",
+            "Lottery Law",
+            "Property Damage",
+          ],
+        },
+      },
+      required: ["term", "geoLocationInputs"],
+      additionalProperties: false,
+    },
+  },
+};
+
+export {
+  usaStatesAndCities,
+  areasOfPractice,
+  generateMartindaleURL,
+  martindaleToolDescription,
+};

@@ -1,8 +1,11 @@
 import readline from "readline";
 import axios from "axios";
 import OpenAI from "openai";
-import { generateMartindaleURL } from "./martindale.js";
-import { tavilySearch } from "./search.js";
+import {
+  generateMartindaleURL,
+  martindaleToolDescription,
+} from "./martindale.js";
+import { tavilySearch, searchToolDescription } from "./search.js";
 
 // Initialize the OpenAI client
 const client = new OpenAI();
@@ -12,147 +15,7 @@ const MAIN_LLM_MODEL = "gpt-4o-mini";
 const MAIN_LLM_MODEL_TOKEN_LIMIT = 128_000;
 
 // Define the tools
-const tools = [
-  {
-    type: "function",
-    function: {
-      name: "generateMartindaleURL",
-      description:
-        "Generates a URL for the Martindale search engine to find lawyers based on specific search criteria. This tool allows users to provide parameters such as search terms, geographic locations, and areas of legal interest, facilitating tailored and efficient searches.",
-      parameters: {
-        type: "object",
-        properties: {
-          term: {
-            type: "string",
-            description:
-              "A keyword or phrase used to refine the lawyer search.",
-            example: "real estate",
-          },
-          geoLocationInputs: {
-            type: "array",
-            items: { type: "string" },
-            description:
-              "List of geographic locations (e.g., 'Denver, CO', 'Colorado', etc).",
-            example: ["Denver, CO", "Los Angeles, CA"],
-          },
-          areaInterestInputs: {
-            type: "array",
-            items: { type: "string" },
-            description:
-              "List of legal practice areas (e.g., 'Real Estate', 'Divorce', 'Civil Litigation', 'Family Law', 'Wills and Probate', 'Criminal Law', 'Estate Planning', 'Bankruptcy', 'Landlord and Tenant Law', 'Trusts and Estates', 'Immigration', 'Social Security Disability', 'Medical Malpractice', 'Labor and Employment', 'Personal Injury', 'Traffic Violations', 'DUI and DWI', 'General Practice', 'Lottery Law', 'Property Damage', etc).",
-            example: [
-              "Real Estate",
-              "Divorce",
-              "Civil Litigation",
-              "Family Law",
-              "Wills and Probate",
-              "Criminal Law",
-              "Estate Planning",
-              "Bankruptcy",
-              "Landlord and Tenant Law",
-              "Trusts and Estates",
-              "Immigration",
-              "Social Security Disability",
-              "Medical Malpractice",
-              "Labor and Employment",
-              "Personal Injury",
-              "Traffic Violations",
-              "DUI and DWI",
-              "General Practice",
-              "Lottery Law",
-              "Property Damage",
-            ],
-          },
-        },
-        required: ["term", "geoLocationInputs"],
-        additionalProperties: false,
-      },
-    },
-  },
-  {
-    type: "function",
-    function: {
-      name: "tavilySearch",
-      description:
-        "Performs a search using the Tavily client with customizable options, providing comprehensive results tailored to specified parameters.",
-      parameters: {
-        type: "object",
-        properties: {
-          query: {
-            type: "string",
-            description: "The search query string.",
-            example: "Who is Leo Messi?",
-          },
-          searchDepth: {
-            type: "string",
-            description: "Determines the thoroughness of the search.",
-            enum: ["basic", "advanced"],
-            default: "advanced",
-          },
-          topic: {
-            type: "string",
-            description:
-              "Specifies the category of the search, influencing the search agent used.",
-            enum: ["general", "news"],
-            default: "general",
-          },
-          days: {
-            type: "number",
-            description:
-              "Sets the time frame for search results in days. Only applicable for news topic.",
-            default: 7,
-          },
-          maxResults: {
-            type: "number",
-            description:
-              "Limits the maximum number of search results returned.",
-            default: 3,
-          },
-          includeImages: {
-            type: "boolean",
-            description: "Includes a list of related images.",
-            default: true,
-          },
-          includeImageDescriptions: {
-            type: "boolean",
-            description:
-              "Adds descriptive text for each image when includeImages is true.",
-            default: true,
-          },
-          includeAnswer: {
-            type: "boolean",
-            description: "Includes a short answer to the query.",
-            default: true,
-          },
-          includeRawContent: {
-            type: "boolean",
-            description:
-              "Includes the cleaned and parsed HTML content of each search result.",
-            default: false,
-          },
-          includeDomains: {
-            type: "array",
-            items: { type: "string" },
-            description:
-              "An array of specific domains to include in the search results.",
-          },
-          excludeDomains: {
-            type: "array",
-            items: { type: "string" },
-            description:
-              "An array of specific domains to exclude from the search results.",
-          },
-          maxTokens: {
-            type: "number",
-            description: "Sets the maximum number of tokens for the response.",
-          },
-        },
-        required: ["query"],
-        additionalProperties: false,
-      },
-    },
-  },
-];
+const tools = [martindaleToolDescription, searchToolDescription];
 
 // Dictionary of available functions
 const availableFunctions = {
