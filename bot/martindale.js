@@ -2700,15 +2700,15 @@ function generateMartindaleURL(functionParams, returnParams = false) {
   if (areaInterests.length > 0) {
     params.practiceAreas = areaInterests;
   }
-  if (term.length > 0) {
-    params.term = term;
-  }
 
   const jsonData = JSON.stringify(params);
   const encodedParams = Buffer.from(jsonData).toString("base64");
 
   // (1-14-2025) currently this is the root URL for Martin-Dale
-  const url = `https://www.martindale.com/search/attorneys/?params=${encodedParams}`;
+  let url = `https://www.martindale.com/search/attorneys/?params=${encodedParams}`;
+  if (term.length > 0) {
+    url = `https://www.martindale.com/search/attorneys/?term=${encodeURIComponent(term)}&params=${encodedParams}`;
+  }
 
   // console.log(`\n${JSON.stringify(params, null, indent=4)}\n`)
 

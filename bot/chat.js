@@ -106,7 +106,7 @@ const tools = [
             type: "number",
             description:
               "Limits the maximum number of search results returned.",
-            default: 10,
+            default: 3,
           },
           includeImages: {
             type: "boolean",

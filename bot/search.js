@@ -40,7 +40,7 @@ async function rawTavilySearch(
   searchDepth = "advanced",
   topic = "general",
   days = 7,
-  maxResults = 10,
+  maxResults = 3,
   includeImages = true,
   includeImageDescriptions = true,
   includeAnswer = true,
