@@ -10,9 +10,23 @@ import { tavilySearch, searchToolDescription } from "./search.js";
 // Initialize the OpenAI client
 const client = new OpenAI();
 
-// Global variables
+// https://openai.com/api/pricing/
 const MAIN_LLM_MODEL = "gpt-4o-mini";
 const MAIN_LLM_MODEL_TOKEN_LIMIT = 128_000;
+const MAIN_LLM_MODEL_DOLLAR_COST_PER_1M_INPUT = 0.15;
+const MAIN_LLM_MODEL_DOLLAR_COST_PER_1M_OUTPUT = 0.6;
+
+let totalInputTokens = 0;
+let totalOutputTokens = 0;
+
+function tokenInputHeaderGen() {
+  let totalInputCost =
+    (totalInputTokens / 1_000_000) * MAIN_LLM_MODEL_DOLLAR_COST_PER_1M_INPUT;
+  let totalOutputCost =
+    (totalOutputTokens / 1_000_000) * MAIN_LLM_MODEL_DOLLAR_COST_PER_1M_OUTPUT;
+  let totalCost = (totalInputCost + totalOutputCost).toFixed(6);
+  return `[i=${totalInputTokens}t|o=${totalOutputTokens}t|$${totalCost}]`;
+}
 
 // Define the tools
 const tools = [martindaleToolDescription, searchToolDescription];
@@ -52,10 +66,20 @@ async function processCompletion(messages, toolCalls = [], responseText = "") {
 
       tools,
       stream: true,
+
+      // NOTE: (1-17-2025) this is option!
+      stream_options: {
+        include_usage: true,
+      },
     });
 
     // Process the streaming response
     for await (const chunk of stream) {
+      if (chunk.usage) {
+        totalInputTokens += chunk.usage.prompt_tokens;
+        totalOutputTokens += chunk.usage.completion_tokens;
+      }
+
       if (chunk.choices[0]?.delta?.content) {
         responseText += chunk.choices[0].delta.content;
         process.stdout.write(chunk.choices[0].delta.content);
@@ -117,8 +141,8 @@ async function getLocation() {
 }
 
 async function getUserFullName() {
-  const firstName = await askQuestion("Please enter your first name: ");
-  const lastName = await askQuestion("Please enter your last name: ");
+  const firstName = await askQuestion(">>> Please enter your first name: ");
+  const lastName = await askQuestion(">>> Please enter your last name: ");
   return { firstName, lastName };
 }
 
@@ -162,7 +186,7 @@ async function main() {
 
       let userInput = undefined;
       if (toolChatOutput === undefined) {
-        userInput = await askQuestion("You: ");
+        userInput = await askQuestion(`${tokenInputHeaderGen()} You: `);
         console.log();
       } else {
         userInput = toolChatOutput;
