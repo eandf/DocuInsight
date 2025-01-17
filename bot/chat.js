@@ -126,6 +126,7 @@ async function main() {
   const currentUTC = `${new Date().toISOString()} UTC ISO (24-hours)`;
   const location = await getLocation();
 
+  console.log(`INPUT USER INFO\n`);
   const { firstName, lastName } = await getUserFullName();
 
   console.log(`\nSTART CHATTING!\n`);
