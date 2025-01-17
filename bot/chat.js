@@ -116,13 +116,23 @@ async function getLocation() {
   }
 }
 
+async function getUserFullName() {
+  const firstName = await askQuestion("Please enter your first name: ");
+  const lastName = await askQuestion("Please enter your last name: ");
+  return { firstName, lastName };
+}
+
 async function main() {
   const currentUTC = `${new Date().toISOString()} UTC ISO (24-hours)`;
   const location = await getLocation();
 
+  const { firstName, lastName } = await getUserFullName();
+
+  console.log(`\nSTART CHATTING!\n`);
+
   const systemMessage = {
     role: "system",
-    content: `You are an AI assistant that helps users find legal resources. When using the Martindale URL generator, always explain what the URL will help them find and provide context about the search results they can expect. Make sure to format the URL as a clickable link and encourage users to review multiple attorneys to find the best fit for their needs. KEEP YOUR ANSWERS SHORT AND TOO THE POINTS. Also NOTE, that use's time is ${currentUTC} and they are located at: ${location}`,
+    content: `You are an AI assistant that helps users find legal resources. When using the Martindale URL generator, always explain what the URL will help them find and provide context about the search results they can expect. Make sure to format the URL as a clickable link and encourage users to review multiple attorneys to find the best fit for their needs. KEEP YOUR ANSWERS SHORT AND TOO THE POINTS. Also NOTE, that use's time is ${currentUTC} and they are located at: ${location}. Also NOTE the person you will be talking is named ${firstName} ${lastName}, don't forget that!`,
   };
 
   // Initialize conversation history
@@ -176,6 +186,15 @@ async function main() {
 
       // If tool calls are detected, execute them
       if (toolCalls.length > 0) {
+        // TODO: optional but great for debugging
+        console.log(`>>> CALLING TOOL(S):`);
+        for (let entry of toolCalls) {
+          console.log(
+            `=> ${entry["function"]["name"]} : ${entry["function"]["arguments"]}`,
+          );
+        }
+        console.log();
+
         for (const toolCall of toolCalls) {
           const functionName = toolCall.function.name;
           if (functionName in availableFunctions) {
