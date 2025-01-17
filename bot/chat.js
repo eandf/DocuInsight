@@ -15,11 +15,16 @@ const MAIN_LLM_MODEL = "gpt-4o-mini";
 const MAIN_LLM_MODEL_TOKEN_LIMIT = 128_000;
 const MAIN_LLM_MODEL_DOLLAR_COST_PER_1M_INPUT = 0.15;
 const MAIN_LLM_MODEL_DOLLAR_COST_PER_1M_OUTPUT = 0.6;
+const ENABLE_USAGE_LOGIC = false;
 
 let totalInputTokens = 0;
 let totalOutputTokens = 0;
 
 function tokenInputHeaderGen() {
+  if (ENABLE_USAGE_LOGIC === false) {
+    return "★ ";
+  }
+
   let totalInputCost =
     (totalInputTokens / 1_000_000) * MAIN_LLM_MODEL_DOLLAR_COST_PER_1M_INPUT;
   let totalOutputCost =
@@ -50,8 +55,7 @@ function askQuestion(question) {
 
 async function processCompletion(messages, toolCalls = [], responseText = "") {
   try {
-    // Send the messages to the model with streaming enabled
-    const stream = await client.chat.completions.create({
+    let modelCallParams = {
       model: MAIN_LLM_MODEL,
 
       messages: messages.map((msg) => ({
@@ -66,12 +70,16 @@ async function processCompletion(messages, toolCalls = [], responseText = "") {
 
       tools,
       stream: true,
+    };
 
-      // NOTE: (1-17-2025) this is option!
-      stream_options: {
+    if (ENABLE_USAGE_LOGIC) {
+      modelCallParams["stream_options"] = {
         include_usage: true,
-      },
-    });
+      };
+    }
+
+    // Send the messages to the model with streaming enabled
+    const stream = await client.chat.completions.create(modelCallParams);
 
     // Process the streaming response
     for await (const chunk of stream) {
