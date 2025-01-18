@@ -179,21 +179,3 @@ const justiaToolDescription = {
 };
 
 export { generateJustiaURL, justiaToolDescription };
-
-// MAIN FUNCTION CALLS
-
-let desiredCity = "Denver";
-let desiredState = undefined;
-let desiredLanguage = "English";
-let desiredPracticeArea = "Elder Law";
-let rating = 9;
-
-console.log(
-  generateJustiaURL(
-    desiredCity,
-    desiredState,
-    desiredLanguage,
-    desiredPracticeArea,
-    rating,
-  ),
-);

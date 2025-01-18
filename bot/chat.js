@@ -1,14 +1,13 @@
 import readline from "readline";
-import axios from "axios";
 import OpenAI from "openai";
+import axios from "axios";
+
 import {
   generateMartindaleURL,
   martindaleToolDescription,
 } from "./martindale.js";
+import { generateJustiaURL, justiaToolDescription } from "./justia.js";
 import { tavilySearch, searchToolDescription } from "./search.js";
-
-// Initialize the OpenAI client
-const client = new OpenAI();
 
 // https://openai.com/api/pricing/
 const MAIN_LLM_MODEL = "gpt-4o-mini";
@@ -17,6 +16,7 @@ const MAIN_LLM_MODEL_DOLLAR_COST_PER_1M_INPUT = 0.15;
 const MAIN_LLM_MODEL_DOLLAR_COST_PER_1M_OUTPUT = 0.6;
 const ENABLE_USAGE_LOGIC = false;
 
+const client = new OpenAI();
 let totalInputTokens = 0;
 let totalOutputTokens = 0;
 
@@ -33,13 +33,16 @@ function tokenInputHeaderGen() {
   return `[i=${totalInputTokens}t|o=${totalOutputTokens}t|$${totalCost}]`;
 }
 
-// Define the tools
-const tools = [martindaleToolDescription, searchToolDescription];
+const tools = [
+  martindaleToolDescription,
+  searchToolDescription,
+  justiaToolDescription,
+];
 
-// Dictionary of available functions
 const availableFunctions = {
   generateMartindaleURL: generateMartindaleURL,
   tavilySearch: tavilySearch,
+  generateJustiaURL: generateJustiaURL,
 };
 
 // Create readline interface for user input
@@ -263,5 +266,5 @@ async function main() {
   }
 }
 
-// main function calls
+// MAIN FUNCTION CALLS
 main();
