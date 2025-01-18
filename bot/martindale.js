@@ -2742,7 +2742,10 @@ const martindaleToolDescription = {
         },
         areaInterestInputs: {
           type: "array",
-          items: { type: "string" },
+          items: {
+            type: "string",
+            enum: areasOfPractice,
+          },
           description:
             "List of legal practice areas (e.g., 'Real Estate', 'Divorce', 'Civil Litigation', 'Family Law', 'Wills and Probate', 'Criminal Law', 'Estate Planning', 'Bankruptcy', 'Landlord and Tenant Law', 'Trusts and Estates', 'Immigration', 'Social Security Disability', 'Medical Malpractice', 'Labor and Employment', 'Personal Injury', 'Traffic Violations', 'DUI and DWI', 'General Practice', 'Lottery Law', 'Property Damage', etc).",
           example: [
