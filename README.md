@@ -12,7 +12,7 @@ This repo contains test code and/or components for the DocuInsight project
 
 ### bot
 
-This project contains a simple chat bot that uses OpenAI's gpt-4o-mini model. This chat bot is a terminal based chat bot. It also uses OpenAI's function calling feature. Currently, this function used by the project isa tool that generates a URL search query for searching lawyers.
+This project contains a simple chat bot that uses OpenAI's **gpt-4o-mini model**. This chat bot is a terminal based chat bot. It also uses OpenAI's function calling feature. Currently, this function used by the project isa tool that generates a URL search query for searching lawyers.
 
 ### api
 
