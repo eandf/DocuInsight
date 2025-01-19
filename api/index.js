@@ -767,10 +767,9 @@ app.post("/reports", async (req, res) => {
       req.body;
 
     // Validate required fields
-    if (!job_id || !contract_content || !version) {
+    if (!job_id || !version) {
       return res.status(400).json({
-        error:
-          "Missing required fields: 'job_id', 'contract_content', or 'version'.",
+        error: "Missing required fields: 'job_id' or 'version'.",
       });
     }
 
