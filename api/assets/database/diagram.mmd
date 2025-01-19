@@ -40,6 +40,7 @@ erDiagram
         jsonb final_report
         jsonb trace_back
         string version
+        enum status "queued|running|completed|failed|canceled|retrying"
         timestamp created_at
         timestamp updated_at
     }

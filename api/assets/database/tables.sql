@@ -1,4 +1,4 @@
--- Drop the enum type after dropping tables that use it
+--- Drop the enum type after dropping tables that use it
 DROP TYPE IF EXISTS job_status;
 
 -- Recreate the job status enum
@@ -52,6 +52,7 @@ CREATE TABLE reports (
     final_report JSONB,
     trace_back JSONB,
     version VARCHAR(50),
+    status job_status DEFAULT 'queued',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_job FOREIGN KEY (job_id) REFERENCES jobs(id)
@@ -60,3 +61,4 @@ CREATE TABLE reports (
 -- Add the foreign key constraint to jobs table for report_id
 ALTER TABLE jobs
 ADD CONSTRAINT fk_report FOREIGN KEY (report_id) REFERENCES reports(id);
+
