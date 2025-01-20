@@ -83,12 +83,24 @@ def get_jobs_by_status():
             .in_("status", ["queued", "failed", "retrying"])
             .execute()
         )
-        # Check if data is present in the response
-        if response.data:
-            return response.data
-        else:
-            print("No matching jobs found.")
-            return []
+
+        all_jobs = response.data
+
+        user_ids = []
+        for entry in all_jobs:
+            if type(entry["id"]) == str:
+                user_ids.append(entry["user_id"])
+
+        dict_users = {}
+        relevant_users = supabase.table("users").select("*").in_("id", user_ids).execute()
+        for entry in relevant_users.data:
+            dict_users[entry["id"]] = entry
+
+        for entry in all_jobs:
+            entry["user"] = dict_users[entry["user_id"]]
+
+        return all_jobs
+
     except Exception as e:
         print(f"An error occurred while fetching jobs: {e}")
         return []
