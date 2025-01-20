@@ -1,3 +1,9 @@
-export default function HomePage() {
-  return <>HOME</>;
+import Navbar from "@/components/navbar";
+
+export default async function HomePage() {
+  return (
+    <>
+      <Navbar />
+    </>
+  );
 }
