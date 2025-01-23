@@ -163,28 +163,33 @@ export default async function SignPage({
   const report = await getReport();
 
   return (
-    <div className="h-screen w-full">
+    <div className="h-screen w-full relative">
       <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel defaultSize={60} minSize={20}>
-          <div className="flex h-full items-center justify-center">
-            {/* <iframe className="w-full h-full" src={recipientView?.url} /> */}
-          </div>
-        </ResizablePanel>
-        <ResizableHandle withHandle />
-        <ResizablePanel defaultSize={40}>
+        <ResizablePanel defaultSize={30}>
           <ResizablePanelGroup direction="vertical">
             <ResizablePanel defaultSize={50}>
               <div className="flex h-full items-center justify-center">
-                <Report data={report} />
+                <div className="w-full h-full flex flex-col">
+                  <span className="font-medium h-14 content-center pl-4 text-3xl border-b">
+                    Docuinsight
+                  </span>
+                  <Report data={report} />
+                </div>
               </div>
             </ResizablePanel>
-            <ResizableHandle withHandle />
+            <ResizableHandle withHandle className="!h-[0.15rem]" />
             <ResizablePanel defaultSize={50}>
               <div className="flex h-full items-center justify-center">
                 <Chat />
               </div>
             </ResizablePanel>
           </ResizablePanelGroup>
+        </ResizablePanel>
+        <ResizableHandle withHandle className="w-[0.15rem]" />
+        <ResizablePanel defaultSize={70} minSize={20}>
+          <div className="flex h-full items-center justify-center">
+            <iframe className="w-full h-full" src={recipientView?.url} />
+          </div>
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>

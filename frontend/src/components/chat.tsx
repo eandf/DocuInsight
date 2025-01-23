@@ -37,7 +37,7 @@ const ChatMessage: React.FC<Message> = ({ content, role }) => (
         }`}
       >
         <div
-          className={`relative rounded-lg px-3 py-2 ${
+          className={`relative rounded-xl px-3 py-1 max-w-[80%] shadow-sm ${
             role === "user"
               ? "bg-primary text-primary-foreground"
               : "bg-muted text-muted-foreground"
@@ -222,13 +222,13 @@ export default function ChatPage() {
       </div>
 
       {/* Input bar */}
-      <div className="border-t p-4">
+      <div className="border-t-[1.5px] p-4 h-[51px] flex">
         <form
           onSubmit={(e) => {
             e.preventDefault();
             handleSend();
           }}
-          className="flex items-center space-x-2"
+          className="flex items-center space-x-2 w-full"
         >
           <Input
             value={input}

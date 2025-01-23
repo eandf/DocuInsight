@@ -67,6 +67,10 @@ export async function POST(request: NextRequest) {
     const { error } = await supabase.from("docusign_envelopes").insert(
       templateRolesWithClientIds.map((role: TemplateRole) => {
         const inviteId = randomBytes(16).toString("hex");
+        console.log(
+          `CREATE ENVELOPE - recipient name: ${role.name} email: ${role.email} invite id: ${inviteId}`
+        );
+        // signing url is /sign/<inviteId>
 
         return {
           account_id: accountId,

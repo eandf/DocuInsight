@@ -14,7 +14,7 @@ export default function Report({ data }: { data: ReportSection[] }) {
   );
 
   return (
-    <ScrollArea className="w-full h-full">
+    <ScrollArea className="w-full flex-1">
       <Accordion
         type="multiple"
         defaultValue={
