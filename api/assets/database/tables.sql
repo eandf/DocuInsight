@@ -33,8 +33,6 @@ CREATE TABLE jobs (
     file_name VARCHAR(255),
     file_hash VARCHAR(255),
     report_id UUID UNIQUE,
-    report_generated BOOLEAN DEFAULT FALSE,
-    signing_url VARCHAR(255),
     recipients JSONB,
     send_at TIMESTAMP WITH TIME ZONE,
     errors JSONB,

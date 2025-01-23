@@ -383,7 +383,6 @@ app.post("/jobs", upload.single("file"), async (req, res) => {
       user_id,
       docu_sign_account_id,
       docu_sign_template_id,
-      signing_url,
       recipients,
     } = req.body;
 
@@ -505,7 +504,6 @@ app.post("/jobs", upload.single("file"), async (req, res) => {
           bucket_url: bucketURL,
           file_name: fileName,
           file_hash: fileHash,
-          signing_url: signing_url,
           recipients: recipients ? JSON.parse(recipients) : null, // Ensure recipients is JSON
           errors: {}, // Initialize as empty object
           status: "queued", // Set default status
@@ -557,7 +555,6 @@ app.put("/jobs", async (req, res) => {
     const {
       id,
       report_generated,
-      signing_url,
       recipients,
       send_at,
       errors,
@@ -572,7 +569,6 @@ app.put("/jobs", async (req, res) => {
     // 2) Define allowed fields for updating
     const allowedFields = {
       report_generated,
-      signing_url,
       recipients,
       send_at,
       errors,
