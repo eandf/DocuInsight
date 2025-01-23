@@ -140,7 +140,18 @@ export default function ChatPage() {
     // 2) Clear input
     setInput("");
 
-    // 3) Call our server route
+    // 3) Create and add assistant's message with empty content
+    const assistantMsg: Message = {
+      id: `assistant-${Date.now()}`,
+      content: "", // Start with empty content
+      role: "assistant",
+    };
+    setMessages((prev) => [...prev, assistantMsg]);
+
+    // Store the assistant message ID for updating
+    const assistantId = assistantMsg.id;
+
+    // 4) Call our server route and stream response
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
@@ -150,23 +161,41 @@ export default function ChatPage() {
           userInput: userText,
         }),
       });
-      if (!res.ok) {
+      if (!res.ok || !res.body) {
         console.error("API error:", res.statusText);
         return;
       }
-      const data = await res.json();
-      if (!data.success) {
-        console.error("LLM error:", data.error);
-        return;
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let done = false;
+
+      while (!done) {
+        const { value, done: isDone } = await reader.read();
+        done = isDone;
+        if (value) {
+          // Convert Uint8Array into a string
+          const chunk = decoder.decode(value, { stream: true });
+
+          // Update the assistant's message with the new chunk
+          setMessages((prevMessages) =>
+            prevMessages.map((msg) =>
+              msg.id === assistantId
+                ? { ...msg, content: msg.content + chunk }
+                : msg
+            )
+          );
+
+          // Optional: Log partial chunks for debugging
+          console.log("Partial chunk:", chunk);
+        }
       }
 
-      // 4) Add assistant's response
-      const aiMsg: Message = {
-        id: (Date.now() + 1).toString(),
-        content: data.assistantMessage,
-        role: "assistant",
-      };
-      setMessages((prev) => [...prev, aiMsg]);
+      // Optional: Log the complete message
+      console.log(
+        "Assistant message complete:",
+        messages.find((msg) => msg.id === assistantId)?.content
+      );
     } catch (error) {
       console.error("Fetch error:", error);
     }
