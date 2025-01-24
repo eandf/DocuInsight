@@ -170,14 +170,16 @@ export default async function SignPage({
             <ResizablePanel defaultSize={50}>
               <div className="flex h-full items-center justify-center">
                 <div className="w-full h-full flex flex-col">
-                  <span className="font-medium h-14 content-center pl-4 text-3xl border-b">
-                    Docuinsight
-                  </span>
+                  <div
+                    className={`h-[57px] px-[15px] text-3xl font-medium flex items-center border-b bg-[#1a1d20] text-white`}
+                  >
+                    DocuInsight
+                  </div>
                   <Report data={report} />
                 </div>
               </div>
             </ResizablePanel>
-            <ResizableHandle withHandle className="!h-[0.15rem]" />
+            <ResizableHandle withHandle className="bg-slate-600" />
             <ResizablePanel defaultSize={50}>
               <div className="flex h-full items-center justify-center">
                 <Chat />
@@ -185,7 +187,7 @@ export default async function SignPage({
             </ResizablePanel>
           </ResizablePanelGroup>
         </ResizablePanel>
-        <ResizableHandle withHandle className="w-[0.15rem]" />
+        <ResizableHandle withHandle className="bg-slate-600" />
         <ResizablePanel defaultSize={70} minSize={20}>
           <div className="flex h-full items-center justify-center">
             <iframe className="w-full h-full" src={recipientView?.url} />

@@ -100,22 +100,25 @@ export default function Dashboard({
   }, [selectedAccountId]);
 
   return (
-    <div className="space-y-4 max-w-screen-xl mx-auto">
-      <Select
-        value={selectedAccountId || ""}
-        onValueChange={(value) => setSelectedAccountId(value)}
-      >
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Select account" />
-        </SelectTrigger>
-        <SelectContent>
-          {accounts.map((account) => (
-            <SelectItem key={account.accountId} value={account.accountId}>
-              {account.accountName}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+    <div className="space-y-4 max-w-screen-xl mx-auto p-4 pt-8">
+      <div className="flex w-full gap-2 items-center font-medium">
+        <span>Selected Account:</span>
+        <Select
+          value={selectedAccountId || ""}
+          onValueChange={(value) => setSelectedAccountId(value)}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select account" />
+          </SelectTrigger>
+          <SelectContent>
+            {accounts.map((account) => (
+              <SelectItem key={account.accountId} value={account.accountId}>
+                {account.accountName}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
       {loading && <div>Loading templates...</div>}
 

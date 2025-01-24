@@ -1,11 +1,6 @@
 import type { Metadata } from "next";
-import { Onest } from "next/font/google";
 import "./globals.css";
-
-const onest = Onest({
-  variable: "--font-onest",
-  subsets: ["latin"],
-});
+import { onest } from "./fonts";
 
 export const metadata: Metadata = {
   title: "Create Next App",
