@@ -1,4 +1,7 @@
 // lib/tools.js
+import { tavily } from "@tavily/core";
+
+const tvly = tavily({ apiKey: process.env.TAVILY_API_KEY });
 
 const usaStatesAndCities = {
   Alabama: {
