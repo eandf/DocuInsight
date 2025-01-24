@@ -17,13 +17,12 @@ export default function CheckEmailPage() {
             Check Your Email
           </CardTitle>
           <CardDescription className="text-center">
-            We've sent a magic link to your email address
+            {"We've sent a magic link to your email address"}
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center">
           <p className="mb-4 text-center">
-            Click the link in the email to log in to your account. If you don't
-            see the email, check your spam folder.
+            {"Click the link in the email to log in to your account. If you don't see the email, check your spam folder."}
           </p>
           <Button asChild className="mt-4">
             <Link href="/login">Back to Login</Link>
