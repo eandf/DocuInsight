@@ -3,6 +3,7 @@ node_modules/
 env/
 __pycache__/
 worker/private/
+worker/.sandbox
 worker/pdfs/*
 
 # files
