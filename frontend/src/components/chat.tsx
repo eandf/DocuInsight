@@ -164,6 +164,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
 
 export default function ChatPage() {
   const [sessionId, setSessionId] = React.useState<string>("");
+  const [userLocation, setUserLocation] = React.useState<string | null>(null);
   const [messages, setMessages] = React.useState<Message[]>([
     {
       id: "assistant-1",
@@ -185,6 +186,23 @@ export default function ChatPage() {
       localStorage.setItem("myChatSessionId", existingId);
     }
     setSessionId(existingId);
+  }, []);
+
+  React.useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          // For now, just store lat/long. If you want city/state, you'd
+          // need to call a reverse-geocode API from the client or your server.
+          setUserLocation(`Lat: ${latitude}, Lon: ${longitude}`);
+        },
+        (error) => {
+          console.warn("Geolocation error:", error);
+          setUserLocation(null);
+        }
+      );
+    }
   }, []);
 
   // For auto-scrolling
@@ -237,6 +255,7 @@ export default function ChatPage() {
         body: JSON.stringify({
           sessionId,
           userInput: userText,
+          userLocation,
         }),
       });
       if (!res.ok || !res.body) {

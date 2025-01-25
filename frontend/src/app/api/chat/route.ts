@@ -3,7 +3,7 @@ import { handleUserMessageStream } from "../../../lib/chat";
 
 export async function POST(request: NextRequest) {
   try {
-    const { sessionId, userInput } = await request.json();
+    const { sessionId, userInput, userLocation } = await request.json();
     if (!sessionId || !userInput) {
       return NextResponse.json(
         { success: false, error: "Missing sessionId or userInput" },
@@ -20,6 +20,7 @@ export async function POST(request: NextRequest) {
         await handleUserMessageStream(
           sessionId,
           userInput,
+          userLocation,
           (partial: string) => {
             writer.write(encoder.encode(partial));
           }
