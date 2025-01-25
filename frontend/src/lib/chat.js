@@ -11,7 +11,7 @@ import {
 
 // --- PRICING/CONFIG ---
 
-const MAIN_LLM_MODEL = "gpt-4o-mini"; // or "gpt-3.5-turbo" etc.
+const MAIN_LLM_MODEL = "gpt-4o-mini";
 const MAIN_LLM_MODEL_TOKEN_LIMIT = 128_000;
 const ENABLE_USAGE_LOGIC = false;
 
