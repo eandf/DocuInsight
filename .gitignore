@@ -8,6 +8,4 @@ worker/pdfs/*
 # files
 .DS_Store
 .env
-code_dump_*.txt
-*_*.pdf
 *.log
