@@ -665,7 +665,8 @@ def manager(
 
 if __name__ == "__main__":
     manager(
-        max_workers=4,
+        # NOTE: A practical range is between 10 and 16 workers, balancing CPU-intensive operations with I/O-bound tasks
+        max_workers=int((16 + 10) / 2),
         big_model="o1-preview",
         small_model="gpt-4o-mini",
         openai_api_key=os.getenv("OPENAI_API_KEY"),
