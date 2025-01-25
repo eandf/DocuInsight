@@ -3,8 +3,12 @@ node_modules/
 env/
 __pycache__/
 worker/private/
+analyzer/private
 worker/.sandbox
+analyzer/.sandbox
 worker/pdfs/*
+analyzer/pdfs/*
+.sandbox/
 
 # files
 .DS_Store
