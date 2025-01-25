@@ -4,6 +4,7 @@ import threading
 import traceback
 import requests
 import logging
+import time
 import uuid
 import json
 import time
@@ -16,10 +17,16 @@ from requests.adapters import HTTPAdapter
 import pytz
 
 from supabase import create_client, Client
+from dotenv import load_dotenv
 from openai import OpenAI
 
 import o_agent
 import mail
+
+
+# load environment variables which should be in the same directory as this script
+dotenv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+load_dotenv(dotenv_path)
 
 # global variables
 supabase: Client = None
