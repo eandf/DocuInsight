@@ -283,17 +283,8 @@ export default function ChatPage() {
                 : msg
             )
           );
-
-          // Optional: Log partial chunks for debugging
-          console.log("Partial chunk:", chunk);
         }
       }
-
-      // Optional: Log the complete message
-      const finalMessage = messages.find(
-        (msg) => msg.id === assistantId
-      )?.content;
-      console.log("Assistant message complete:", finalMessage);
 
       setIsAssistantTyping(false);
       setCurrentAssistantId(null);

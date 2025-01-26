@@ -1,4 +1,5 @@
 import { LoginForm } from "@/components/login-form";
+import { Disclaimer } from "@/components/disclaimer";
 
 export default function SignInPage() {
   return (
@@ -27,6 +28,7 @@ export default function SignInPage() {
           ></iframe>
         </div>
       </div>
+      <Disclaimer />
     </div>
   );
 }
