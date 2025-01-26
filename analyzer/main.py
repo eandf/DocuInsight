@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 # logging setup - configure log file location
-log_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "worker.log")
+log_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "analyzer.log")
 file_handler = logging.FileHandler(log_file_path)
 file_handler.setLevel(logging.INFO)
 
@@ -241,13 +241,18 @@ def delete_bucket_file(document: dict):
         raise Exception("Error: No data returned when deleting document from DB.")
 
 
+from supabase.lib.client_options import ClientOptions
+
+
 def get_jobs_with_users_by_status():
     """
     Fetch jobs with statuses 'queued', 'failed', or 'retrying',
     and include user information for each job.
     """
+
     worker_id = get_worker_id()
     try:
+        # Fetch jobs with specified statuses
         job_response = (
             supabase.table("jobs")
             .select("*")
@@ -255,6 +260,7 @@ def get_jobs_with_users_by_status():
             .execute()
         )
         logger.info(f"[{worker_id}] Result of fetching jobs: {job_response.data}")
+
         if not job_response.data:
             logger.info(f"[{worker_id}] No jobs found with the specified statuses.")
             return []
@@ -263,10 +269,24 @@ def get_jobs_with_users_by_status():
         user_ids = list({job["user_id"] for job in jobs if "user_id" in job})
 
         if user_ids:
-            user_response = (
-                supabase.table("users").select("*").in_("id", user_ids).execute()
+            # NOTE: (1-25-2025) Supabase's python SDK is dumb and requires you to setup a new client for a different schema
+            supabase_auth_schema_client = create_client(
+                supabase_url=os.getenv("SUPABASE_URL"),
+                supabase_key=os.getenv("SUPABASE_SERVICE"),
+                options=ClientOptions(schema="next_auth"),
             )
+
+            user_response = (
+                supabase_auth_schema_client.table("users")
+                .select(
+                    "id, name, first_name, last_name, email, emailVerified, created_at, updated_at"
+                )
+                .in_("id", user_ids)
+                .execute()
+            )
+
             logger.info(f"[{worker_id}] Result of fetching users: {user_response.data}")
+
             if user_response.data:
                 user_map = {u["id"]: u for u in user_response.data}
                 for job in jobs:
@@ -277,6 +297,12 @@ def get_jobs_with_users_by_status():
             f"[{worker_id}] An error occurred while fetching jobs and users: {e}"
         )
         return []
+    finally:
+        if (
+            "supabase_auth_schema_client" in locals()
+            or "supabase_auth_schema_client" in globals()
+        ):
+            del supabase_auth_schema_client
 
 
 def get_contract_pdf(file_bucket_url: str, root_destination_dir="."):
