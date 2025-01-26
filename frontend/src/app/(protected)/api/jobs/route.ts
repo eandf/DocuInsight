@@ -11,6 +11,7 @@ import crypto from "crypto";
 import docusign, { EnvelopeDefinition, EnvelopeSummary } from "docusign-esign";
 import { fileTypeFromBuffer } from "file-type";
 import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
 
 export async function GET(request: NextRequest) {
   const session = await auth();
@@ -136,6 +137,9 @@ export async function POST(request: NextRequest) {
 
   const bucketURL = publicURLData.publicUrl;
 
+  const jobId = uuidv4();
+  const inviteId = uuidv4();
+
   const jobRecipients = recipients.map(
     (recipient: {
       roleName: string;
@@ -147,8 +151,9 @@ export async function POST(request: NextRequest) {
         roleName: recipient.roleName,
         name: recipient.name,
         email: recipient.email,
-        clientUserId: crypto.randomBytes(32).toString("base64"),
-        // invite_id: crypto.randomBytes(32).toString("base64"),
+        clientUserId: uuidv4(),
+        inviteId: inviteId,
+        signing_url: `${process.env.NEXT_PUBLIC_BASE_URL}/sign/?job=${jobId}&invite=${inviteId}`,
       };
     }
   );
@@ -183,6 +188,7 @@ export async function POST(request: NextRequest) {
     .from("jobs")
     .insert([
       {
+        id: jobId,
         user_id: userId,
         docu_sign_account_id: accountId,
         docu_sign_envelope_id: envelopeSummary.envelopeId,
@@ -190,7 +196,8 @@ export async function POST(request: NextRequest) {
         file_name: fileName,
         file_hash: fileHash,
         bucket_url: bucketURL,
-        created_at: new Date().toISOString(),
+        status: "queued",
+        created_at: new Date().toISOString(), // TODO: change these to uuids?
         updated_at: new Date().toISOString(),
       },
     ])

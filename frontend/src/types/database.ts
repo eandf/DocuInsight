@@ -67,8 +67,9 @@ export interface VerificationToken {
 export interface JobRecipient {
   name: string;
   email: string;
-  client_user_id: string;
-  invite_id: string;
+  clientUserId: string;
+  inviteId: string;
+  signing_url: string;
 }
 
 export interface Job {
