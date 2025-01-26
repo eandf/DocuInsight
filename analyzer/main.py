@@ -20,19 +20,23 @@ from supabase.lib.client_options import ClientOptions
 from supabase import create_client, Client
 from dotenv import load_dotenv
 from openai import OpenAI
-import file_io
 
+import file_io
 import o_agent
 import mail
 
 
 # load environment variables which should be in the same directory as this script
-dotenv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
-load_dotenv(dotenv_path)
+load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
 
 # global variables
-supabase: Client = None
-DISCORD_SERVER_ALERT_WEBHOOK = None
+supabase: Client = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
+supabase_auth_schema_client: Client = create_client(
+    supabase_url=os.getenv("SUPABASE_URL"),
+    supabase_key=os.getenv("SUPABASE_SERVICE"),
+    # NOTE: (1-25-2025) Supabase's python SDK is dumb and requires you to setup a new client for a different schema
+    options=ClientOptions(schema="next_auth"),
+)
 _worker_ids = {}
 
 # logging setup - configure overall logger
@@ -70,12 +74,7 @@ def send_alert(message: str):
     """
     Sends an alert message (Discord channel, etc.) via webhook
     """
-    global DISCORD_SERVER_ALERT_WEBHOOK
-
-    if DISCORD_SERVER_ALERT_WEBHOOK == None:
-        DISCORD_SERVER_ALERT_WEBHOOK = os.getenv("DISCORD_SERVER_ALERT_WEBHOOK")
-
-    url = DISCORD_SERVER_ALERT_WEBHOOK
+    url = os.getenv("DISCORD_SERVER_ALERT_WEBHOOK")
     headers = {"Content-Type": "application/json"}
     data = {"content": message}
 
@@ -252,33 +251,24 @@ def get_jobs_with_users_by_status():
     Fetch jobs with statuses 'queued', 'failed', or 'retrying',
     and include user information for each job.
     """
+    global supabase, supabase_auth_schema_client
 
     worker_id = get_worker_id()
     try:
-        # Fetch jobs with specified statuses
         job_response = (
             supabase.table("jobs")
             .select("*")
             .in_("status", ["queued", "failed", "retrying"])
             .execute()
         )
-        logger.info(f"[{worker_id}] Result of fetching jobs: {job_response.data}")
 
         if not job_response.data:
-            logger.info(f"[{worker_id}] No jobs found with the specified statuses.")
             return []
 
         jobs = job_response.data
         user_ids = list({job["user_id"] for job in jobs if "user_id" in job})
 
         if user_ids:
-            # NOTE: (1-25-2025) Supabase's python SDK is dumb and requires you to setup a new client for a different schema
-            supabase_auth_schema_client = create_client(
-                supabase_url=os.getenv("SUPABASE_URL"),
-                supabase_key=os.getenv("SUPABASE_SERVICE"),
-                options=ClientOptions(schema="next_auth"),
-            )
-
             user_response = (
                 supabase_auth_schema_client.table("users")
                 .select(
@@ -287,8 +277,6 @@ def get_jobs_with_users_by_status():
                 .in_("id", user_ids)
                 .execute()
             )
-
-            logger.info(f"[{worker_id}] Result of fetching users: {user_response.data}")
 
             if user_response.data:
                 user_map = {u["id"]: u for u in user_response.data}
@@ -300,12 +288,6 @@ def get_jobs_with_users_by_status():
             f"[{worker_id}] An error occurred while fetching jobs and users: {e}"
         )
         return []
-    finally:
-        if (
-            "supabase_auth_schema_client" in locals()
-            or "supabase_auth_schema_client" in globals()
-        ):
-            del supabase_auth_schema_client
 
 
 def get_contract_pdf(file_bucket_url: str, root_destination_dir="."):
@@ -620,10 +602,6 @@ def process_single_job(
 
 def manager(
     max_workers=None,
-    openai_api_key=None,
-    supabase_url=None,
-    supabase_key=None,
-    discord_webhook_url=None,
     prices=None,
     big_model=None,
     small_model=None,
@@ -631,34 +609,17 @@ def manager(
     """
     Parameters:
       - max_workers: number of threads to use
-      - openai_api_key: key for OpenAI
-      - supabase_url: URL for Supabase
-      - supabase_key: key for Supabase
-      - discord_webhook_url: webhook for Discord alerts
       - prices: dictionary of model pricing
+      - big_model: the large LLM model for analyzing the legal contract
+      - small_model: the small LLM model for converting the output from the big_model into a json
     """
 
-    if openai_api_key is None:
-        openai_api_key = os.getenv("OPENAI_API_KEY")
-    if supabase_url is None:
-        supabase_url = os.getenv("SUPABASE_URL")
-    if supabase_key is None:
-        supabase_key = os.getenv("SUPABASE_KEY")
-    if discord_webhook_url is None:
-        discord_webhook_url = os.getenv("DISCORD_SERVER_ALERT_WEBHOOK")
     if prices is None:
         raise Exception("Model prices data not provided")
     if big_model is None:
         raise Exception("Big model name not provided")
     if small_model is None:
         raise Exception("Small model name not provided")
-
-    # Set globals
-    global supabase
-    supabase = create_client(supabase_url, supabase_key)
-
-    global DISCORD_SERVER_ALERT_WEBHOOK
-    DISCORD_SERVER_ALERT_WEBHOOK = discord_webhook_url
 
     worker_id = "[MAIN]"  # For main logs, just use a static placeholder
 
@@ -668,7 +629,7 @@ def manager(
     def create_job_processing_function(job):
         # Each thread will get its own worker_id upon entering the function:
         w_id = get_worker_id()
-        local_openai_client = OpenAI(api_key=openai_api_key)
+        local_openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         return process_single_job(
             w_id,
             job,
@@ -743,10 +704,23 @@ def local_cleanup():
 
 
 if __name__ == "__main__":
-    # determine what big model to use
+    # set max worker value
+    max_workers_values = 13
+
+    # set and safely determine model based values
     big_model_name = "o1-preview"
+    small_model_name = "gpt-4o-mini"
+    model_prices = {
+            "openai": {
+                "gpt-4o": {"input": 2.5, "output": 10},
+                "gpt-4o-mini": {"input": 0.15, "output": 0.6},
+                "o1": {"input": 15, "output": 60},
+                "o1-preview": {"input": 15, "output": 60},
+                "o1-mini": {"input": 3, "output": 12},
+            }
+        }
     if str(os.getenv("DEV_MODE")).lower() == "true":
-        big_model_name = "gpt-4o-mini"
+        big_model_name = small_model_name
         dev_mode_msg = f"The analyzer is currently in DEV_MODE so the big model is set to {big_model_name}"
         logger.critical(dev_mode_msg)
         send_alert(dev_mode_msg)
@@ -760,24 +734,17 @@ if __name__ == "__main__":
         send_alert(cleanup_fail_msg)
 
     # run main analyzer logic
-    manager(
-        max_workers=int((16 + 10) / 2),
-        big_model=big_model_name,
-        small_model="gpt-4o-mini",
-        openai_api_key=os.getenv("OPENAI_API_KEY"),
-        supabase_url=os.getenv("SUPABASE_URL"),
-        supabase_key=os.getenv("SUPABASE_KEY"),
-        discord_webhook_url=os.getenv("DISCORD_SERVER_ALERT_WEBHOOK"),
-        prices={
-            "openai": {
-                "gpt-4o": {"input": 2.5, "output": 10},
-                "gpt-4o-mini": {"input": 0.15, "output": 0.6},
-                "o1": {"input": 15, "output": 60},
-                "o1-preview": {"input": 15, "output": 60},
-                "o1-mini": {"input": 3, "output": 12},
-            }
-        },
-    )
+    try:
+        manager(
+            max_workers=max_workers_values,
+            big_model=big_model_name,
+            small_model=small_model_name,
+            prices=model_prices,
+        )
+    except Exception as e:
+        big_root_error_msg = f"Root error with main manager code: {e}"
+        logger.critical(big_root_error_msg)
+        send_alert(big_root_error_msg)
 
     # add a minor delay for things to cool down
-    time.time(1)
+    time.sleep(1)

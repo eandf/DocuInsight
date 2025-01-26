@@ -347,6 +347,7 @@ Document Under Review:
         return self.analyze_contract(contract_path)
 
 
+# NOTE: this code is only used for testing
 if __name__ == "__main__":
     openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
