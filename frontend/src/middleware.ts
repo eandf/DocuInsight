@@ -7,7 +7,8 @@ export default auth(async (request) => {
   if (
     pathname === "/" ||
     pathname.startsWith("/auth") ||
-    pathname.startsWith("/sign")
+    pathname.startsWith("/sign") ||
+    pathname === "/api/chat"
   ) {
     return NextResponse.next();
   }

@@ -85,9 +85,9 @@ export default async function SignPage({
     );
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.log("Axios error response:", error.response);
+      console.error("Axios error response:", error.response);
     } else {
-      console.log("Unexpected error:", error);
+      console.error("Unexpected error:", error);
     }
   }
 

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 // import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { ArrowUp } from "lucide-react";
-import { ComponentPropsWithoutRef } from "react";
+import type { ComponentPropsWithoutRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 // Simple CSS Spinner Component
@@ -99,14 +99,14 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
             <div
               className={`relative rounded-xl px-3 py-1 max-w-[80%] break-words shadow-sm ${
                 role === "user"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground"
+                  ? "bg-gray-700 text-gray-100"
+                  : "bg-gray-200 text-gray-900"
               }`}
             >
               <ReactMarkdown
                 components={{
                   p: ({ children }) => (
-                    <p className="mb-2 last:mb-0">{children}</p>
+                    <p className="mb-2 last:mb-0 text-current">{children}</p>
                   ),
                   ul: ({ children }) => (
                     <ul className="list-disc pl-4 mb-2">{children}</ul>
@@ -114,7 +114,9 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
                   ol: ({ children }) => (
                     <ol className="list-decimal pl-4 mb-2">{children}</ol>
                   ),
-                  li: ({ children }) => <li className="mb-1">{children}</li>,
+                  li: ({ children }) => (
+                    <li className="mb-1 text-current">{children}</li>
+                  ),
                   h1: ({ children }) => (
                     <h1 className="text-2xl font-bold mb-2">{children}</h1>
                   ),
@@ -127,7 +129,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
                   a: ({ href, children }) => (
                     <a
                       href={href}
-                      className="text-blue-500 hover:underline break-words"
+                      className="text-gray-700 font-semibold hover:underline break-words"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -141,11 +143,11 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
                     inline?: boolean;
                   }) =>
                     inline ? (
-                      <code className="bg-gray-200 rounded px-1">
+                      <code className="bg-gray-300 text-gray-900 rounded px-1">
                         {children}
                       </code>
                     ) : (
-                      <pre className="bg-gray-200 rounded p-2 overflow-x-auto">
+                      <pre className="bg-gray-300 text-gray-900 rounded p-2 overflow-x-auto">
                         <code>{children}</code>
                       </pre>
                     ),
@@ -283,8 +285,17 @@ export default function ChatPage() {
                 : msg
             )
           );
+
+          // Optional: Log partial chunks for debugging
+          console.log("Partial chunk:", chunk);
         }
       }
+
+      // Optional: Log the complete message
+      const finalMessage = messages.find(
+        (msg) => msg.id === assistantId
+      )?.content;
+      console.log("Assistant message complete:", finalMessage);
 
       setIsAssistantTyping(false);
       setCurrentAssistantId(null);
