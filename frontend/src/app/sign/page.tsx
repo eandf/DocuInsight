@@ -10,6 +10,7 @@ import {
 import Report from "@/components/report";
 import Chat from "@/components/chat";
 import { JobRecipient } from "@/types/database";
+import { Disclaimer } from "@/components/disclaimer";
 
 export default async function SignPage({
   searchParams,
@@ -30,8 +31,6 @@ export default async function SignPage({
     console.error(jobError);
     throw new Error("Job not found");
   }
-
-  console.log(jobData.recipients);
 
   const signer = jobData.recipients.find(
     (recipient: JobRecipient) => recipient.inviteId === inviteId
@@ -86,9 +85,9 @@ export default async function SignPage({
     );
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.log("Axios error response:", error.response);
+      console.error("Axios error response:", error.response);
     } else {
-      console.log("Unexpected error:", error);
+      console.error("Unexpected error:", error);
     }
   }
 
@@ -124,6 +123,7 @@ export default async function SignPage({
           </div>
         </ResizablePanel>
       </ResizablePanelGroup>
+      <Disclaimer />
     </div>
   );
 }

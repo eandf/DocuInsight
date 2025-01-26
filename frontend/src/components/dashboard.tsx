@@ -95,9 +95,9 @@ export default function Dashboard({
       }
     );
 
-    const data = await response.json();
-
-    console.log("RESPONSE DATA:", data);
+    if (!response.ok) {
+      console.error("Error creating envelope", response);
+    }
 
     setDialogOpen(false);
   };
