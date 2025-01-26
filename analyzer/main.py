@@ -74,6 +74,17 @@ def send_alert(message: str):
     """
     Sends an alert message (Discord channel, etc.) via webhook
     """
+    if (
+        "DISCORD_SERVER_ALERT_WEBHOOK" not in os.environ
+        or "https://discord.com/api/webhooks/"
+        not in str(os.getenv("DISCORD_SERVER_ALERT_WEBHOOK"))
+    ):
+        logger.critical(
+            f"DISCORD_SERVER_ALERT_WEBHOOK environment variable is NOT defined; printing instead of sending an alert now"
+        )
+        logger.info(f"send_alert() basic print: {message}")
+        return
+
     url = os.getenv("DISCORD_SERVER_ALERT_WEBHOOK")
     headers = {"Content-Type": "application/json"}
     data = {"content": message}
