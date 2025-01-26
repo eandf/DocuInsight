@@ -19,7 +19,7 @@ export default function SignInForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">Sign in to Docuinsight</CardTitle>
+          <CardTitle className="text-2xl">Sign in to DocuInsight</CardTitle>
           <CardDescription>Enter your email to sign in</CardDescription>
         </CardHeader>
         <CardContent>

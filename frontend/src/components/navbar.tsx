@@ -9,7 +9,7 @@ export default async function Navbar() {
     <div className="w-full border-b">
       <nav className="flex px-4 py-2 items-center justify-between max-w-screen-xl mx-auto h-16">
         <Link className="text-2xl font-medium" href="/">
-          Docuinsight
+          DocuInsight
         </Link>
         <ul className="flex gap-2">
           <li>

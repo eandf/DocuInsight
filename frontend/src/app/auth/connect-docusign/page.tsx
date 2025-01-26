@@ -25,7 +25,7 @@ export default async function ConnectDocusignPage() {
           </CardHeader>
           <CardContent className="flex flex-col items-center">
             <p className="mb-4 text-center">
-              {"You need to connect a docusign account to use Docuinsight"}
+              {"You need to connect a docusign account to use DocuInsight"}
             </p>
             <Button asChild className="mt-4">
               <a href={"/api/auth/docusign/authorize"}>
