@@ -9,7 +9,15 @@ import { DocusignAccountInfo } from "@/types/docusign";
 
 export default async function DashboardPage() {
   const session = await auth();
-  if (!session) redirect("/");
+  if (!session) {
+    return Response.json(
+      { error: "missing session" },
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
 
   const supabase = await createClient();
   const { data, error } = await supabase

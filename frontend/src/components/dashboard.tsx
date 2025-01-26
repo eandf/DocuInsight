@@ -79,16 +79,25 @@ export default function Dashboard({
   };
 
   const handleCreateEnvelope = async () => {
-    const payload = {
-      templateRoles: templateSigners,
-    };
+    const formData = new FormData();
+    formData.set("docusign_account_id", selectedAccountId as string);
+    formData.set(
+      "docusign_template_id",
+      selectedTemplate?.templateId as string
+    );
+    formData.set("recipients", JSON.stringify(templateSigners));
+
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/docusign/create-envelope?account_id=${selectedAccountId}&template_id=${selectedTemplate?.templateId}`,
-      { method: "POST", body: JSON.stringify(payload) }
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/jobs`,
+      {
+        method: "POST",
+        body: formData,
+      }
     );
 
     const data = await response.json();
-    console.log("handleCreateEnvelope:", data);
+
+    console.log("RESPONSE DATA:", data);
 
     setDialogOpen(false);
   };

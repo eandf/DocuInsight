@@ -2,14 +2,21 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import docusign from "docusign-esign";
 import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const accountId = searchParams.get("account_id") as string;
 
   const session = await auth();
-  if (!session) redirect(`${process.env.NEXT_PUBLIC_BASE_URL}`);
+  if (!session) {
+    return Response.json(
+      { error: "missing session" },
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
 
   const supabase = await createClient();
   const { data, error } = await supabase
