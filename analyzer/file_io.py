@@ -167,3 +167,28 @@ def load_file_content(file_path, client=None):
     else:
         file_content = load_text(file_path)
     return file_content
+
+
+def get_file_creation_date(file_path):
+    if not os.path.exists(file_path):
+        return None
+
+    creation_time = os.path.getctime(file_path)
+    return creation_time
+
+
+def get_size_mb(path):
+    if not os.path.exists(path):
+        return 0
+
+    if os.path.isfile(path):
+        return os.path.getsize(path) / (1024 * 1024)
+
+    total_size = 0
+    for dirpath, dirnames, filenames in os.walk(path):
+        for f in filenames:
+            fp = os.path.join(dirpath, f)
+            if not os.path.islink(fp):
+                total_size += os.path.getsize(fp)
+
+    return total_size / (1024 * 1024)

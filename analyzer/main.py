@@ -16,9 +16,11 @@ from requests.packages.urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
 import pytz
 
+from supabase.lib.client_options import ClientOptions
 from supabase import create_client, Client
 from dotenv import load_dotenv
 from openai import OpenAI
+import file_io
 
 import o_agent
 import mail
@@ -69,6 +71,10 @@ def send_alert(message: str):
     Sends an alert message (Discord channel, etc.) via webhook
     """
     global DISCORD_SERVER_ALERT_WEBHOOK
+
+    if DISCORD_SERVER_ALERT_WEBHOOK == None:
+        DISCORD_SERVER_ALERT_WEBHOOK = os.getenv("DISCORD_SERVER_ALERT_WEBHOOK")
+
     url = DISCORD_SERVER_ALERT_WEBHOOK
     headers = {"Content-Type": "application/json"}
     data = {"content": message}
@@ -239,9 +245,6 @@ def delete_bucket_file(document: dict):
     )
     if not db_response.data:
         raise Exception("Error: No data returned when deleting document from DB.")
-
-
-from supabase.lib.client_options import ClientOptions
 
 
 def get_jobs_with_users_by_status():
@@ -696,11 +699,70 @@ def manager(
                 logger.error(f"{worker_id} Job processing failed: {e}")
 
 
+def local_cleanup():
+    current_epoch_seconds = time.time()
+
+    pdfs_removed = []
+    pdfs_directory_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "pdfs/"
+    )
+    for file_name in os.listdir(pdfs_directory_path):
+        file_path = os.path.join(pdfs_directory_path, file_name)
+        if os.path.isfile(file_path) and file_path.endswith(".pdf"):
+            file_date_created = file_io.get_file_creation_date(file_path)
+            if abs(file_date_created - current_epoch_seconds) >= (
+                24 * 60 * 60
+            ):  # delete files older then 24 hours
+                os.remove(file_path)
+                pdfs_removed.append(file_path)
+
+    lines_to_remove = 0
+    log_file_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "analyzer.log"
+    )
+    if os.path.isfile(log_file_path):
+        if file_io.get_size_mb(log_file_path) > (1 * 1024):  # 1 GB = 1024 MB
+            with open(log_file_path, "r") as file:
+                lines = file.readlines()
+
+            lines_to_remove = len(lines) // 3  # calculate one-third of the lines
+            with open(log_file_path, "w") as file:
+                file.writelines(lines[lines_to_remove:])
+
+    log_label = "[LOCAL_CLEANUP]"
+    if len(pdfs_removed) > 0:
+        logger.debug(
+            f"{log_label} Removed {len(pdfs_removed)} pdfs that were created over 24 hours ago"
+        )
+    if lines_to_remove > 0:
+        logger.debug(
+            f"{log_label} Trimmed top {lines_to_remove} lines from the log file."
+        )
+
+    return
+
+
 if __name__ == "__main__":
+    # determine what big model to use
+    big_model_name = "o1-preview"
+    if str(os.getenv("DEV_MODE")).lower() == "true":
+        big_model_name = "gpt-4o-mini"
+        dev_mode_msg = f"The analyzer is currently in DEV_MODE so the big model is set to {big_model_name}"
+        logger.critical(dev_mode_msg)
+        send_alert(dev_mode_msg)
+
+    # clean local files to make sure instance does not run out of space
+    try:
+        local_cleanup()
+    except Exception as e:
+        cleanup_fail_msg = f"Failed to run local file cleaner due to error: {e}"
+        logger.critical(cleanup_fail_msg)
+        send_alert(cleanup_fail_msg)
+
+    # run main analyzer logic
     manager(
-        # NOTE: A practical range is between 10 and 16 workers, balancing CPU-intensive operations with I/O-bound tasks
         max_workers=int((16 + 10) / 2),
-        big_model="o1-preview",
+        big_model=big_model_name,
         small_model="gpt-4o-mini",
         openai_api_key=os.getenv("OPENAI_API_KEY"),
         supabase_url=os.getenv("SUPABASE_URL"),
@@ -716,3 +778,6 @@ if __name__ == "__main__":
             }
         },
     )
+
+    # add a minor delay for things to cool down
+    time.time(1)
