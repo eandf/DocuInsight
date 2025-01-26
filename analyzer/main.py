@@ -4,6 +4,7 @@ import threading
 import traceback
 import requests
 import logging
+import time
 import uuid
 import json
 import time
@@ -15,15 +16,27 @@ from requests.packages.urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
 import pytz
 
+from supabase.lib.client_options import ClientOptions
 from supabase import create_client, Client
+from dotenv import load_dotenv
 from openai import OpenAI
 
+import file_io
 import o_agent
 import mail
 
+
+# load environment variables which should be in the same directory as this script
+load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
+
 # global variables
-supabase: Client = None
-DISCORD_SERVER_ALERT_WEBHOOK = None
+supabase: Client = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
+supabase_auth_schema_client: Client = create_client(
+    supabase_url=os.getenv("SUPABASE_URL"),
+    supabase_key=os.getenv("SUPABASE_SERVICE"),
+    # NOTE: (1-25-2025) Supabase's python SDK is dumb and requires you to setup a new client for a different schema
+    options=ClientOptions(schema="next_auth"),
+)
 _worker_ids = {}
 
 # logging setup - configure overall logger
@@ -31,7 +44,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 # logging setup - configure log file location
-log_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "worker.log")
+log_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "analyzer.log")
 file_handler = logging.FileHandler(log_file_path)
 file_handler.setLevel(logging.INFO)
 
@@ -61,8 +74,18 @@ def send_alert(message: str):
     """
     Sends an alert message (Discord channel, etc.) via webhook
     """
-    global DISCORD_SERVER_ALERT_WEBHOOK
-    url = DISCORD_SERVER_ALERT_WEBHOOK
+    if (
+        "DISCORD_SERVER_ALERT_WEBHOOK" not in os.environ
+        or "https://discord.com/api/webhooks/"
+        not in str(os.getenv("DISCORD_SERVER_ALERT_WEBHOOK"))
+    ):
+        logger.critical(
+            f"DISCORD_SERVER_ALERT_WEBHOOK environment variable is NOT defined; printing instead of sending an alert now"
+        )
+        logger.info(f"send_alert() basic print: {message}")
+        return
+
+    url = os.getenv("DISCORD_SERVER_ALERT_WEBHOOK")
     headers = {"Content-Type": "application/json"}
     data = {"content": message}
 
@@ -239,6 +262,8 @@ def get_jobs_with_users_by_status():
     Fetch jobs with statuses 'queued', 'failed', or 'retrying',
     and include user information for each job.
     """
+    global supabase, supabase_auth_schema_client
+
     worker_id = get_worker_id()
     try:
         job_response = (
@@ -247,9 +272,8 @@ def get_jobs_with_users_by_status():
             .in_("status", ["queued", "failed", "retrying"])
             .execute()
         )
-        logger.info(f"[{worker_id}] Result of fetching jobs: {job_response.data}")
+
         if not job_response.data:
-            logger.info(f"[{worker_id}] No jobs found with the specified statuses.")
             return []
 
         jobs = job_response.data
@@ -257,9 +281,14 @@ def get_jobs_with_users_by_status():
 
         if user_ids:
             user_response = (
-                supabase.table("users").select("*").in_("id", user_ids).execute()
+                supabase_auth_schema_client.table("users")
+                .select(
+                    "id, name, first_name, last_name, email, emailVerified, created_at, updated_at"
+                )
+                .in_("id", user_ids)
+                .execute()
             )
-            logger.info(f"[{worker_id}] Result of fetching users: {user_response.data}")
+
             if user_response.data:
                 user_map = {u["id"]: u for u in user_response.data}
                 for job in jobs:
@@ -475,6 +504,37 @@ def process_single_job(
         if not os.path.exists(local_file_path):
             raise Exception("Contract PDF still does not exist locally after download.")
 
+        # Ensure "recipients" value is formatted correctly
+        recipients_formatted_correctly = True
+
+        # Check if the "recipients" key exists and is a list
+        if "recipients" not in job or not isinstance(job.get("recipients"), list):
+            recipients_formatted_correctly = False
+        elif len(job.get("recipients")) == 0:
+            recipients_formatted_correctly = False
+        # Iterate over each recipient to check their structure
+        for recipient in job.get("recipients"):
+            if not isinstance(recipient, dict):
+                recipients_formatted_correctly = False
+                break
+            # Ensure each recipient has all required keys and they are strings
+            if not all(key in recipient for key in ["email", "name", "signing_url"]):
+                recipients_formatted_correctly = False
+                break
+            if not (
+                isinstance(recipient.get("email"), str)
+                and isinstance(recipient.get("name"), str)
+                and isinstance(recipient.get("signing_url"), str)
+            ):
+                recipients_formatted_correctly = False
+                break
+
+        # Raise an exception if the formatting is incorrect
+        if not recipients_formatted_correctly:
+            raise Exception(
+                "recipients in job is NOT formatted correctly; it must be a list of dictionaries with 'email', 'name', and 'signing_url' as strings"
+            )
+
         # create config for OAgent
         config = o_agent.OAgentConfig(
             big_model=big_model_name,
@@ -506,53 +566,52 @@ def process_single_job(
             raise Exception(f"Error updating report: {report_update_resp['error']}")
 
         # Send emails
+        final_status = "completed"
         recipients = job.get("recipients", [])
-        if recipients:
-            for recipient in recipients:
-                try:
-                    if not isinstance(recipient, dict):
-                        raise ValueError(
-                            f"Recipient data is not a dictionary: {recipient}"
-                        )
+        failed_email_counter = 0
+        for recipient in recipients:
+            try:
+                if not isinstance(recipient, dict):
+                    raise ValueError(f"Recipient data is not a dictionary: {recipient}")
 
-                    def send_email_and_return():
-                        return mail.send_document_review_email(
-                            sender_name=job["user"]["name"],
-                            sender_email=job["user"]["email"],
-                            recipient_name=recipient["name"],
-                            recipient_email=[recipient["email"]],
-                            document_link=recipient["signing_url"],
-                            document_message="Please review and sign this document using DocuInsight.",
-                            signature_line=job["user"]["name"],
-                            email_from_name="DocuInsight",
-                            from_email_address="noreply@docuinsight.ai",
-                            action_description="sent you a document to review and sign",
-                            button_text="REVIEW DOCUMENT",
-                        )
+                def send_email_and_return():
+                    return mail.send_document_review_email(
+                        sender_name=job["user"]["name"],
+                        sender_email=job["user"]["email"],
+                        recipient_name=recipient["name"],
+                        recipient_email=[recipient["email"]],
+                        document_link=recipient["signing_url"],
+                        document_message="Please review and sign this document using DocuInsight.",
+                        signature_line=job["user"]["name"],
+                        email_from_name="DocuInsight",
+                        from_email_address="noreply@docuinsight.ai",
+                        action_description="sent you a document to review and sign",
+                        button_text="REVIEW DOCUMENT",
+                    )
 
-                    email_resp = retry_operation(
-                        operation_name="Send Email",
-                        func=send_email_and_return,
-                        max_retries=3,
-                        delay=2,
-                    )
-                    _trace(
-                        f"Email successfully sent to {recipient['email']}.",
-                        data=email_resp,
-                    )
-                except Exception as e:
-                    _trace(
-                        f"Failed to send email to {recipient.get('email', 'unknown')}: {e}"
-                    )
-        else:
-            _trace("No recipients found for this job, skipping email sending.")
+                email_resp = retry_operation(
+                    operation_name="Send Email",
+                    func=send_email_and_return,
+                    max_retries=3,
+                    delay=2,
+                )
+                _trace(
+                    f"Email successfully sent to {recipient['email']}.",
+                    data=email_resp,
+                )
+            except Exception as e:
+                _trace(
+                    f"Failed to send email to {recipient.get('email', 'unknown')}: {e}"
+                )
+                final_status = "error"
+                failed_email_counter += 1
 
-        # Mark job as 'completed'
+        # Mark job
         _trace("Updating job status to 'completed'.")
         job_update_result = update_jobs_table(
             job_id=job_id,
             updated_values={
-                "status": "completed",
+                "status": final_status,
                 "send_at": str(datetime.now(pytz.utc)),
                 "errors": {},
                 "report_id": report_id,
@@ -562,7 +621,7 @@ def process_single_job(
             raise Exception(f"Error updating job: {job_update_result['error']}")
 
         # Final trace update
-        trace_back["final_state"] = "completed"
+        trace_back["final_state"] = final_status
         _trace("Saving final trace_back to the report.")
         final_trace_resp = update_report(report_id, {"trace_back": trace_back})
         if isinstance(final_trace_resp, dict) and "error" in final_trace_resp:
@@ -570,7 +629,9 @@ def process_single_job(
                 f"Error updating trace_back in report: {final_trace_resp['error']}"
             )
 
-        _trace(f"Job {job_id} completed successfully.")
+        _trace(
+            f"Job {job_id} completed successfully - failed email sent count: {failed_email_counter}"
+        )
 
     except Exception as e:
         # If an error happens at any point, fail the job and store partial trace
@@ -584,10 +645,6 @@ def process_single_job(
 
 def manager(
     max_workers=None,
-    openai_api_key=None,
-    supabase_url=None,
-    supabase_key=None,
-    discord_webhook_url=None,
     prices=None,
     big_model=None,
     small_model=None,
@@ -595,34 +652,17 @@ def manager(
     """
     Parameters:
       - max_workers: number of threads to use
-      - openai_api_key: key for OpenAI
-      - supabase_url: URL for Supabase
-      - supabase_key: key for Supabase
-      - discord_webhook_url: webhook for Discord alerts
       - prices: dictionary of model pricing
+      - big_model: the large LLM model for analyzing the legal contract
+      - small_model: the small LLM model for converting the output from the big_model into a json
     """
 
-    if openai_api_key is None:
-        openai_api_key = os.getenv("OPENAI_API_KEY")
-    if supabase_url is None:
-        supabase_url = os.getenv("SUPABASE_URL")
-    if supabase_key is None:
-        supabase_key = os.getenv("SUPABASE_KEY")
-    if discord_webhook_url is None:
-        discord_webhook_url = os.getenv("DISCORD_SERVER_ALERT_WEBHOOK")
     if prices is None:
         raise Exception("Model prices data not provided")
     if big_model is None:
         raise Exception("Big model name not provided")
     if small_model is None:
         raise Exception("Small model name not provided")
-
-    # Set globals
-    global supabase
-    supabase = create_client(supabase_url, supabase_key)
-
-    global DISCORD_SERVER_ALERT_WEBHOOK
-    DISCORD_SERVER_ALERT_WEBHOOK = discord_webhook_url
 
     worker_id = "[MAIN]"  # For main logs, just use a static placeholder
 
@@ -632,7 +672,7 @@ def manager(
     def create_job_processing_function(job):
         # Each thread will get its own worker_id upon entering the function:
         w_id = get_worker_id()
-        local_openai_client = OpenAI(api_key=openai_api_key)
+        local_openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         return process_single_job(
             w_id,
             job,
@@ -663,23 +703,91 @@ def manager(
                 logger.error(f"{worker_id} Job processing failed: {e}")
 
 
-if __name__ == "__main__":
-    manager(
-        # NOTE: A practical range is between 10 and 16 workers, balancing CPU-intensive operations with I/O-bound tasks
-        max_workers=int((16 + 10) / 2),
-        big_model="o1-preview",
-        small_model="gpt-4o-mini",
-        openai_api_key=os.getenv("OPENAI_API_KEY"),
-        supabase_url=os.getenv("SUPABASE_URL"),
-        supabase_key=os.getenv("SUPABASE_KEY"),
-        discord_webhook_url=os.getenv("DISCORD_SERVER_ALERT_WEBHOOK"),
-        prices={
-            "openai": {
-                "gpt-4o": {"input": 2.5, "output": 10},
-                "gpt-4o-mini": {"input": 0.15, "output": 0.6},
-                "o1": {"input": 15, "output": 60},
-                "o1-preview": {"input": 15, "output": 60},
-                "o1-mini": {"input": 3, "output": 12},
-            }
-        },
+def local_cleanup():
+    current_epoch_seconds = time.time()
+
+    pdfs_removed = []
+    pdfs_directory_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "pdfs/"
     )
+    for file_name in os.listdir(pdfs_directory_path):
+        file_path = os.path.join(pdfs_directory_path, file_name)
+        if os.path.isfile(file_path) and file_path.endswith(".pdf"):
+            file_date_created = file_io.get_file_creation_date(file_path)
+            if abs(file_date_created - current_epoch_seconds) >= (
+                24 * 60 * 60
+            ):  # delete files older then 24 hours
+                os.remove(file_path)
+                pdfs_removed.append(file_path)
+
+    lines_to_remove = 0
+    log_file_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "analyzer.log"
+    )
+    if os.path.isfile(log_file_path):
+        if file_io.get_size_mb(log_file_path) > (1 * 1024):  # 1 GB = 1024 MB
+            with open(log_file_path, "r") as file:
+                lines = file.readlines()
+
+            lines_to_remove = len(lines) // 3  # calculate one-third of the lines
+            with open(log_file_path, "w") as file:
+                file.writelines(lines[lines_to_remove:])
+
+    log_label = "[LOCAL_CLEANUP]"
+    if len(pdfs_removed) > 0:
+        logger.debug(
+            f"{log_label} Removed {len(pdfs_removed)} pdfs that were created over 24 hours ago"
+        )
+    if lines_to_remove > 0:
+        logger.debug(
+            f"{log_label} Trimmed top {lines_to_remove} lines from the log file."
+        )
+
+    return
+
+
+if __name__ == "__main__":
+    # set max worker value
+    max_workers_values = 13
+
+    # set and safely determine model based values
+    big_model_name = "o1-preview"
+    small_model_name = "gpt-4o-mini"
+    model_prices = {
+        "openai": {
+            "gpt-4o": {"input": 2.5, "output": 10},
+            "gpt-4o-mini": {"input": 0.15, "output": 0.6},
+            "o1": {"input": 15, "output": 60},
+            "o1-preview": {"input": 15, "output": 60},
+            "o1-mini": {"input": 3, "output": 12},
+        }
+    }
+    if str(os.getenv("DEV_MODE")).lower() == "true":
+        big_model_name = small_model_name
+        dev_mode_msg = f"The analyzer is currently in DEV_MODE so the big model is set to {big_model_name}"
+        logger.critical(dev_mode_msg)
+        send_alert(dev_mode_msg)
+
+    # clean local files to make sure instance does not run out of space
+    try:
+        local_cleanup()
+    except Exception as e:
+        cleanup_fail_msg = f"Failed to run local file cleaner due to error: {e}"
+        logger.critical(cleanup_fail_msg)
+        send_alert(cleanup_fail_msg)
+
+    # run main analyzer logic
+    try:
+        manager(
+            max_workers=max_workers_values,
+            big_model=big_model_name,
+            small_model=small_model_name,
+            prices=model_prices,
+        )
+    except Exception as e:
+        big_root_error_msg = f"Root error with main manager code: {e}"
+        logger.critical(big_root_error_msg)
+        send_alert(big_root_error_msg)
+
+    # add a minor delay for things to cool down
+    time.sleep(1)
