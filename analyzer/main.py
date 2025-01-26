@@ -493,6 +493,37 @@ def process_single_job(
         if not os.path.exists(local_file_path):
             raise Exception("Contract PDF still does not exist locally after download.")
 
+        # Ensure "recipients" value is formatted correctly
+        recipients_formatted_correctly = True
+
+        # Check if the "recipients" key exists and is a list
+        if "recipients" not in job or not isinstance(job.get("recipients"), list):
+            recipients_formatted_correctly = False
+        elif len(job.get("recipients")) == 0:
+            recipients_formatted_correctly = False
+        # Iterate over each recipient to check their structure
+        for recipient in job.get("recipients"):
+            if not isinstance(recipient, dict):
+                recipients_formatted_correctly = False
+                break
+            # Ensure each recipient has all required keys and they are strings
+            if not all(key in recipient for key in ["email", "name", "signing_url"]):
+                recipients_formatted_correctly = False
+                break
+            if not (
+                isinstance(recipient.get("email"), str)
+                and isinstance(recipient.get("name"), str)
+                and isinstance(recipient.get("signing_url"), str)
+            ):
+                recipients_formatted_correctly = False
+                break
+
+        # Raise an exception if the formatting is incorrect
+        if not recipients_formatted_correctly:
+            raise Exception(
+                "recipients in job is NOT formatted correctly; it must be a list of dictionaries with 'email', 'name', and 'signing_url' as strings"
+            )
+
         # create config for OAgent
         config = o_agent.OAgentConfig(
             big_model=big_model_name,
@@ -524,53 +555,52 @@ def process_single_job(
             raise Exception(f"Error updating report: {report_update_resp['error']}")
 
         # Send emails
+        final_status = "completed"
         recipients = job.get("recipients", [])
-        if recipients:
-            for recipient in recipients:
-                try:
-                    if not isinstance(recipient, dict):
-                        raise ValueError(
-                            f"Recipient data is not a dictionary: {recipient}"
-                        )
+        failed_email_counter = 0
+        for recipient in recipients:
+            try:
+                if not isinstance(recipient, dict):
+                    raise ValueError(f"Recipient data is not a dictionary: {recipient}")
 
-                    def send_email_and_return():
-                        return mail.send_document_review_email(
-                            sender_name=job["user"]["name"],
-                            sender_email=job["user"]["email"],
-                            recipient_name=recipient["name"],
-                            recipient_email=[recipient["email"]],
-                            document_link=recipient["signing_url"],
-                            document_message="Please review and sign this document using DocuInsight.",
-                            signature_line=job["user"]["name"],
-                            email_from_name="DocuInsight",
-                            from_email_address="noreply@docuinsight.ai",
-                            action_description="sent you a document to review and sign",
-                            button_text="REVIEW DOCUMENT",
-                        )
+                def send_email_and_return():
+                    return mail.send_document_review_email(
+                        sender_name=job["user"]["name"],
+                        sender_email=job["user"]["email"],
+                        recipient_name=recipient["name"],
+                        recipient_email=[recipient["email"]],
+                        document_link=recipient["signing_url"],
+                        document_message="Please review and sign this document using DocuInsight.",
+                        signature_line=job["user"]["name"],
+                        email_from_name="DocuInsight",
+                        from_email_address="noreply@docuinsight.ai",
+                        action_description="sent you a document to review and sign",
+                        button_text="REVIEW DOCUMENT",
+                    )
 
-                    email_resp = retry_operation(
-                        operation_name="Send Email",
-                        func=send_email_and_return,
-                        max_retries=3,
-                        delay=2,
-                    )
-                    _trace(
-                        f"Email successfully sent to {recipient['email']}.",
-                        data=email_resp,
-                    )
-                except Exception as e:
-                    _trace(
-                        f"Failed to send email to {recipient.get('email', 'unknown')}: {e}"
-                    )
-        else:
-            _trace("No recipients found for this job, skipping email sending.")
+                email_resp = retry_operation(
+                    operation_name="Send Email",
+                    func=send_email_and_return,
+                    max_retries=3,
+                    delay=2,
+                )
+                _trace(
+                    f"Email successfully sent to {recipient['email']}.",
+                    data=email_resp,
+                )
+            except Exception as e:
+                _trace(
+                    f"Failed to send email to {recipient.get('email', 'unknown')}: {e}"
+                )
+                final_status = "error"
+                failed_email_counter += 1
 
-        # Mark job as 'completed'
+        # Mark job
         _trace("Updating job status to 'completed'.")
         job_update_result = update_jobs_table(
             job_id=job_id,
             updated_values={
-                "status": "completed",
+                "status": final_status,
                 "send_at": str(datetime.now(pytz.utc)),
                 "errors": {},
                 "report_id": report_id,
@@ -580,7 +610,7 @@ def process_single_job(
             raise Exception(f"Error updating job: {job_update_result['error']}")
 
         # Final trace update
-        trace_back["final_state"] = "completed"
+        trace_back["final_state"] = final_status
         _trace("Saving final trace_back to the report.")
         final_trace_resp = update_report(report_id, {"trace_back": trace_back})
         if isinstance(final_trace_resp, dict) and "error" in final_trace_resp:
@@ -588,7 +618,9 @@ def process_single_job(
                 f"Error updating trace_back in report: {final_trace_resp['error']}"
             )
 
-        _trace(f"Job {job_id} completed successfully.")
+        _trace(
+            f"Job {job_id} completed successfully - failed email sent count: {failed_email_counter}"
+        )
 
     except Exception as e:
         # If an error happens at any point, fail the job and store partial trace
