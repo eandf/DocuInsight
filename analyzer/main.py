@@ -711,14 +711,14 @@ if __name__ == "__main__":
     big_model_name = "o1-preview"
     small_model_name = "gpt-4o-mini"
     model_prices = {
-            "openai": {
-                "gpt-4o": {"input": 2.5, "output": 10},
-                "gpt-4o-mini": {"input": 0.15, "output": 0.6},
-                "o1": {"input": 15, "output": 60},
-                "o1-preview": {"input": 15, "output": 60},
-                "o1-mini": {"input": 3, "output": 12},
-            }
+        "openai": {
+            "gpt-4o": {"input": 2.5, "output": 10},
+            "gpt-4o-mini": {"input": 0.15, "output": 0.6},
+            "o1": {"input": 15, "output": 60},
+            "o1-preview": {"input": 15, "output": 60},
+            "o1-mini": {"input": 3, "output": 12},
         }
+    }
     if str(os.getenv("DEV_MODE")).lower() == "true":
         big_model_name = small_model_name
         dev_mode_msg = f"The analyzer is currently in DEV_MODE so the big model is set to {big_model_name}"
