@@ -1,4 +1,7 @@
-# DocuInsight Lab
+<h1 align="center">DocuInsight</h1>
+<p align="center">
+    <img width="200" src="./assets/images/logo.png">
+</p>
 
 ## About
 
