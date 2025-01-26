@@ -446,6 +446,8 @@ def process_single_job(
     prices: dict,
     big_model_name: str,
     small_model_name: str,
+    sender_email_address: str,
+    last_cost_values_set_date: str,
 ):
     """
     Processes a single job from 'queued_jobs' in a production-ready manner.
@@ -541,7 +543,7 @@ def process_single_job(
             small_model=small_model_name,
             document_type="UNKNOWN",
             specific_concerns="UNKNOWN",
-            last_cost_values_set_date="January 20, 2025",
+            last_cost_values_set_date=last_cost_values_set_date,
             prices=prices,
         )
 
@@ -584,7 +586,7 @@ def process_single_job(
                         document_message="Please review and sign this document using DocuInsight.",
                         signature_line=job["user"]["name"],
                         email_from_name="DocuInsight",
-                        from_email_address="noreply@docuinsight.ai",
+                        from_email_address=sender_email_address,
                         action_description="sent you a document to review and sign",
                         button_text="REVIEW DOCUMENT",
                     )
@@ -648,6 +650,8 @@ def manager(
     prices=None,
     big_model=None,
     small_model=None,
+    sender_email_address=None,
+    last_cost_values_set_date="?",
 ):
     """
     Parameters:
@@ -663,6 +667,8 @@ def manager(
         raise Exception("Big model name not provided")
     if small_model is None:
         raise Exception("Small model name not provided")
+    if sender_email_address is None:
+        raise Exception("Sender email address is not provided")
 
     worker_id = "[MAIN]"  # For main logs, just use a static placeholder
 
@@ -680,6 +686,8 @@ def manager(
             prices,
             big_model,
             small_model,
+            sender_email_address,
+            last_cost_values_set_date,
         )
 
     queued_jobs = get_jobs_with_users_by_status()
@@ -747,12 +755,12 @@ def local_cleanup():
 
 
 if __name__ == "__main__":
-    # set max worker value
+    # important config values
     max_workers_values = 13
-
-    # set and safely determine model based values
     big_model_name = "o1-preview"
     small_model_name = "gpt-4o-mini"
+    last_cost_values_set_date = "January 20, 2025"
+    sender_email_address = "noreply@docuinsight.ai"
     model_prices = {
         "openai": {
             "gpt-4o": {"input": 2.5, "output": 10},
@@ -762,6 +770,8 @@ if __name__ == "__main__":
             "o1-mini": {"input": 3, "output": 12},
         }
     }
+
+    # set and safely determine model based values
     if str(os.getenv("DEV_MODE")).lower() == "true":
         big_model_name = small_model_name
         dev_mode_msg = f"The analyzer is currently in DEV_MODE so the big model is set to {big_model_name}"
@@ -783,6 +793,8 @@ if __name__ == "__main__":
             big_model=big_model_name,
             small_model=small_model_name,
             prices=model_prices,
+            sender_email_address=sender_email_address,
+            last_cost_values_set_date=last_cost_values_set_date,
         )
     except Exception as e:
         big_root_error_msg = f"Root error with main manager code: {e}"
