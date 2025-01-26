@@ -16,14 +16,14 @@ export default async function SignPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const { job, invite } = await searchParams;
+  const { job: jobId, invite: inviteId } = await searchParams;
 
   const supabase = await createClient();
 
   const { data: jobData, error: jobError } = await supabase
     .from("jobs")
     .select("*")
-    .eq("id", job)
+    .eq("id", jobId)
     .single();
 
   if (jobError) {
@@ -34,7 +34,7 @@ export default async function SignPage({
   console.log(jobData.recipients);
 
   const signer = jobData.recipients.find(
-    (recipient: JobRecipient) => recipient.inviteId === invite
+    (recipient: JobRecipient) => recipient.inviteId === inviteId
   );
 
   if (!signer) {

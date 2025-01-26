@@ -5,8 +5,15 @@ import { createClient } from "@/utils/supabase/server";
 
 export async function GET(request: NextRequest) {
   const session = await auth();
-  if (!session)
-    return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASE_URL}`);
+  if (!session) {
+    return Response.json(
+      { error: "missing session" },
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
 
   const { searchParams } = new URL(request.url);
   const code = searchParams.get("code")!;

@@ -1,11 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { auth } from "@/auth"; // TODO: session not available in API routes for some reason
-import {
-  parseSelect,
-  parseLimit,
-  parseQuery,
-  applySupabaseFilters,
-} from "@/utils/api-utils";
 import { createClient } from "@/utils/supabase/server";
 import crypto from "crypto";
 import docusign, { EnvelopeDefinition, EnvelopeSummary } from "docusign-esign";
@@ -13,53 +7,17 @@ import { fileTypeFromBuffer } from "file-type";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 
-export async function GET(request: NextRequest) {
-  const session = await auth();
-  if (!session) {
-    return NextResponse.redirect(new URL(request.nextUrl.origin));
-  }
-
-  const supabase = await createClient();
-
-  const searchParams = request.nextUrl.searchParams;
-  const select = searchParams.get("select");
-  const limit = searchParams.get("limit");
-  const query = searchParams.get("query");
-
-  try {
-    const columns = parseSelect(select);
-    const limitValue = parseLimit(limit);
-    const queryConditions = parseQuery(query);
-
-    let dbQuery = supabase.from("jobs").select(columns);
-    dbQuery = applySupabaseFilters(dbQuery, queryConditions);
-
-    if (limitValue) {
-      dbQuery = dbQuery.limit(limitValue);
-    }
-
-    const { data, error } = await dbQuery;
-    if (error) {
-      console.error("Supabase error [jobs]:", error);
-      return new Response(JSON.stringify({ error: error.message }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
-
-    return Response.json(data);
-  } catch (error) {
-    console.error("Unexpected error [GET /jobs]:", error);
-    return new Response(JSON.stringify({ error: "Internal Server Error" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-}
-
 export async function POST(request: NextRequest) {
   const session = await auth();
-  if (!session) return Response.redirect("http://localhost:3000/auth/sign-in");
+  if (!session) {
+    return Response.json(
+      { error: "missing session" },
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
 
   const formData = await request.formData();
 
