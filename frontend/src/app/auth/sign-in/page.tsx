@@ -1,5 +1,6 @@
 import { LoginForm } from "@/components/login-form";
 import { Disclaimer } from "@/components/disclaimer";
+import { ExternalLink } from "lucide-react";
 
 export default function SignInPage() {
   return (
@@ -10,10 +11,30 @@ export default function SignInPage() {
             DocuInsight
           </a>
         </div>
-        <div className="flex flex-1 items-center justify-center">
+        <div className="flex flex-1 items-center justify-center flex-col ">
           <div className="w-full max-w-xs">
             <LoginForm />
           </div>
+        </div>
+        <div className="flex flex-col items-start space-y-2 text-sm">
+          <a
+            href="https://support.docusign.com/s/document-item?bundleId=xry1643227563338&topicId=dqj1578456412286.html&_LANG=enus&language=en_US&rsc_301="
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary hover:underline inline-flex items-center"
+          >
+            Docusign - Working With Templates
+            <ExternalLink className="ml-1 h-4 w-4" />
+          </a>
+          <a
+            href="https://forms.gle/jYdEvAedLm3Uc8416"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary hover:underline inline-flex items-center"
+          >
+            Contact Us
+            <ExternalLink className="ml-1 h-4 w-4" />
+          </a>
         </div>
       </div>
       <div className="relative bg-muted flex items-center justify-center overflow-hidden">
