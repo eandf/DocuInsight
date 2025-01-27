@@ -2,10 +2,10 @@ import { LoginForm } from "@/components/login-form";
 import { Disclaimer } from "@/components/disclaimer";
 
 export default function SignInPage() {
-  const demoVideoUrl = process.env.NEXT_PUBLIC_DEMO_VIDEO_URL;
-  if (!demoVideoUrl) {
-    throw new Error("Missing demo video URL");
-  }
+  // const demoVideoUrl = process.env.NEXT_PUBLIC_DEMO_VIDEO_URL;
+  // if (!demoVideoUrl) {
+  //   throw new Error("Missing demo video URL");
+  // }
 
   return (
     <div className="grid min-h-svh grid-cols-1 lg:grid-cols-[1fr_2fr]">
@@ -24,7 +24,7 @@ export default function SignInPage() {
       <div className="relative bg-muted flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           <iframe
-            src={demoVideoUrl}
+            src="https://www.youtube.com/embed/oviyDYKbzGc?si=0fBzOtjOETHvThdp"
             title="YouTube video player"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             referrerPolicy="strict-origin-when-cross-origin"
