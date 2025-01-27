@@ -176,3 +176,16 @@ def send_document_review_email(
 
     email = resend.Emails.send(params)
     return email
+
+
+if __name__ == "__main__":
+    to_email = input("Email Address: ")
+    resend.api_key = os.environ["RESEND_API_KEY"]
+    params: resend.Emails.SendParams = {
+        "from": "Acme <onboarding@resend.dev>",
+        "to": [to_email],
+        "subject": "hello world",
+        "html": "<strong>it works!</strong>",
+    }
+    email = resend.Emails.send(params)
+    print(email)
