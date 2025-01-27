@@ -40,7 +40,7 @@ export default function SignInPage() {
       <div className="relative bg-muted flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           <iframe
-            src="https://www.youtube.com/embed/oviyDYKbzGc?si=0fBzOtjOETHvThdp"
+            src="https://www.youtube.com/embed/vechiKAvdDU?si=iK5x3v6p03Ug45y8"
             title="YouTube video player"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             referrerPolicy="strict-origin-when-cross-origin"
