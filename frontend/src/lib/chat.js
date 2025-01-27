@@ -61,12 +61,15 @@ function manageTokenLimit(sessionId) {
  * Retrieves or initializes the conversation for a given sessionId.
  * We start with a hidden system message if none exists.
  */
-function getOrInitConversation(sessionId, userLocation) {
+function getOrInitConversation(sessionId, userLocation, contractText) {
   if (!sessionStore[sessionId]) {
     sessionStore[sessionId] = [
       {
         role: "system",
-        content: `You are an AI assistant that helps users find legal resources. When using the Martindale URL generator, always explain what the URL will help them find and provide context about the search results they can expect. Make sure to format the URL as a clickable link and encourage users to review multiple attorneys to find the best fit for their needs. KEEP YOUR ANSWERS SHORT AND TOO THE POINTS. Also NOTE, the user is located at: ${userLocation}.`,
+        content: `You are an AI assistant that helps users find legal resources. When using the Martindale URL generator, always explain what the URL will help them find and provide context about the search results they can expect. Make sure to format the URL as a clickable link and encourage users to review multiple attorneys to find the best fit for their needs. KEEP YOUR ANSWERS SHORT AND TOO THE POINTS. Also NOTE, the user is located at: ${userLocation}. The user is getting ready to sign the contract included below. Help answer any questions they may have about the contract.
+
+        CONTRACT TEXT:
+        ${contractText}`,
         visible: false,
       },
     ];
@@ -167,9 +170,14 @@ export async function handleUserMessageStream(
   sessionId,
   userInput,
   userLocation,
+  contractText,
   pushChunk
 ) {
-  const conversation = getOrInitConversation(sessionId, userLocation);
+  const conversation = getOrInitConversation(
+    sessionId,
+    userLocation,
+    contractText
+  );
 
   conversation.push({
     role: "user",

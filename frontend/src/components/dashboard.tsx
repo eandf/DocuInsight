@@ -33,6 +33,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Loader2 } from "lucide-react"; // Importing Loader for spinner
 
 export default function Dashboard({
   accounts,
@@ -48,6 +49,7 @@ export default function Dashboard({
   const [templateSigners, setTemplateSigners] = useState<Signer[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [creatingEnvelope, setCreatingEnvelope] = useState(false); // New state
 
   const getTemplates = async (accountId: string) => {
     setLoading(true);
@@ -58,7 +60,7 @@ export default function Dashboard({
       const data = (await response.json()) as EnvelopeTemplateResults;
       setTemplates((data.envelopeTemplates as EnvelopeTemplate[]) || []);
     } catch (error) {
-      console.error("failed to fetch templates:", error);
+      console.error("Failed to fetch templates:", error);
       setTemplates([]);
     } finally {
       setLoading(false);
@@ -71,35 +73,49 @@ export default function Dashboard({
     const signers = recipients?.signers ?? [];
     setTemplateSigners(signers);
 
-    for (const signer of signers) {
-      if (!signer.name || !signer.email) {
-        setDialogOpen(true);
-      }
+    // Check if any signer is missing name or email
+    const missingInfo = signers.some((signer) => !signer.name || !signer.email);
+    if (missingInfo) {
+      setDialogOpen(true);
+    } else {
+      // If no missing info, proceed to create the envelope directly
+      await handleCreateEnvelope();
     }
   };
 
   const handleCreateEnvelope = async () => {
-    const formData = new FormData();
-    formData.set("docusign_account_id", selectedAccountId as string);
-    formData.set(
-      "docusign_template_id",
-      selectedTemplate?.templateId as string
-    );
-    formData.set("recipients", JSON.stringify(templateSigners));
+    setCreatingEnvelope(true); // Start loading
+    try {
+      const formData = new FormData();
+      formData.set("docusign_account_id", selectedAccountId as string);
+      formData.set(
+        "docusign_template_id",
+        selectedTemplate?.templateId as string
+      );
+      formData.set("recipients", JSON.stringify(templateSigners));
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/jobs`,
-      {
-        method: "POST",
-        body: formData,
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/jobs`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        console.error("Error creating envelope", response);
+        // Optionally, handle error feedback to the user here
+      } else {
+        // Optionally, handle success feedback to the user here
       }
-    );
 
-    if (!response.ok) {
-      console.error("Error creating envelope", response);
+      setDialogOpen(false); // Close the dialog on success
+    } catch (error) {
+      console.error("Error creating envelope:", error);
+      // Optionally, handle error feedback to the user here
+    } finally {
+      setCreatingEnvelope(false); // End loading
     }
-
-    setDialogOpen(false);
   };
 
   useEffect(() => {
@@ -115,6 +131,7 @@ export default function Dashboard({
         <Select
           value={selectedAccountId || ""}
           onValueChange={(value) => setSelectedAccountId(value)}
+          disabled={loading || creatingEnvelope} // Disable select during loading or creation
         >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Select account" />
@@ -129,7 +146,12 @@ export default function Dashboard({
         </Select>
       </div>
 
-      {loading && <div>Loading templates...</div>}
+      {loading && (
+        <div className="flex items-center space-x-2">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          <span>Loading templates...</span>
+        </div>
+      )}
 
       {!loading && templates && (
         <div className="rounded-md border">
@@ -177,7 +199,10 @@ export default function Dashboard({
                       {lastModifiedStr}
                     </TableCell>
                     <TableCell>
-                      <Button onClick={() => handleUseTemplate(template)}>
+                      <Button
+                        onClick={() => handleUseTemplate(template)}
+                        disabled={creatingEnvelope}
+                      >
                         Use
                       </Button>
                     </TableCell>
@@ -188,48 +213,91 @@ export default function Dashboard({
           </Table>
         </div>
       )}
-      <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+
+      <AlertDialog
+        open={dialogOpen}
+        onOpenChange={(isOpen) => {
+          // Prevent closing the dialog by external means if creatingEnvelope is true
+          if (!creatingEnvelope) {
+            setDialogOpen(isOpen);
+          }
+        }}
+      >
         <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Fill in Role Info</AlertDialogTitle>
-            <AlertDialogDescription>
-              Please enter name/email for any roles that need it.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
+          {/* Conditionally render the header only when not creating the envelope */}
+          {!creatingEnvelope && (
+            <AlertDialogHeader>
+              <AlertDialogTitle>Fill in Role Info</AlertDialogTitle>
+              <AlertDialogDescription>
+                Please enter name/email for any roles that need it.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+          )}
 
-          {templateSigners.map((role, index) => (
-            <div key={`${role.roleName}-${index}`} className="my-2">
-              <Label className="mt-2">{role.roleName || "Signer"} Name</Label>
-              <Input
-                value={role.name ?? ""}
-                onChange={(e) => {
-                  const updatedRoles = [...templateSigners];
-                  updatedRoles[index].name = e.target.value;
-                  setTemplateSigners(updatedRoles);
-                }}
-                placeholder="Full name"
-              />
-
-              <Label className="mt-2">{role.roleName || "Signer"} Email</Label>
-              <Input
-                type="email"
-                value={role.email ?? ""}
-                onChange={(e) => {
-                  const updatedRoles = [...templateSigners];
-                  updatedRoles[index].email = e.target.value;
-                  setTemplateSigners(updatedRoles);
-                }}
-                placeholder="email@example.com"
-              />
+          {creatingEnvelope ? (
+            <div className="flex flex-col items-center justify-center py-6">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <p className="text-sm text-muted-foreground mt-2">
+                Creating and sending envelope...
+              </p>
             </div>
-          ))}
+          ) : (
+            <>
+              {templateSigners.map((role, index) => (
+                <div key={`${role.roleName}-${index}`} className="my-4">
+                  <Label className="mt-2">
+                    {role.roleName || "Signer"} Name
+                  </Label>
+                  <Input
+                    value={role.name ?? ""}
+                    onChange={(e) => {
+                      const updatedRoles = [...templateSigners];
+                      updatedRoles[index].name = e.target.value;
+                      setTemplateSigners(updatedRoles);
+                    }}
+                    placeholder="Full name"
+                    disabled={creatingEnvelope}
+                  />
 
-          <AlertDialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleCreateEnvelope}>Create Envelope</Button>
-          </AlertDialogFooter>
+                  <Label className="mt-2">
+                    {role.roleName || "Signer"} Email
+                  </Label>
+                  <Input
+                    type="email"
+                    value={role.email ?? ""}
+                    onChange={(e) => {
+                      const updatedRoles = [...templateSigners];
+                      updatedRoles[index].email = e.target.value;
+                      setTemplateSigners(updatedRoles);
+                    }}
+                    placeholder="email@example.com"
+                    disabled={creatingEnvelope}
+                  />
+                </div>
+              ))}
+
+              <AlertDialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setDialogOpen(false)}
+                  disabled={creatingEnvelope}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleCreateEnvelope}
+                  disabled={
+                    creatingEnvelope ||
+                    templateSigners.some(
+                      (signer) => !signer.name || !signer.email
+                    )
+                  }
+                >
+                  {"Create Envelope"}
+                </Button>
+              </AlertDialogFooter>
+            </>
+          )}
         </AlertDialogContent>
       </AlertDialog>
     </div>

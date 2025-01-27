@@ -62,6 +62,8 @@ export default async function SignPage({
     throw new Error("Report not found");
   }
 
+  const contractText = reportData.contract_content;
+
   const accessToken = await getAccessToken(userData);
 
   const apiClient = new docusign.ApiClient();
@@ -113,7 +115,7 @@ export default async function SignPage({
             <ResizableHandle withHandle className="bg-slate-600" />
             <ResizablePanel defaultSize={50}>
               <div className="flex h-full items-center justify-center">
-                <Chat />
+                <Chat contractText={contractText} />
               </div>
             </ResizablePanel>
           </ResizablePanelGroup>
