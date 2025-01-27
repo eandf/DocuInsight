@@ -238,7 +238,7 @@ export default function Dashboard({
             <div className="flex flex-col items-center justify-center py-6">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
               <p className="text-sm text-muted-foreground mt-2">
-                Creating and sending envelope...
+                {"Creating and sending envelope..."}
               </p>
             </div>
           ) : (
