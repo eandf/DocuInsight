@@ -1,77 +1,139 @@
 # DocuInsight Frontend
 
-## Setup
+This sub-directory contains all the frontend code for DocuInsight. To learn how to setup it up, follow the instructions below.
 
-You will need an account for each of the external services listed below.
-    - Resend
-    - Docusign Developers
-    - Supabase
-    - OpenAI API
-    - Tavily
+## Setup Instructions
 
-Once you have crated the accounts, you will need to create a .env.local file to store the api keys and other values needed to interact with each service. Refer to `example.env.local` to see what all is needed.
+To get started, follow these steps:
 
-### 1. Auth.js
-The Auth.js package is used to handle user authentication. The package requires the `AUTH_SECRET` variable in `.env.local` key to be set. `AUTH_SECRET` can be set to any string, but it would be good to set it something hard to guess. In Linux/MacOS environments you can use the command `openssl rand -base64 32` to generate a value for `AUTH_SECRET`
+### Prerequisites
 
-### 2. Resend
-Resend is used by Auth.js to send emails for user authentication. You will need to create a free resend account
+1. **Accounts Required**  
+   You will need accounts for the following external services:
 
-You will need to connect a domain
+   - [Resend](https://resend.com)
+   - [DocuSign Developers](https://developers.docusign.com/)
+   - [Supabase](https://supabase.com/)
+   - [OpenAI API](https://platform.openai.com/)
+   - [Tavily](https://tavily.com/)
 
-You will need to create an api key and add it the env file as `AUTH_RESEND_KEY`
+2. **Environment Variables**  
+   Create a `.env.local` file in the root directory to store API keys and configuration values. Refer to the provided `example.env.local` for the required variables.
 
-You will need to put an email address to send emails from in the env file as `AUTH_RESEND_EMAIL`
-the email can be anything as long as it is @ the domain connected to resend
+### Configuration Details
 
-### 3. Docusign
-You need to create an account at https://developers.docusign.com/
+#### 1. **Auth.js**
 
-Once you have an account click on your profile in the top right and then click on "My Apps & Keys"
+[Auth.js](https://authjs.dev/) is used for user authentication.
 
-Scroll down until you see the integration section on the left side of the page
-Click on Apps and Keys
+- Set the `AUTH_SECRET` variable in `.env.local`.  
+  To generate a strong value, use the command:
+  ```bash
+  openssl rand -base64 32
+  ```
+- Required variables:
+  - `AUTH_SECRET`: Authentication secret
+  - `AUTH_RESEND_KEY`: Resend API key
+  - `AUTH_RESEND_EMAIL`: Email address to send authentication emails (must belong to the domain connected to Resend)
 
-Click on the blue "Add App an Integration Key" button
-add integration key to env file as DOCUSIGN_INTEGRATION_KEY
-fill out the form
+#### 2. **Resend**
 
-Is your application able to securely store a client secret? - Yes
-Require Proof Key for Code Exchange (PKCE) - unchecked
-Add a secret key and add it the the env file as `DOCUSIGN_SECRET_KEY`
-You don't need to create an RSA key pair
+Resend is used by Auth.js to send authentication emails.
 
-Add a redirect URI
-    - dev: http://localhost:3000/api/auth/docusign/callback
-    - prod: https://your-domain/api/auth/docusign/callback
+- Create a [Resend account](https://resend.com).
+- Connect a domain to Resend.
+- Generate an API key and add it to `.env.local` as `AUTH_RESEND_KEY`.
+- Set a `AUTH_RESEND_EMAIL` (e.g., `noreply@yourdomain.com`).
 
-leave everything else default and click save
+#### 3. **DocuSign**
 
-### 4. Supabase
-create supabase account
-create a project in supabase
+- Create a [DocuSign Developer account](https://developers.docusign.com/).
+- Navigate to **My Apps & Keys** under your profile.
+- Create a new integration key:
+  - Add the integration key to `.env.local` as `DOCUSIGN_INTEGRATION_KEY`.
+  - Generate a secret key and add it to `.env.local` as `DOCUSIGN_SECRET_KEY`.
+- Add the following redirect URIs:
+  - Development: `http://localhost:3000/api/auth/docusign/callback`
+  - Production: `https://your-domain/api/auth/docusign/callback`
 
-add the project url to the env file as `NEXT_PUBLIC_SUPABASE_PROJECT_URL`
-add the service role key to the env file as `SUPABASE_SERVICE_ROLE_KEY`
+#### 4. **Supabase**
 
-### 5. OpenAI API
+- Create a [Supabase account](https://supabase.com) and a project.
+- Add the following to `.env.local`:
+  - `NEXT_PUBLIC_SUPABASE_PROJECT_URL`: Your project URL.
+  - `SUPABASE_SERVICE_ROLE_KEY`: Your service role key.
 
-create openai account
-create openai api key
-add to env file as `OPENAI_API_KEY`
+#### 5. **OpenAI API**
 
-### 6. Tavily
+- Create an [OpenAI account](https://platform.openai.com/) and generate an API key.
+- Add the API key to `.env.local` as `OPENAI_API_KEY`.
 
-create tavily account
-create tavily api key
-add to env file as `TAVILY_API_KEY`
+#### 6. **Tavily**
 
-### 7. install packages
+- Create a [Tavily account](https://tavily.com) and generate an API key.
+- Add the API key to `.env.local` as `TAVILY_API_KEY`.
 
-`npm install`
+### Installation and Running the Project
 
-### 8. run local dev server
+1. **Setup environment variables**:  
+   Create the environment variable file `.env.local` and set all the environment variables listed in the `example.env.local`. This file contains all required environment variables and their expected structure.
 
-`npm run dev`
+2. **Install dependencies**:
 
-visit site at http://localhost:3000
+   ```bash
+   npm install
+   ```
+
+3. **Run the development server**:
+
+   ```bash
+   npm run dev
+   ```
+
+4. **Access the app**:  
+   Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### Deploy to Production
+
+To deploy this project to production, follow these steps:
+
+1. **Add Your Code to GitHub**
+
+   - Ensure your project code is version-controlled and pushed to a GitHub repository.  
+     If your project isn't already a Git repository, initialize it with:
+     ```bash
+     git init
+     git add .
+     git commit -m "Initial commit"
+     git branch -M main
+     git remote add origin <your-repo-url>
+     git push -u origin main
+     ```
+
+2. **Create a Vercel Account**
+
+   - Go to [Vercel](https://vercel.com) and sign up (or log in if you already have an account).
+
+3. **Connect GitHub to Vercel**
+
+   - In Vercel, connect your GitHub account by selecting **Add New Project**.
+   - Locate and select your repository from the list.
+
+4. **Deploy the Project**
+
+   - When prompted, select **Next.js** as the project framework.
+   - During the setup, add all environment variables from your `.env.local` file into Vercel's Environment Variables settings.
+
+5. **Complete Deployment**
+
+   - Follow the remaining steps in Vercel's guided setup.
+   - Once deployment is complete, Vercel will provide a production URL (e.g., `https://your-project-name.vercel.app`).
+
+6. **Need Help?**  
+   If you encounter any issues, refer to these resources:
+   - [Next.js Deployment Guide](https://nextjs.org/learn-pages-router/basics/deploying-nextjs-app/deploy)
+   - [Vercel Deployment Tutorial (YouTube)](https://www.youtube.com/watch?v=2HBIzEx6IZA)
+
+### Example `.env.local`
+
+Refer to the `example.env.local` file for all required environment variables and their expected structure.
