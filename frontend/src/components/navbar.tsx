@@ -1,5 +1,6 @@
 import { auth, signOut } from "@/auth";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 
 export default async function Navbar() {
@@ -40,6 +41,7 @@ export default async function Navbar() {
                 action={async () => {
                   "use server";
                   await signOut();
+                  redirect("/auth/sign-in");
                 }}
               >
                 <Button type="submit">Sign out</Button>
