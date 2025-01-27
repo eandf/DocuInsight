@@ -14,3 +14,4 @@ analyzer/pdfs/*
 .DS_Store
 .env
 *.log
+nohup.out
