@@ -817,9 +817,10 @@ def local_cleanup():
 def retry_email_sending(sender_email_address):
     error_status_cases = get_all_errored_jobs()
 
-    logger.error(
-        f"Found {len(error_status_cases)} jobs with an 'error' status - seeing if I can try and retry emailing missed emails"
-    )
+    if len(error_status_cases) > 0:
+        logger.error(
+            f"Found {len(error_status_cases)} jobs with an 'error' status - seeing if I can try and retry emailing missed emails"
+        )
 
     for entry in error_status_cases:
         if (
