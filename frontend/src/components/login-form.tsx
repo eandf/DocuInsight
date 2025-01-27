@@ -1,24 +1,35 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signIn } from "@/auth";
+import { useTransition } from "react";
+import { signInAction } from "@/actions/auth";
+import { Spinner } from "@/components/spinner";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"form">) {
+  const [isPending, startTransition] = useTransition();
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get("email") as string;
+
+    startTransition(() => {
+      signInAction(email);
+    });
+  };
+
   return (
     <form
       className={cn("flex flex-col gap-6", className)}
       {...props}
-      action={async (formData: FormData) => {
-        "use server";
-        await signIn("resend", {
-          email: formData.get("email"),
-          redirectTo: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard`,
-        });
-      }}
+      onSubmit={handleSubmit}
     >
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Sign In</h1>
@@ -35,10 +46,18 @@ export function LoginForm({
             name="email"
             placeholder="m@example.com"
             required
+            disabled={isPending}
           />
         </div>
-        <Button type="submit" className="w-full">
-          Sign In
+        <Button type="submit" className="w-full" disabled={isPending}>
+          {isPending ? (
+            <>
+              <Spinner className="mr-2 h-4 w-4" />
+              Signing In...
+            </>
+          ) : (
+            "Sign In"
+          )}
         </Button>
       </div>
     </form>
