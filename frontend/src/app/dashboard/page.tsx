@@ -3,9 +3,12 @@ import { redirect } from "next/navigation";
 import Navbar from "@/components/navbar";
 import { createClient } from "@/utils/supabase/server";
 import docusign from "docusign-esign";
-import axios from "axios";
 import Dashboard from "@/components/dashboard";
 import { DocusignAccountInfo } from "@/types/docusign";
+import type { User } from "@/types/database";
+import { getAccessToken } from "@/lib/docusign";
+
+// TODO: this needs a loading spinner for envelope creation
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -28,23 +31,34 @@ export default async function DashboardPage() {
     .single();
 
   if (error) {
-    console.error(error);
+    console.error("Error fetching user data:", error);
+    throw error;
   }
 
-  if (!data.docusign_sub) redirect("/auth/connect-docusign");
+  if (!data || !data.docusign_sub) {
+    redirect("/auth/connect-docusign");
+  }
 
-  const { docusign_access_token } = data;
+  const userData: User = data as User;
+
+  let accessToken: string;
+  try {
+    accessToken = await getAccessToken(userData);
+  } catch (tokenError) {
+    console.error("Error obtaining access token:", tokenError);
+    redirect("/auth/connect-docusign");
+  }
 
   const apiClient = new docusign.ApiClient();
   apiClient.setBasePath(`${process.env.DOCUSIGN_API_BASE_PATH}/restapi`);
+  apiClient.addDefaultHeader("Authorization", `Bearer ${accessToken}`);
 
   let userInfo;
   try {
-    userInfo = await apiClient.getUserInfo(docusign_access_token);
+    userInfo = await apiClient.getUserInfo(accessToken);
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error(error.response?.data);
-    }
+    console.error("Error fetching DocuSign user info:", error);
+    throw error;
   }
 
   const accounts = userInfo.accounts.map((account: DocusignAccountInfo) => {

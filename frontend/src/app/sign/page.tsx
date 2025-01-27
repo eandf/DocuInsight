@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
+import { getAccessToken } from "@/lib/docusign";
 import docusign from "docusign-esign";
 import { RecipientViewRequest } from "docusign-esign";
 import axios from "axios";
@@ -61,7 +62,7 @@ export default async function SignPage({
     throw new Error("Report not found");
   }
 
-  const accessToken = userData.docusign_access_token;
+  const accessToken = await getAccessToken(userData);
 
   const apiClient = new docusign.ApiClient();
   apiClient.setBasePath(`${process.env.DOCUSIGN_API_BASE_PATH}/restapi`);
@@ -89,6 +90,7 @@ export default async function SignPage({
     } else {
       console.error("Unexpected error:", error);
     }
+    throw new Error("Error creating recipient view");
   }
 
   return (
@@ -119,7 +121,11 @@ export default async function SignPage({
         <ResizableHandle withHandle className="bg-slate-600" />
         <ResizablePanel defaultSize={70} minSize={20}>
           <div className="flex h-full items-center justify-center">
-            <iframe className="w-full h-full" src={recipientView?.url} />
+            {recipientView?.url ? (
+              <iframe className="w-full h-full" src={recipientView.url} />
+            ) : (
+              <p>Loading...</p>
+            )}
           </div>
         </ResizablePanel>
       </ResizablePanelGroup>

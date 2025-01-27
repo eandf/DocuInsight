@@ -19,7 +19,6 @@ export default auth(async (request) => {
     return NextResponse.next();
   }
 
-  // routes are protected by default
   return Response.redirect(new URL("/auth/sign-in", request.nextUrl.origin));
 });
 
