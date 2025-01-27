@@ -2,11 +2,6 @@ import { LoginForm } from "@/components/login-form";
 import { Disclaimer } from "@/components/disclaimer";
 
 export default function SignInPage() {
-  // const demoVideoUrl = process.env.NEXT_PUBLIC_DEMO_VIDEO_URL;
-  // if (!demoVideoUrl) {
-  //   throw new Error("Missing demo video URL");
-  // }
-
   return (
     <div className="grid min-h-svh grid-cols-1 lg:grid-cols-[1fr_2fr]">
       <div className="flex flex-col gap-4 p-6 md:p-10">

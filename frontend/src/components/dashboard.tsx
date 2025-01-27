@@ -50,6 +50,8 @@ export default function Dashboard({
   const [dialogOpen, setDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [creatingEnvelope, setCreatingEnvelope] = useState(false); // New state
+  const [successMessage, setSuccessMessage] = useState<string | null>(null); // New state for success feedback
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); // New state for error feedback
 
   const getTemplates = async (accountId: string) => {
     setLoading(true);
@@ -62,6 +64,7 @@ export default function Dashboard({
     } catch (error) {
       console.error("Failed to fetch templates:", error);
       setTemplates([]);
+      setErrorMessage("Failed to load templates. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -85,6 +88,8 @@ export default function Dashboard({
 
   const handleCreateEnvelope = async () => {
     setCreatingEnvelope(true); // Start loading
+    setErrorMessage(null); // Reset error message
+    setSuccessMessage(null); // Reset success message
     try {
       const formData = new FormData();
       formData.set("docusign_account_id", selectedAccountId as string);
@@ -103,16 +108,24 @@ export default function Dashboard({
       );
 
       if (!response.ok) {
-        console.error("Error creating envelope", response);
-        // Optionally, handle error feedback to the user here
+        const errorText = await response.text();
+        console.error("Error creating envelope", errorText);
+        setErrorMessage("Failed to create envelope. Please try again.");
       } else {
-        // Optionally, handle success feedback to the user here
+        setSuccessMessage("Envelope created and sent successfully!");
+        // Reset relevant states
+        setSelectedTemplate(null);
+        setTemplateSigners([]);
+        // Optionally, refresh templates if needed
+        if (selectedAccountId) {
+          await getTemplates(selectedAccountId);
+        }
       }
 
-      setDialogOpen(false); // Close the dialog on success
+      setDialogOpen(false); // Close the dialog on success or failure
     } catch (error) {
       console.error("Error creating envelope:", error);
-      // Optionally, handle error feedback to the user here
+      setErrorMessage("An unexpected error occurred. Please try again.");
     } finally {
       setCreatingEnvelope(false); // End loading
     }
@@ -122,10 +135,33 @@ export default function Dashboard({
     if (selectedAccountId) {
       void getTemplates(selectedAccountId);
     }
+    // Reset selected template and signers when account changes
+    setSelectedTemplate(null);
+    setTemplateSigners([]);
   }, [selectedAccountId]);
 
   return (
     <div className="space-y-4 max-w-screen-xl mx-auto p-4 pt-8">
+      {/* Success Message */}
+      {successMessage && (
+        <div
+          className="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg"
+          role="alert"
+        >
+          {successMessage}
+        </div>
+      )}
+
+      {/* Error Message */}
+      {errorMessage && (
+        <div
+          className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg"
+          role="alert"
+        >
+          {errorMessage}
+        </div>
+      )}
+
       <div className="flex w-full gap-2 items-center font-medium">
         <span>Selected Account:</span>
         <Select
@@ -153,7 +189,7 @@ export default function Dashboard({
         </div>
       )}
 
-      {!loading && templates && (
+      {!loading && templates && templates.length > 0 && (
         <div className="rounded-md border">
           <Table>
             <TableHeader>
@@ -211,6 +247,12 @@ export default function Dashboard({
               })}
             </TableBody>
           </Table>
+        </div>
+      )}
+
+      {!loading && templates && templates.length === 0 && (
+        <div className="p-4 text-sm text-muted-foreground">
+          No templates available for the selected account.
         </div>
       )}
 
@@ -279,7 +321,17 @@ export default function Dashboard({
               <AlertDialogFooter>
                 <Button
                   variant="outline"
-                  onClick={() => setDialogOpen(false)}
+                  onClick={() => {
+                    setDialogOpen(false);
+                    // Optionally, reset signers if dialog is canceled
+                    setTemplateSigners((prevSigners) =>
+                      prevSigners.map((signer) => ({
+                        ...signer,
+                        name: "",
+                        email: "",
+                      }))
+                    );
+                  }}
                   disabled={creatingEnvelope}
                 >
                   Cancel

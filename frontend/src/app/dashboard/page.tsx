@@ -8,8 +8,6 @@ import { DocusignAccountInfo } from "@/types/docusign";
 import type { User } from "@/types/database";
 import { getAccessToken } from "@/lib/docusign";
 
-// TODO: this needs a loading spinner for envelope creation
-
 export default async function DashboardPage() {
   const session = await auth();
   if (!session) {
