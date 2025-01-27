@@ -1,4 +1,21 @@
-# How To Setup Database For DocuInsight
+# DocuInsight's Database Setup
+
+## About
+
+DocuInsight uses Postgres and it's main database. This database consists of the user of two schemas and mainly 4 tables:
+
+- schema: next_auth
+
+  - accounts
+  - verification_tokens
+
+- schema: public
+  - jobs
+  - reports
+
+This database is hosted on [Supabase](https://supabase.com/) and, in this project, is mainly accessed though Supabase's API. With all that in mind, follow the steps below to easily setup DocuInsight's database on Supabase.
+
+## How To Setup Database For DocuInsight
 
 1. Create a [Supabase](https://supabase.com/) account and/or sign in
 
