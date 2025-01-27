@@ -4,6 +4,7 @@ import threading
 import traceback
 import requests
 import logging
+import copy
 import time
 import uuid
 import json
@@ -149,7 +150,6 @@ def fail_job(worker_id: str, job_id: str, error_message: str, trace_back: dict):
             .execute()
         )
 
-        logger.info(f"[{worker_id}] Result of failing job {job_id}: {response.data}")
         if not response.data:
             logger.error(
                 f"[{worker_id}] No data returned when updating job status to 'failed'."
@@ -168,9 +168,6 @@ def fail_job(worker_id: str, job_id: str, error_message: str, trace_back: dict):
                 .update({"trace_back": trace_back})
                 .eq("id", report_id)
                 .execute()
-            )
-            logger.info(
-                f"[{worker_id}] Result of updating reports.trace_back: {resp.data}"
             )
             if not resp.data:
                 logger.error(
@@ -301,6 +298,63 @@ def get_jobs_with_users_by_status():
         return []
 
 
+def get_specific_job(job_id):
+    """
+    Fetch the details for a specific job
+    """
+    global supabase
+
+    worker_id = get_worker_id()
+    try:
+        job_response = supabase.table("jobs").select("*").eq("id", job_id).execute()
+        return job_response.data[0]
+    except Exception as e:
+        logger.error(
+            f"[{worker_id}] An error occurred while fetching jobs with id '{job_id}': {e}"
+        )
+        return None
+
+
+def get_all_errored_jobs():
+    """
+    Get all jobs that have status error and the user details
+    """
+    global supabase, supabase_auth_schema_client
+
+    worker_id = get_worker_id()
+    try:
+        job_response = (
+            supabase.table("jobs").select("*").eq("status", "error").execute()
+        )
+
+        if not job_response.data:
+            return []
+
+        jobs = job_response.data
+        user_ids = list({job["user_id"] for job in jobs if "user_id" in job})
+
+        if user_ids:
+            user_response = (
+                supabase_auth_schema_client.table("users")
+                .select(
+                    "id, name, first_name, last_name, email, emailVerified, created_at, updated_at"
+                )
+                .in_("id", user_ids)
+                .execute()
+            )
+
+            if user_response.data:
+                user_map = {u["id"]: u for u in user_response.data}
+                for job in jobs:
+                    job["user"] = user_map.get(job["user_id"])
+        return jobs
+    except Exception as e:
+        logger.error(
+            f"[{worker_id}] An error occurred with get_all_errored_jobs(): {e}"
+        )
+        return []
+
+
 def get_contract_pdf(file_bucket_url: str, root_destination_dir="."):
     """
     Retrieves (downloads) the contract PDF if it's not already present.
@@ -349,7 +403,6 @@ def update_jobs_table(job_id: str, updated_values: dict):
             raise ValueError("No valid fields provided for job update.")
 
         response = supabase.table("jobs").update(filtered).eq("id", job_id).execute()
-        logger.info(f"[{worker_id}] Result of updating jobs table: {response.data}")
         if not response.data:
             raise Exception("No data returned when updating jobs table.")
         return response
@@ -372,9 +425,6 @@ def create_report(report_id: str, new_report_data: dict):
             existing_report_response = (
                 supabase.table("reports").select("*").eq("id", report_id).execute()
             )
-            logger.info(
-                f"[{worker_id}] Result of selecting existing report {report_id}: {existing_report_response.data}"
-            )
             if existing_report_response.data:
                 return existing_report_response.data[0]
 
@@ -390,7 +440,6 @@ def create_report(report_id: str, new_report_data: dict):
             raise ValueError("No valid columns provided for creating a report.")
 
         response = supabase.table("reports").insert(filtered_data).execute()
-        logger.info(f"[{worker_id}] Result of inserting new report: {response.data}")
         if not response.data:
             raise Exception("No data returned when creating new report.")
 
@@ -426,9 +475,6 @@ def update_report(report_id: str, updated_values: dict):
             .update(filtered_data)
             .eq("id", report_id)
             .execute()
-        )
-        logger.info(
-            f"[{worker_id}] Result of updating report {report_id}: {response.data}"
         )
         if not response.data:
             raise Exception("No data returned when updating report.")
@@ -570,7 +616,7 @@ def process_single_job(
         # Send emails
         final_status = "completed"
         recipients = job.get("recipients", [])
-        failed_email_counter = 0
+        failed_email_counter = []
         for recipient in recipients:
             try:
                 if not isinstance(recipient, dict):
@@ -606,7 +652,7 @@ def process_single_job(
                     f"Failed to send email to {recipient.get('email', 'unknown')}: {e}"
                 )
                 final_status = "error"
-                failed_email_counter += 1
+                failed_email_counter.append(recipient)
 
         # Mark job
         _trace("Updating job status to 'completed'.")
@@ -632,8 +678,22 @@ def process_single_job(
             )
 
         _trace(
-            f"Job {job_id} completed successfully - failed email sent count: {failed_email_counter}"
+            f"Job {job_id} completed successfully - failed email sent count: {len(failed_email_counter)}"
         )
+
+        if len(failed_email_counter) > 0:
+            current_error_value = {}
+            job_data = get_specific_job(job["id"])
+            if (
+                job_data != None
+                and type(job_data) == dict
+                and job_data.get("errors") != None
+            ):
+                current_error_value = job_data["errors"]
+            current_error_value["failed_emails"] = failed_email_counter
+            update_jobs_table(
+                job_id=job["id"], updated_values={"errors": current_error_value}
+            )
 
     except Exception as e:
         # If an error happens at any point, fail the job and store partial trace
@@ -718,15 +778,16 @@ def local_cleanup():
     pdfs_directory_path = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "pdfs/"
     )
-    for file_name in os.listdir(pdfs_directory_path):
-        file_path = os.path.join(pdfs_directory_path, file_name)
-        if os.path.isfile(file_path) and file_path.endswith(".pdf"):
-            file_date_created = file_io.get_file_creation_date(file_path)
-            if abs(file_date_created - current_epoch_seconds) >= (
-                24 * 60 * 60
-            ):  # delete files older then 24 hours
-                os.remove(file_path)
-                pdfs_removed.append(file_path)
+    if os.path.isdir(pdfs_directory_path):
+        for file_name in os.listdir(pdfs_directory_path):
+            file_path = os.path.join(pdfs_directory_path, file_name)
+            if os.path.isfile(file_path) and file_path.endswith(".pdf"):
+                file_date_created = file_io.get_file_creation_date(file_path)
+                if abs(file_date_created - current_epoch_seconds) >= (
+                    24 * 60 * 60
+                ):  # delete files older then 24 hours
+                    os.remove(file_path)
+                    pdfs_removed.append(file_path)
 
     lines_to_remove = 0
     log_file_path = os.path.join(
@@ -743,15 +804,65 @@ def local_cleanup():
 
     log_label = "[LOCAL_CLEANUP]"
     if len(pdfs_removed) > 0:
-        logger.debug(
-            f"{log_label} Removed {len(pdfs_removed)} pdfs that were created over 24 hours ago"
-        )
+        msg = f"{log_label} Removed {len(pdfs_removed)} pdfs that were created over 24 hours ago"
+        logger.debug(msg)
     if lines_to_remove > 0:
-        logger.debug(
-            f"{log_label} Trimmed top {lines_to_remove} lines from the log file."
-        )
+        msg = f"{log_label} Trimmed top {lines_to_remove} lines from the log file."
+        logger.debug(msg)
+        send_alert(msg)
 
     return
+
+
+def retry_email_sending(sender_email_address):
+    error_status_cases = get_all_errored_jobs()
+
+    logger.error(
+        f"Found {len(error_status_cases)} jobs with an 'error' status - seeing if I can try and retry emailing missed emails"
+    )
+
+    for entry in error_status_cases:
+        if (
+            type(entry.get("errors")) == dict
+            and "failed_emails" in entry.get("errors")
+            and type(entry["errors"]["failed_emails"]) == list
+        ):
+            failed_again_emails = []
+            for recipient in entry["errors"]["failed_emails"]:
+                try:
+                    mail.send_document_review_email(
+                        sender_name=entry["user"]["name"],
+                        sender_email=entry["user"]["email"],
+                        recipient_name=recipient["name"],
+                        recipient_email=[recipient["email"]],
+                        document_link=recipient["signing_url"],
+                        document_message="Please review and sign this document using DocuInsight.",
+                        signature_line=entry["user"]["name"],
+                        email_from_name="DocuInsight",
+                        from_email_address=sender_email_address,
+                        action_description="sent you a document to review and sign",
+                        button_text="REVIEW DOCUMENT",
+                    )
+                except Exception as e:
+                    new_entry = copy.deepcopy(recipient)
+                    new_entry["error_message"] = str(e)
+                    failed_again_emails.append(new_entry)
+                    pass
+
+            if len(failed_again_emails) == 0:
+                entry["errors"]["failed_emails"] = None
+                update_jobs_table(
+                    entry["id"], {"status": "completed", "errors": entry["errors"]}
+                )
+                logger.info(
+                    f"Successfully retried and sent all missed emails for job {entry['id']}"
+                )
+            else:
+                entry["errors"]["failed_emails"] = copy.deepcopy(failed_again_emails)
+                update_jobs_table(entry["id"], {"errors": entry["errors"]})
+                logger.error(
+                    f"Failed to retry send missed emails for {len(failed_again_emails)} emails for job {entry['id']}"
+                )
 
 
 if __name__ == "__main__":
@@ -785,6 +896,14 @@ if __name__ == "__main__":
         cleanup_fail_msg = f"Failed to run local file cleaner due to error: {e}"
         logger.critical(cleanup_fail_msg)
         send_alert(cleanup_fail_msg)
+
+    # run email retry logic
+    try:
+        retry_email_sending(sender_email_address)
+    except Exception as e:
+        big_root_error_msg = f"Root error with retry_email_sending() code: {e}"
+        logger.critical(big_root_error_msg)
+        send_alert(big_root_error_msg)
 
     # run main analyzer logic
     try:
