@@ -44,7 +44,7 @@ pip3 install -r requirements.txt
 To start the Analyzer locally, run:
 
 ```bash
-bash ./analyzer.sh &
+nohup ./analyzer.sh &
 ```
 
 ### 5. Checking Status
@@ -88,3 +88,7 @@ You can access your Linode instance via:
 - The [Linode Website or App](https://www.linode.com/)
 
 By following these steps, you can ensure the Analyzer is set up and running effectively, either locally or on the cloud.
+
+### Step 4: Run it
+
+Follow the same steps for running it but now do it in the pod instance of your personal computer
