@@ -41,17 +41,6 @@ export default async function SignPage({
     throw new Error("Invalid invite ID");
   }
 
-  const { data: userData, error: userError } = await supabase
-    .schema("next_auth")
-    .from("users")
-    .select("*")
-    .eq("id", jobData.user_id)
-    .single();
-
-  if (userError) {
-    throw new Error("Sender not found");
-  }
-
   const { data: reportData, error: reportError } = await supabase
     .from("reports")
     .select("*")
@@ -64,7 +53,7 @@ export default async function SignPage({
 
   const contractText = reportData.contract_content;
 
-  const accessToken = await getAccessToken(userData);
+  const accessToken = await getAccessToken(jobData.user_id);
 
   const apiClient = new docusign.ApiClient();
   apiClient.setBasePath(`${process.env.DOCUSIGN_API_BASE_PATH}/restapi`);

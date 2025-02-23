@@ -1,28 +1,42 @@
 import { createClient } from "@/utils/supabase/server";
-import type { User } from "@/types/database";
+import { auth } from "@/auth";
 
-export async function getAccessToken(userData: User): Promise<string> {
+export async function getAccessToken(userId?: string): Promise<string> {
+  if (!userId) {
+    const session = await auth();
+    if (!session) {
+      throw new Error("not authenticted");
+    }
+
+    userId = session.user?.id as string;
+  }
+
   const supabase = await createClient();
 
-  const {
-    docusign_access_token,
-    docusign_refresh_token,
-    docusign_access_token_expires_at,
-  } = userData;
+  const { data: accountData, error } = await supabase
+    .schema("next_auth")
+    .from("accounts")
+    .select("*")
+    .eq("userId", userId)
+    .single();
+
+  if (error) {
+    console.error("Error fetching Docusign account data:", error);
+    throw error;
+  }
 
   const currentTime = new Date();
 
-  if (
-    !docusign_access_token_expires_at ||
-    currentTime >= new Date(docusign_access_token_expires_at)
-  ) {
+  const { access_token, expires_at, refresh_token } = accountData;
+
+  if (!expires_at || currentTime >= new Date(expires_at)) {
     const integrationKey = process.env.DOCUSIGN_INTEGRATION_KEY!;
     const secretKey = process.env.DOCUSIGN_SECRET_KEY!;
     const combined = `${integrationKey}:${secretKey}`;
     const base64Auth = Buffer.from(combined).toString("base64");
 
     const tokenResponse = await fetch(
-      "https://account-d.docusign.com/oauth/token",
+      `${process.env.DOCUSIGN_AUTH_BASE_PATH}/oauth/token`,
       {
         method: "POST",
         headers: {
@@ -31,7 +45,7 @@ export async function getAccessToken(userData: User): Promise<string> {
         },
         body: new URLSearchParams({
           grant_type: "refresh_token",
-          refresh_token: docusign_refresh_token as string,
+          refresh_token: refresh_token as string,
         }),
       }
     );
@@ -50,16 +64,15 @@ export async function getAccessToken(userData: User): Promise<string> {
 
     const { error: tokenRefreshError } = await supabase
       .schema("next_auth")
-      .from("users")
+      .from("accounts")
       .update({
-        docusign_access_token: tokenData.access_token,
-        docusign_refresh_token:
-          tokenData.refresh_token || docusign_refresh_token,
-        docusign_access_token_expires_at: new Date(
+        access_token: tokenData.access_token,
+        refresh_token: tokenData.refresh_token || refresh_token,
+        expires_at: new Date(
           Date.now() + tokenData.expires_in * 1000
         ).toISOString(),
       })
-      .eq("id", userData.id);
+      .eq("id", userId);
 
     if (tokenRefreshError) {
       console.error(
@@ -74,5 +87,5 @@ export async function getAccessToken(userData: User): Promise<string> {
     return tokenData.access_token;
   }
 
-  return docusign_access_token as string;
+  return access_token as string;
 }

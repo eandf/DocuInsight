@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import docusign from "docusign-esign";
-import { createClient } from "@/utils/supabase/server";
 import { getAccessToken } from "@/lib/docusign";
 
 export async function GET(request: NextRequest) {
@@ -30,36 +29,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const supabase = await createClient();
-    const { data: userData, error: userError } = await supabase
-      .schema("next_auth")
-      .from("users")
-      .select("*")
-      .eq("id", session.user.id)
-      .single();
-
-    if (userError) {
-      console.error("Supabase user fetch error:", userError);
-      return NextResponse.json(
-        { error: "Failed to fetch user data" },
-        {
-          status: 500,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-    }
-
-    if (!userData) {
-      return NextResponse.json(
-        { error: "User data not found" },
-        {
-          status: 404,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-    }
-
-    const accessToken = await getAccessToken(userData);
+    const accessToken = await getAccessToken();
 
     const apiClient = new docusign.ApiClient();
     apiClient.setBasePath(`${process.env.DOCUSIGN_API_BASE_PATH}/restapi`);

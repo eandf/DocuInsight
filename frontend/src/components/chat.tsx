@@ -5,7 +5,7 @@ import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 // import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-import { ArrowUp } from "lucide-react";
+import { ArrowUp, ExternalLink } from "lucide-react";
 import type { ComponentPropsWithoutRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 
@@ -129,11 +129,13 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
                   a: ({ href, children }) => (
                     <a
                       href={href}
-                      className="text-gray-700 font-semibold hover:underline break-words"
+                      className="text-blue-600 underline hover:text-blue-800 break-words inline-flex items-center"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       {children}
+                      {/* External link icon for a visual cue */}
+                      <ExternalLink className="ml-1 h-4 w-4" />
                     </a>
                   ),
                   code: ({

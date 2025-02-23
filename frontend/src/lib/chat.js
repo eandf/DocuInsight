@@ -1,72 +1,34 @@
-import OpenAI from "openai";
+// frontend/src/lib/chat.js
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { generateMartindaleURL, tavilySearch } from "@/lib/tools"; // import your tool(s)
+import { martindaleToolDescription, searchToolDescription } from "@/lib/tools";
 
-import {
-  generateMartindaleURL,
-  generateJustiaURL,
-  tavilySearch,
-  martindaleToolDescription,
-  justiaToolDescription,
-  searchToolDescription,
-} from "./tools.js";
-
-// --- PRICING/CONFIG ---
-
-const MAIN_LLM_MODEL = "gpt-4o-mini";
-const MAIN_LLM_MODEL_TOKEN_LIMIT = 128_000;
-const ENABLE_USAGE_LOGIC = false;
-
-const client = new OpenAI();
-
-/**
- * An in-memory store of conversations.
- * Key = sessionId (string), value = array of {role, content, visible?, name?}
- */
-const sessionStore = {};
-
-const tools = [
-  martindaleToolDescription,
-  searchToolDescription,
-  justiaToolDescription,
-];
-
+// Define the available tool functions.
 const availableFunctions = {
-  generateMartindaleURL,
   tavilySearch,
-  generateJustiaURL,
+  generateMartindaleURL,
 };
 
-/** Approximate token usage (word-based) */
-function estimateTokens(text) {
-  const wordCount = text.trim().split(/\s+/).length;
-  return Math.round(wordCount * 1.33);
-}
+// --- Gemini Model Settings ---
+const MODEL_NAME = "gemini-2.0-flash";
 
-/** Ensure we don't exceed 85% of token limit */
-function manageTokenLimit(sessionId) {
-  const conversation = sessionStore[sessionId];
-  if (!conversation) return;
-  while (
-    estimateTokens(JSON.stringify(conversation)) >
-    Math.floor(MAIN_LLM_MODEL_TOKEN_LIMIT * 0.85)
-  ) {
-    if (conversation.length > 1) {
-      conversation.splice(1, 1); // remove earliest non-system message
-    } else {
-      break;
-    }
-  }
-}
+// In-memory conversation store.
+const sessionStore = {};
 
 /**
- * Retrieves or initializes the conversation for a given sessionId.
- * We start with a hidden system message if none exists.
+ * Initializes or retrieves the conversation for a given session.
  */
 function getOrInitConversation(sessionId, userLocation, contractText) {
   if (!sessionStore[sessionId]) {
     sessionStore[sessionId] = [
       {
         role: "system",
-        content: `You are an AI assistant that helps users find legal resources. When using the Martindale URL generator, always explain what the URL will help them find and provide context about the search results they can expect. Make sure to format the URL as a clickable link and encourage users to review multiple attorneys to find the best fit for their needs. KEEP YOUR ANSWERS SHORT AND TOO THE POINTS. Also NOTE, the user is located at: ${userLocation}. The user is getting ready to sign the contract included below. Help answer any questions they may have about the contract.
+        content: `You are an AI assistant that helps users find legal resources. When using the Martindale URL generator, always explain what the URL will help them find and provide context about the search results they can expect. Make sure to format the URL as a clickable link and encourage users to review multiple attorneys to find the best fit for their needs. KEEP YOUR ANSWERS SHORT AND TOO THE POINT. Also NOTE, the user is located at: ${userLocation}. The user is getting ready to sign the contract included below. Help answer any questions they may have about the contract.
+
+
+        NOTES:
+
+        - ANY TIME you include a URL in your response, use markdown to format it as link with anchor text. Make the anchor text short but descriptive.
 
         CONTRACT TEXT:
         ${contractText}`,
@@ -77,94 +39,132 @@ function getOrInitConversation(sessionId, userLocation, contractText) {
   return sessionStore[sessionId];
 }
 
+// content: `
+// You are an AI assistant that helps users understand their contracts and find legal resources. You also provide general advice when needed, but do not give legal advice. If users request specific legal advice, recommend they consult a lawyer.
+
+// Your tasks include:
+
+// 1. Explaining legal terms and clauses in contracts.
+// 2. Providing access to and information from reliable legal sources.
+// 3. Sharing the latest legal news and updates, when relevant.
+// 4. Always responding in clear, concise markdown format.
+// 5. Use descriptive text for any hyperlinks in markdown, rather than displaying the URL itself.
+
+// Keep your answers short and to the point and make sure all your responses are in markdown format, with any links always styled as short descriptive hyperlinks.
+
+// When using the generateMartindaleURL tool, include the returned url in your message. DO NOT modify the URL at all or include any other martindale.com URLs in the message.
+
+// User location: ${userLocation}
+// Contract text:
+// ${contractText}
+
+// Keep all answers short, to the point, and formatted in markdown.`,
+
+// - If the user is asking for help finding a lawyer that speaks a particular language, use generateJustiaURL instead of generateMartindaleURL
+
 /**
- * Calls OpenAI with streaming turned on, reading partial data as it arrives.
- *
- * @param {*} conversation An array of messages
- * @param {*} onToken A callback that receives partial text as each token arrives
- * @returns {Promise<{responseText: string, toolCalls: any[]}>}
+ * Processes the conversation through Gemini.
+ * If the response contains a tool call, executes it and re-prompts the model.
  */
-async function processCompletionStream(conversation, onToken) {
-  // Convert our conversation to OpenAI’s format
-  const openAIMessages = conversation.map((msg) => ({
-    role: msg.role,
-    content:
-      typeof msg.content === "string"
-        ? msg.content
-        : JSON.stringify(msg.content),
-    ...(msg.name && { name: msg.name }),
-  }));
+async function processGeminiChat(conversation) {
+  // Initialize Gemini client and model.
+  const geminiClient = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+  const model = geminiClient.getGenerativeModel({
+    model: MODEL_NAME,
+    tools: [
+      {
+        functionDeclarations: [
+          martindaleToolDescription.function,
+          searchToolDescription.function,
+          justiaToolDescription.function,
+        ],
+      },
+    ],
+    generationConfig: { temperature: 0.5 },
+  });
+  const chat = model.startChat();
 
-  const modelCallParams = {
-    model: MAIN_LLM_MODEL,
-    messages: openAIMessages,
-    tools,
-    stream: true,
-  };
-
-  if (ENABLE_USAGE_LOGIC) {
-    modelCallParams["stream_options"] = { include_usage: true };
+  let lastResponse = null;
+  // Send all conversation messages sequentially.
+  for (const msg of conversation) {
+    if (msg.role === "function") {
+      // For a function message, send it as a function response.
+      lastResponse = await chat.sendMessage([
+        {
+          functionResponse: {
+            name: msg.name,
+            response: msg.content, // msg.content should be an object (proto Struct)
+          },
+        },
+      ]);
+    } else {
+      lastResponse = await chat.sendMessage([msg.content]);
+    }
   }
 
-  let responseText = "";
-  const toolCalls = [];
-
-  const stream = await client.chat.completions.create(modelCallParams);
-  try {
-    for await (const chunk of stream) {
-      if (chunk.usage) {
-        totalInputTokens += chunk.usage.prompt_tokens || 0;
-        totalOutputTokens += chunk.usage.completion_tokens || 0;
+  // Inspect the last response for a function call.
+  const parts = lastResponse?.response?.candidates?.[0]?.content?.parts || [];
+  const functionCallPart = parts.find((part) => part.functionCall);
+  if (functionCallPart) {
+    const { name, args } = functionCallPart.functionCall;
+    if (availableFunctions[name]) {
+      console.log(`Calling tool "${name}" with args:`, args);
+      let toolResult;
+      try {
+        toolResult = await availableFunctions[name](args);
+        console.log(`Tool "${name}" returned:`, toolResult);
+      } catch (error) {
+        console.error("Error executing tool call:", error);
+        toolResult = { error: "Tool execution failed" };
       }
-
-      if (chunk.choices[0]?.delta?.content) {
-        const partial = chunk.choices[0].delta.content;
-        responseText += partial;
-
-        onToken(partial);
+      // Wrap string results into an object.
+      let structuredResult = toolResult;
+      if (typeof toolResult === "string") {
+        structuredResult = { url: toolResult };
       }
-
-      if (chunk.choices[0]?.delta?.tool_calls) {
-        const deltaToolCalls = chunk.choices[0].delta.tool_calls;
-        for (const toolCall of deltaToolCalls) {
-          if (toolCalls.length <= toolCall.index) {
-            toolCalls.push({
-              id: "",
-              type: "function",
-              function: { name: "", arguments: "" },
-            });
-          }
-          const tc = toolCalls[toolCall.index];
-          if (toolCall.id) tc.id += toolCall.id;
-          if (toolCall.function?.name) {
-            tc.function.name += toolCall.function.name;
-          }
-          if (toolCall.function?.arguments) {
-            tc.function.arguments += toolCall.function.arguments;
-          }
+      // Immediately send the function response message.
+      const fnRespMsg = await chat.sendMessage([
+        {
+          functionResponse: {
+            name,
+            response: structuredResult, // Must be an object with the same number of parts.
+          },
+        },
+      ]);
+      // Extract the final assistant answer.
+      let finalText = "";
+      const parts2 = fnRespMsg?.response?.candidates?.[0]?.content?.parts || [];
+      for (const part of parts2) {
+        if (part.text) {
+          finalText += part.text;
         }
       }
+      return finalText;
+    } else {
+      console.error(`No available function for: ${name}`);
+      return "Error: Function not available.";
     }
-    return { responseText, toolCalls };
-  } catch (err) {
-    console.error("Error streaming from OpenAI:", err);
-    throw err;
+  } else {
+    // No function call in the response; just accumulate text parts.
+    let finalText = "";
+    for (const part of parts) {
+      if (part.text) {
+        finalText += part.text;
+      }
+    }
+    return finalText;
   }
 }
 
 /**
- * handleUserMessageStream(sessionId, userInput, pushChunk)
+ * Main function called by your API route.
+ * It appends the user message, processes the conversation, and then sends the complete response.
  *
- * - Called once per new user message.
- * - We append the user’s message to the conversation.
- * - We do an OpenAI streaming pass. As tokens arrive, we call `pushChunk(...)` to send them to the client.
- * - If the response triggers a function call, we:
- *    1) Stop streaming further from that pass (it's over).
- *    2) Execute the function call.
- *    3) Re-run the model with a hidden user message describing the tool result.
- *    4) Stream that second pass, also chunk by chunk to the client (continuing the same stream).
- *    5) Repeat if multiple function calls occur.
- * - Return once no more function calls are requested.
+ * @param {string} sessionId - The chat session ID.
+ * @param {string} userInput - The new message from the user.
+ * @param {string|null} userLocation - The user's location.
+ * @param {string} contractText - The contract text to include in the context.
+ * @param {function} pushChunk - Callback to send the final response to the client.
  */
 export async function handleUserMessageStream(
   sessionId,
@@ -173,75 +173,44 @@ export async function handleUserMessageStream(
   contractText,
   pushChunk
 ) {
+  // Retrieve or initialize conversation history.
   const conversation = getOrInitConversation(
     sessionId,
     userLocation,
     contractText
   );
 
+  // Append the new user message.
   conversation.push({
     role: "user",
     content: userInput,
     visible: true,
   });
 
-  manageTokenLimit(sessionId);
+  // Process conversation with Gemini.
+  const finalText = await processGeminiChat(conversation);
 
-  let finalAssistantText = "";
+  // Append the assistant's final response.
+  conversation.push({
+    role: "assistant",
+    content: finalText,
+    visible: true,
+  });
 
-  while (true) {
-    const { responseText, toolCalls } = await processCompletionStream(
-      conversation,
-      (partial) => {
-        pushChunk(partial);
+  await new Promise((resolve) => {
+    let index = 0;
+    const chunkSize = 10; // characters per chunk
+    const interval = setInterval(() => {
+      if (index < finalText.length) {
+        pushChunk(finalText.substring(index, index + chunkSize));
+        index += chunkSize;
+      } else {
+        clearInterval(interval);
+        console.log();
+        resolve();
       }
-    );
+    }, 50);
+  });
 
-    finalAssistantText = responseText;
-
-    conversation.push({
-      role: "assistant",
-      content: responseText,
-      visible: true,
-    });
-
-    if (!toolCalls || toolCalls.length === 0) {
-      break;
-    }
-
-    for (const call of toolCalls) {
-      const fnName = call.function.name.trim();
-      if (availableFunctions[fnName]) {
-        try {
-          const parsedArgs = JSON.parse(call.function.arguments);
-          const result = await availableFunctions[fnName](parsedArgs);
-
-          conversation.push({
-            role: "function",
-            name: fnName,
-            content: JSON.stringify(result),
-            visible: false,
-          });
-
-          const metaPrompt = `
-            As the user input was: ${userInput}
-            And the tool called was: ${JSON.stringify(call.function)}
-            Here is the tool response: ${JSON.stringify(result)}
-            Now provide the final answer to the user,
-            considering the tool's result.
-          `;
-
-          conversation.push({
-            role: "user",
-            content: metaPrompt,
-            visible: false,
-          });
-        } catch (err) {
-          console.error("Error executing tool call:", err);
-        }
-      }
-    }
-  }
-
-  return finalAssistantText;
+  return finalText;
 }

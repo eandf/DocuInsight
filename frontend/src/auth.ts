@@ -1,30 +1,32 @@
 import NextAuth from "next-auth";
 import { SupabaseAdapter } from "@auth/supabase-adapter";
-import Resend from "next-auth/providers/resend";
+import type { Provider } from "next-auth/providers";
 
 const supabaseAdapter = SupabaseAdapter({
-  url: process.env.NEXT_PUBLIC_SUPABASE_PROJECT_URL as string,
-  secret: process.env.SUPABASE_SERVICE_ROLE_KEY as string,
+  url: process.env.NEXT_PUBLIC_SUPABASE_PROJECT_URL ?? "",
+  secret: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
 });
 
+const DocusignProvider: Provider = {
+  id: "docusign",
+  name: "Docusign",
+  type: "oidc",
+  clientId: process.env.DOCUSIGN_INTEGRATION_KEY ?? "",
+  clientSecret: process.env.DOCUSIGN_SECRET_KEY ?? "",
+  issuer: `${process.env.DOCUSIGN_AUTH_BASE_PATH}/`,
+  authorization: {
+    params: {
+      scope: "openid profile email signature extended",
+    },
+  },
+};
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  providers: [
-    Resend({
-      from: process.env.AUTH_RESEND_EMAIL,
-    }),
-  ],
+  providers: [DocusignProvider],
   pages: {
     signIn: "/auth/sign-in",
     verifyRequest: "/auth/verify",
   },
   adapter: supabaseAdapter,
-  session: { strategy: "jwt" },
-  callbacks: {
-    async session({ session, token }) {
-      if (session.user && token.sub) {
-        session.user.id = token.sub;
-      }
-      return session;
-    },
-  },
+  session: { strategy: "database" },
 });

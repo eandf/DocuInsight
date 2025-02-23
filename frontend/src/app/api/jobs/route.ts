@@ -41,35 +41,7 @@ export async function POST(request: NextRequest) {
 
     const supabase = await createClient();
 
-    const { data: userData, error: userError } = await supabase
-      .schema("next_auth")
-      .from("users")
-      .select("*")
-      .eq("id", userId)
-      .single();
-
-    if (userError) {
-      console.error("Supabase user fetch error:", userError);
-      return NextResponse.json(
-        { error: "Failed to fetch user data" },
-        {
-          status: 500,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-    }
-
-    if (!userData) {
-      return NextResponse.json(
-        { error: "User data not found" },
-        {
-          status: 404,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-    }
-
-    const docusignAccessToken = await getAccessToken(userData);
+    const docusignAccessToken = await getAccessToken();
 
     const docusignApi = new docusign.ApiClient();
     docusignApi.setBasePath(`${process.env.DOCUSIGN_API_BASE_PATH}/restapi`);
