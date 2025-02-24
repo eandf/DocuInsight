@@ -34,6 +34,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react"; // Importing Loader for spinner
+import FileUploadDialog from "@/components/file-upload-dialog";
 
 export default function Dashboard({
   accounts,
@@ -162,24 +163,27 @@ export default function Dashboard({
         </div>
       )}
 
-      <div className="flex w-full gap-2 items-center font-medium">
-        <span>Selected Account:</span>
-        <Select
-          value={selectedAccountId || ""}
-          onValueChange={(value) => setSelectedAccountId(value)}
-          disabled={loading || creatingEnvelope} // Disable select during loading or creation
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select account" />
-          </SelectTrigger>
-          <SelectContent>
-            {accounts.map((account) => (
-              <SelectItem key={account.accountId} value={account.accountId}>
-                {account.accountName}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <div className="flex">
+        <div className="flex w-full gap-2 items-center font-medium">
+          <span>Selected Account:</span>
+          <Select
+            value={selectedAccountId || ""}
+            onValueChange={(value) => setSelectedAccountId(value)}
+            disabled={loading || creatingEnvelope}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select account" />
+            </SelectTrigger>
+            <SelectContent>
+              {accounts.map((account) => (
+                <SelectItem key={account.accountId} value={account.accountId}>
+                  {account.accountName}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <FileUploadDialog />
       </div>
 
       {loading && (
