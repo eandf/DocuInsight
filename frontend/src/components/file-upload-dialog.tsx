@@ -23,7 +23,11 @@ import {
 } from "@/components/ui/form";
 import { AlertCircle, Upload } from "lucide-react";
 
-export default function FileUploadUploadDialog() {
+export default function FileUploadUploadDialog({
+  onClose,
+}: {
+  onClose: (file: File | null) => void;
+}) {
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -31,8 +35,6 @@ export default function FileUploadUploadDialog() {
   const form = useForm();
 
   const onSubmit = (data: any) => {
-    // Handle file upload here
-    console.log("File to upload:", file);
     setIsOpen(false); // Close the dialog after submission
   };
 
@@ -118,7 +120,11 @@ export default function FileUploadUploadDialog() {
               )}
             />
             <AlertDialogFooter>
-              <Button type="submit" className="w-full">
+              <Button
+                type="submit"
+                className="w-full"
+                onClick={() => onClose(file)}
+              >
                 Upload
               </Button>
             </AlertDialogFooter>

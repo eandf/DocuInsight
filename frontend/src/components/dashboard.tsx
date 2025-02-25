@@ -35,6 +35,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react"; // Importing Loader for spinner
 import FileUploadDialog from "@/components/file-upload-dialog";
+import { uploadDocument } from "@/actions/upload-document";
 
 export default function Dashboard({
   accounts,
@@ -183,7 +184,7 @@ export default function Dashboard({
             </SelectContent>
           </Select>
         </div>
-        <FileUploadDialog />
+        <FileUploadDialog onClose={uploadDocument} />
       </div>
 
       {loading && (
