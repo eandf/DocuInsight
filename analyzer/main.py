@@ -192,6 +192,7 @@ def create_signed_url(bucket_name: str, file_path: str, expires_in=60):
     Creates a signed URL from Supabase Storage.
     This method returns a dict-like object with the "signedURL" key.
     """
+
     worker_id = get_worker_id()
     response = supabase.storage.from_(bucket_name).create_signed_url(
         file_path, expires_in
@@ -366,6 +367,7 @@ def get_contract_pdf(file_bucket_url: str, root_destination_dir="."):
         bucket_name = url_parts[-3]
         file_path = "/".join(url_parts[-2:])
         destination_path = os.path.join(root_destination_dir, url_parts[-1])
+        destination_path = destination_path.split("?")[0]
         if not os.path.exists(destination_path):
             retry_operation(
                 operation_name="download_bucket_file",
@@ -623,6 +625,25 @@ def process_single_job(
                     raise ValueError(f"Recipient data is not a dictionary: {recipient}")
 
                 def send_email_and_return():
+                    # NOTE: account for case where the user is analyzing their own contract and is not sending it to anyone
+                    if type(recipient) == dict and list(recipient.keys()) == [
+                        "name",
+                        "email",
+                        "signing_url",
+                    ]:
+                        return mail.send_personal_doc_analysis_email(
+                            user_name=recipient["name"],
+                            user_email=recipient["email"],
+                            document_link=recipient["signing_url"],
+                            email_from_name="DocuInsight",
+                            from_email_address=sender_email_address,
+                            document_message="We've successfully analyzed your uploaded document. Click below to view the results!",
+                            analysis_headline_text="Your Document Analysis is Ready!",
+                            button_text="VIEW ANALYSIS",
+                            signature_line="The DocuInsight Team",
+                            full_custom_override_subject_text="Your Document Analysis Results Are Here!",
+                        )
+
                     return mail.send_document_review_email(
                         sender_name=job["user"]["name"],
                         sender_email=job["user"]["email"],
@@ -644,7 +665,7 @@ def process_single_job(
                     delay=2,
                 )
                 _trace(
-                    f"Email successfully sent to {recipient['email']}.",
+                    f"Email successfully sent to {recipient['email']}",
                     data=email_resp,
                 )
             except Exception as e:
@@ -819,7 +840,7 @@ def retry_email_sending(sender_email_address):
 
     if len(error_status_cases) > 0:
         logger.error(
-            f"Found {len(error_status_cases)} jobs with an 'error' status - seeing if I can try and retry emailing missed emails"
+            f"Found {len(error_status_cases)} jobs with an 'error' status  seeing if I can try and retry emailing missed emails"
         )
 
     for entry in error_status_cases:
@@ -873,6 +894,8 @@ if __name__ == "__main__":
     small_model_name = "gpt-4o-mini"
     last_cost_values_set_date = "January 20, 2025"
     sender_email_address = "noreply@docuinsight.ai"
+
+    # last updated on 2-25-2025
     model_prices = {
         "openai": {
             "gpt-4o": {"input": 2.5, "output": 10},
@@ -880,6 +903,7 @@ if __name__ == "__main__":
             "o1": {"input": 15, "output": 60},
             "o1-preview": {"input": 15, "output": 60},
             "o1-mini": {"input": 3, "output": 12},
+            "o3-mini": {"input": 1.10, "output": 4.40},
         }
     }
 
@@ -898,13 +922,14 @@ if __name__ == "__main__":
         logger.critical(cleanup_fail_msg)
         send_alert(cleanup_fail_msg)
 
-    # run email retry logic
-    try:
-        retry_email_sending(sender_email_address)
-    except Exception as e:
-        big_root_error_msg = f"Root error with retry_email_sending() code: {e}"
-        logger.critical(big_root_error_msg)
-        send_alert(big_root_error_msg)
+    # # TODO: (2-25-2025) as of this feature has been deprecated due to changes and needs further refinement!
+    # # run email retry logic
+    # try:
+    #     retry_email_sending(sender_email_address)
+    # except Exception as e:
+    #     big_root_error_msg = f"Root error with retry_email_sending() code: {e}"
+    #     logger.critical(big_root_error_msg)
+    #     send_alert(big_root_error_msg)
 
     # run main analyzer logic
     try:
