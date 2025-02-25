@@ -176,7 +176,7 @@ CREATE TABLE public.jobs (
     user_id UUID NOT NULL,                   -- maps to sender_user_id (FK to next_auth.users)
     docu_sign_account_id VARCHAR(255),       -- maps to account_id
     docu_sign_envelope_id VARCHAR(255),      -- maps to envelope_id
-    bucket_url VARCHAR(255),
+    bucket_url TEXT,
     file_name VARCHAR(255),
     file_hash VARCHAR(255),
     recipients JSONB, -- holds multiple signers: [ { signer_name, signer_email, signer_client_user_id, invite_id }, ... ]
