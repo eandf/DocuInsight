@@ -39,11 +39,11 @@ export async function uploadDocument(file: File | null) {
     throw new Error("failed to upload document to storage");
   }
 
-  const { data: publicURLData } = supabase.storage
+  const { data: signedURLData } = await supabase.storage
     .from("contracts")
-    .getPublicUrl(storageFilePath);
+    .createSignedUrl(storageFilePath, 3600);
 
-  const bucketURL = publicURLData.publicUrl;
+  const bucketURL = signedURLData?.signedUrl;
 
   const jobId = uuidv4();
 
