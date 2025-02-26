@@ -57,7 +57,7 @@ export async function uploadDocument(file: File | null) {
           {
             name: user.name,
             email: user.email,
-            signing_url: `https://www.docuinsight.ai/sign/?job=${jobId}`,
+            signing_url: `${process.env.NEXT_PUBLIC_BASE_URL}/sign/?job=${jobId}`,
           },
         ],
         file_name: fileName,
