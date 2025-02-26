@@ -15,3 +15,4 @@ analyzer/pdfs/*
 .env
 *.log
 nohup.out
+pointers/
