@@ -1,9 +1,7 @@
 "use client";
 
-import type React from "react";
-
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -23,6 +21,10 @@ import {
 } from "@/components/ui/form";
 import { AlertCircle, Upload } from "lucide-react";
 
+interface FormValues {
+  file?: File | null;
+}
+
 export default function FileUploadUploadDialog({
   onClose,
 }: {
@@ -32,9 +34,10 @@ export default function FileUploadUploadDialog({
   const [isDragging, setIsDragging] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  const form = useForm();
+  const form = useForm<FormValues>();
 
-  const onSubmit = (data: any) => {
+  // If you need the submitted data, implement logic here
+  const onSubmit: SubmitHandler<FormValues> = () => {
     setIsOpen(false); // Close the dialog after submission
   };
 
@@ -84,7 +87,7 @@ export default function FileUploadUploadDialog({
             <FormField
               control={form.control}
               name="file"
-              render={({ field: { onChange, ...field } }) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Upload File</FormLabel>
                   <FormControl>
@@ -100,14 +103,21 @@ export default function FileUploadUploadDialog({
                         <input
                           id="file-upload"
                           type="file"
+                          className="hidden"
+                          // Spread the rest of the field props, but exclude "value"
+                          {...{
+                            ...field,
+                            value: undefined, // or delete `value` entirely
+                          }}
                           onChange={(e) => {
-                            if (e.target.files && e.target.files[0]) {
+                            // First call react-hook-form's onChange to update form state
+                            field.onChange(e);
+
+                            // Then do your custom logic
+                            if (e.target.files?.[0]) {
                               handleFileChange(e.target.files[0]);
                             }
                           }}
-                          className="hidden"
-                          {...field}
-                          value={undefined}
                         />
                         <Upload className="mx-auto h-12 w-12 text-gray-400" />
                         <p className="mt-2 text-sm text-gray-600">
