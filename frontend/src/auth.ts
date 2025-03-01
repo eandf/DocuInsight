@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import { SupabaseAdapter } from "@auth/supabase-adapter";
 import type { Provider } from "next-auth/providers";
+import Resend from "next-auth/providers/resend";
 
 const supabaseAdapter = SupabaseAdapter({
   url: process.env.NEXT_PUBLIC_SUPABASE_PROJECT_URL ?? "",
@@ -21,8 +22,12 @@ const DocusignProvider: Provider = {
   },
 };
 
+const ResendProvider = Resend({
+  from: process.env.AUTH_RESEND_EMAIL,
+});
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  providers: [DocusignProvider],
+  providers: [DocusignProvider, ResendProvider],
   pages: {
     signIn: "/auth/sign-in",
     verifyRequest: "/auth/verify",

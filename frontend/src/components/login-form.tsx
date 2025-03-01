@@ -12,7 +12,7 @@ export function LoginForm({
 }: React.ComponentPropsWithoutRef<"form">) {
   const [isPending, startTransition] = useTransition();
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const signInWithDocusign = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     startTransition(() => {
@@ -21,21 +21,23 @@ export function LoginForm({
   };
 
   return (
-    <form
-      className={cn("flex flex-col gap-6", className)}
-      {...props}
-      onSubmit={handleSubmit}
-    >
-      <Button type="submit" className="w-full" disabled={isPending}>
-        {isPending ? (
-          <>
-            <Spinner className="mr-2 h-4 w-4" />
-            Signing In...
-          </>
-        ) : (
-          "Sign in with Docusign"
-        )}
-      </Button>
-    </form>
+    <div className="flex flex-col gap-6 w-64">
+      <form
+        className={cn("flex flex-col gap-6", className)}
+        {...props}
+        onSubmit={signInWithDocusign}
+      >
+        <Button type="submit" className="w-full" disabled={isPending}>
+          {isPending ? (
+            <>
+              <Spinner className="mr-2 h-4 w-4" />
+              Signing In...
+            </>
+          ) : (
+            "Sign in with Docusign"
+          )}
+        </Button>
+      </form>
+    </div>
   );
 }
