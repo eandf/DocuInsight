@@ -19,7 +19,7 @@ import {
   FormItem,
   FormLabel,
 } from "@/components/ui/form";
-import { AlertCircle, Upload } from "lucide-react";
+import { AlertCircle, Upload, X } from "lucide-react";
 
 interface FormValues {
   file?: File | null;
@@ -71,6 +71,16 @@ export default function FileUploadUploadDialog({
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent className="sm:max-w-[425px]">
+        {/* <AlertDialogContent className="relative sm:max-w-[425px]"> */}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setIsOpen(false)}
+          className="absolute top-2 right-2"
+        >
+          <X className="h-4 w-4" />
+        </Button>
+
         <AlertDialogHeader>
           <AlertDialogTitle className="flex items-center gap-2">
             <AlertCircle className="h-5 w-5" />
