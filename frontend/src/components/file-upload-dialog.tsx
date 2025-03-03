@@ -67,7 +67,7 @@ export default function FileUploadUploadDialog({
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogTrigger asChild>
         <Button variant="outline" onClick={() => setIsOpen(true)}>
-          Upload File
+          Upload Document
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent className="sm:max-w-[425px]">

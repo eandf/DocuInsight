@@ -1,9 +1,10 @@
 import { auth } from "@/auth";
 import Navbar from "@/components/navbar";
-import docusign from "docusign-esign";
-import Dashboard from "@/components/dashboard";
-import { DocusignAccountInfo } from "@/types/docusign";
-import { getAccessToken } from "@/lib/docusign";
+import { createClient } from "@/utils/supabase/server";
+import FileUploadDialog from "@/components/file-upload-dialog";
+import { uploadDocument } from "@/actions/upload-document";
+import JobTable from "@/components/job-table";
+import EnvelopeSendDialog from "@/components/envelope-send-dialog";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -17,29 +18,29 @@ export default async function DashboardPage() {
     );
   }
 
-  // TODO: error handling
-  const accessToken = await getAccessToken();
+  const supabase = await createClient();
+  const { data: jobsData, error: getJobsError } = await supabase
+    .schema("public")
+    .from("jobs")
+    .select("*")
+    .eq("user_id", session.user?.id);
 
-  const apiClient = new docusign.ApiClient();
-  apiClient.setBasePath(`${process.env.DOCUSIGN_API_BASE_PATH}/restapi`);
-  apiClient.addDefaultHeader("Authorization", `Bearer ${accessToken}`);
-
-  let userInfo;
-  try {
-    userInfo = await apiClient.getUserInfo(accessToken);
-  } catch (error) {
-    console.error("Error fetching DocuSign user info:", error);
-    throw error;
+  if (getJobsError) {
+    console.error(getJobsError);
+    throw new Error("Failed to get jobs");
   }
-
-  const accounts = userInfo.accounts.map((account: DocusignAccountInfo) => {
-    return { ...account };
-  });
 
   return (
     <>
       <Navbar />
-      <Dashboard accounts={accounts} />
+      <div className="space-y-4 max-w-screen-xl mx-auto p-4 pt-8">
+        <div className="flex gap-4 items-center">
+          <span className="text-xl font-medium mr-auto">Reports</span>
+          <FileUploadDialog onClose={uploadDocument} />
+          <EnvelopeSendDialog />
+        </div>
+        <JobTable jobs={jobsData} />
+      </div>
     </>
   );
 }
