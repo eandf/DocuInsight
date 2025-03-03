@@ -17,10 +17,10 @@ export function LoginForm({
 }: React.ComponentPropsWithoutRef<"form">) {
   const [isPending, startTransition] = useTransition();
   const [email, setEmail] = React.useState("");
-  const [emailPlaceholder, setEmailPlaceholder] = React.useState("your@amazing.com"); // Default placeholder
+  const [emailPlaceholder, setEmailPlaceholder] = React.useState("your@ready.com");
 
   React.useEffect(() => {
-    setEmailPlaceholder(getRandomEmailPlaceholder()); // Set a random placeholder after hydration
+    setEmailPlaceholder(getRandomEmailPlaceholder());
   }, []);
 
   const handleDocusignSignIn = (event: React.FormEvent<HTMLFormElement>) => {
