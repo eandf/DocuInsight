@@ -1,6 +1,7 @@
 import { auth, signOut } from "@/auth";
 import { Button, buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
+import Image from "next/image";
 
 export default async function Navbar() {
   const session = await auth();
@@ -8,9 +9,19 @@ export default async function Navbar() {
   return (
     <div className="w-full border-b">
       <nav className="flex px-4 py-2 items-center justify-between max-w-screen-xl mx-auto h-16">
-        <Link className="text-2xl font-medium" href="/">
-          DocuInsight
-        </Link>
+        <div className="flex justify-center gap-2 md:justify-start items-center">
+          <Image
+            src="/logo.png"
+            alt=""
+            width="64"
+            height="64"
+            className="h-8 w-auto"
+          />
+          <Link className="text-2xl font-medium" href="/">
+            DocuInsight
+          </Link>
+        </div>
+
         <ul className="flex gap-8">
           <li>
             <a

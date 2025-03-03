@@ -1,13 +1,21 @@
 import { LoginForm } from "@/components/login-form";
 import { Disclaimer } from "@/components/disclaimer";
 import { ExternalLink } from "lucide-react";
+import Image from "next/image";
 
 export default function SignInPage() {
   return (
     <div className="grid min-h-svh grid-cols-1 lg:grid-cols-[1fr_2fr]">
       <div className="flex flex-col gap-4 p-6 md:p-10">
-        <div className="flex justify-center gap-2 md:justify-start">
-          <a href="#" className="flex items-center gap-2 text-2xl font-medium">
+        <div className="flex justify-center gap-2 md:justify-start items-center">
+          <Image
+            src="/logo.png"
+            alt=""
+            width="64"
+            height="64"
+            className="h-12 w-auto"
+          />
+          <a href="#" className="flex items-center gap-2 text-4xl font-medium">
             DocuInsight
           </a>
         </div>
