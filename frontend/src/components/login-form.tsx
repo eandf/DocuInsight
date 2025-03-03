@@ -9,6 +9,7 @@ import { signInAction } from "@/actions/auth";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
+import { getRandomEmailPlaceholder } from "@/lib/email-placeholder";
 
 export function LoginForm({
   className,
@@ -48,7 +49,7 @@ export function LoginForm({
             <Input
               id="email"
               type="email"
-              placeholder="m@example.com"
+              placeholder={getRandomEmailPlaceholder()}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required

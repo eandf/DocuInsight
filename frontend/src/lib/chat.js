@@ -76,7 +76,6 @@ async function processGeminiChat(conversation) {
         functionDeclarations: [
           martindaleToolDescription.function,
           searchToolDescription.function,
-          justiaToolDescription.function,
         ],
       },
     ],
