@@ -38,8 +38,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     signIn: async ({ profile, account }) => {
       if (profile && account && account.provider === "docusign") {
-        const now = new Date().toISOString();
-
         const supabase = await createClient();
 
         const { data, error } = await supabase
