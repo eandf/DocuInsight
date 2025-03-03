@@ -1,5 +1,5 @@
 // frontend/src/lib/chat.js
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import OpenAI from "openai";
 import { generateMartindaleURL, tavilySearch } from "@/lib/tools"; // import your tool(s)
 import { martindaleToolDescription, searchToolDescription } from "@/lib/tools";
 
@@ -9,22 +9,57 @@ const availableFunctions = {
   generateMartindaleURL,
 };
 
-// --- Gemini Model Settings ---
-const MODEL_NAME = "gemini-2.0-flash";
+// --- OpenAI Model Settings ---
+const MODEL_NAME = "gpt-4o-mini";
+const MODEL_TOKEN_LIMIT = 128_000;
 
 // In-memory conversation store.
 const sessionStore = {};
 
 /**
+ * Estimate token count based on text length
+ * This is a rough approximation - 1 token is roughly 4 characters or 3/4 of a word
+ */
+function estimateTokens(text) {
+  const wordCount = text.trim().split(/\s+/).length;
+  return Math.round(wordCount * 1.33);
+}
+
+/**
+ * Ensure conversation doesn't exceed token limit
+ * Removes oldest messages first (except system message)
+ */
+function manageTokenLimit(sessionId) {
+  const conversation = sessionStore[sessionId];
+  if (!conversation) return;
+  
+  // Keep removing messages until we're under 85% of the token limit
+  while (
+    estimateTokens(JSON.stringify(conversation)) >
+    Math.floor(MODEL_TOKEN_LIMIT * 0.85)
+  ) {
+    if (conversation.length > 1) {
+      // Remove the second message (first after system message)
+      conversation.splice(1, 1);
+    } else {
+      break;
+    }
+  }
+}
+
+/**
  * Initializes or retrieves the conversation for a given session.
  */
 function getOrInitConversation(sessionId, userLocation, contractText) {
+  // Get current UTC time in the requested format
+  const now = new Date();
+  const utcTime = now.toISOString().replace('T', ' ').substring(0, 16) + ' UTC';
+  
   if (!sessionStore[sessionId]) {
     sessionStore[sessionId] = [
       {
         role: "system",
-        content: `You are an AI assistant that helps users find legal resources. When using the Martindale URL generator, always explain what the URL will help them find and provide context about the search results they can expect. Make sure to format the URL as a clickable link and encourage users to review multiple attorneys to find the best fit for their needs. KEEP YOUR ANSWERS SHORT AND TOO THE POINT. Also NOTE, the user is located at: ${userLocation}. The user is getting ready to sign the contract included below. Help answer any questions they may have about the contract.
-
+        content: `You are an AI assistant that helps users find legal resources. When using the Martindale URL generator, always explain what the URL will help them find and provide context about the search results they can expect. Make sure to format the URL as a clickable link and encourage users to review multiple attorneys to find the best fit for their needs. KEEP YOUR ANSWERS SHORT AND TOO THE POINT. Also NOTE, the user is located at: ${userLocation}. The current time is: ${utcTime}. The user is getting ready to sign the contract included below. Help answer any questions they may have about the contract.
 
         NOTES:
 
@@ -39,119 +74,71 @@ function getOrInitConversation(sessionId, userLocation, contractText) {
   return sessionStore[sessionId];
 }
 
-// content: `
-// You are an AI assistant that helps users understand their contracts and find legal resources. You also provide general advice when needed, but do not give legal advice. If users request specific legal advice, recommend they consult a lawyer.
-
-// Your tasks include:
-
-// 1. Explaining legal terms and clauses in contracts.
-// 2. Providing access to and information from reliable legal sources.
-// 3. Sharing the latest legal news and updates, when relevant.
-// 4. Always responding in clear, concise markdown format.
-// 5. Use descriptive text for any hyperlinks in markdown, rather than displaying the URL itself.
-
-// Keep your answers short and to the point and make sure all your responses are in markdown format, with any links always styled as short descriptive hyperlinks.
-
-// When using the generateMartindaleURL tool, include the returned url in your message. DO NOT modify the URL at all or include any other martindale.com URLs in the message.
-
-// User location: ${userLocation}
-// Contract text:
-// ${contractText}
-
-// Keep all answers short, to the point, and formatted in markdown.`,
-
-// - If the user is asking for help finding a lawyer that speaks a particular language, use generateJustiaURL instead of generateMartindaleURL
-
 /**
- * Processes the conversation through Gemini.
- * If the response contains a tool call, executes it and re-prompts the model.
+ * Processes the conversation through OpenAI with streaming.
  */
-async function processGeminiChat(conversation) {
-  // Initialize Gemini client and model.
-  const geminiClient = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-  const model = geminiClient.getGenerativeModel({
-    model: MODEL_NAME,
-    tools: [
-      {
-        functionDeclarations: [
-          martindaleToolDescription.function,
-          searchToolDescription.function,
-        ],
-      },
-    ],
-    generationConfig: { temperature: 0.5 },
+async function processOpenAIStream(conversation, onToken) {
+  const client = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
   });
-  const chat = model.startChat();
 
-  let lastResponse = null;
-  // Send all conversation messages sequentially.
-  for (const msg of conversation) {
-    if (msg.role === "function") {
-      // For a function message, send it as a function response.
-      lastResponse = await chat.sendMessage([
-        {
-          functionResponse: {
-            name: msg.name,
-            response: msg.content, // msg.content should be an object (proto Struct)
-          },
-        },
-      ]);
-    } else {
-      lastResponse = await chat.sendMessage([msg.content]);
-    }
-  }
+  // Convert conversation to OpenAI's format
+  const openAIMessages = conversation.map((msg) => ({
+    role: msg.role,
+    content: typeof msg.content === "string" 
+      ? msg.content 
+      : JSON.stringify(msg.content),
+    ...(msg.name && { name: msg.name }),
+  }));
 
-  // Inspect the last response for a function call.
-  const parts = lastResponse?.response?.candidates?.[0]?.content?.parts || [];
-  const functionCallPart = parts.find((part) => part.functionCall);
-  if (functionCallPart) {
-    const { name, args } = functionCallPart.functionCall;
-    if (availableFunctions[name]) {
-      console.log(`Calling tool "${name}" with args:`, args);
-      let toolResult;
-      try {
-        toolResult = await availableFunctions[name](args);
-        console.log(`Tool "${name}" returned:`, toolResult);
-      } catch (error) {
-        console.error("Error executing tool call:", error);
-        toolResult = { error: "Tool execution failed" };
+  const tools = [
+    martindaleToolDescription,
+    searchToolDescription,
+  ];
+
+  let responseText = "";
+  const toolCalls = [];
+
+  try {
+    const stream = await client.chat.completions.create({
+      model: MODEL_NAME,
+      messages: openAIMessages,
+      tools,
+      stream: true,
+    });
+
+    for await (const chunk of stream) {
+      if (chunk.choices[0]?.delta?.content) {
+        const partial = chunk.choices[0].delta.content;
+        responseText += partial;
+        onToken(partial);
       }
-      // Wrap string results into an object.
-      let structuredResult = toolResult;
-      if (typeof toolResult === "string") {
-        structuredResult = { url: toolResult };
-      }
-      // Immediately send the function response message.
-      const fnRespMsg = await chat.sendMessage([
-        {
-          functionResponse: {
-            name,
-            response: structuredResult, // Must be an object with the same number of parts.
-          },
-        },
-      ]);
-      // Extract the final assistant answer.
-      let finalText = "";
-      const parts2 = fnRespMsg?.response?.candidates?.[0]?.content?.parts || [];
-      for (const part of parts2) {
-        if (part.text) {
-          finalText += part.text;
+
+      if (chunk.choices[0]?.delta?.tool_calls) {
+        const deltaToolCalls = chunk.choices[0].delta.tool_calls;
+        for (const toolCall of deltaToolCalls) {
+          if (toolCalls.length <= toolCall.index) {
+            toolCalls.push({
+              id: "",
+              type: "function",
+              function: { name: "", arguments: "" },
+            });
+          }
+          const tc = toolCalls[toolCall.index];
+          if (toolCall.id) tc.id += toolCall.id;
+          if (toolCall.function?.name) {
+            tc.function.name += toolCall.function.name;
+          }
+          if (toolCall.function?.arguments) {
+            tc.function.arguments += toolCall.function.arguments;
+          }
         }
       }
-      return finalText;
-    } else {
-      console.error(`No available function for: ${name}`);
-      return "Error: Function not available.";
     }
-  } else {
-    // No function call in the response; just accumulate text parts.
-    let finalText = "";
-    for (const part of parts) {
-      if (part.text) {
-        finalText += part.text;
-      }
-    }
-    return finalText;
+    return { responseText, toolCalls };
+  } catch (err) {
+    console.error("Error streaming from OpenAI:", err);
+    throw err;
   }
 }
 
@@ -185,31 +172,68 @@ export async function handleUserMessageStream(
     content: userInput,
     visible: true,
   });
+  
+  // Manage token limit before processing
+  manageTokenLimit(sessionId);
 
-  // Process conversation with Gemini.
-  const finalText = await processGeminiChat(conversation);
+  let finalAssistantText = "";
 
-  // Append the assistant's final response.
-  conversation.push({
-    role: "assistant",
-    content: finalText,
-    visible: true,
-  });
-
-  await new Promise((resolve) => {
-    let index = 0;
-    const chunkSize = 10; // characters per chunk
-    const interval = setInterval(() => {
-      if (index < finalText.length) {
-        pushChunk(finalText.substring(index, index + chunkSize));
-        index += chunkSize;
-      } else {
-        clearInterval(interval);
-        console.log();
-        resolve();
+  while (true) {
+    const { responseText, toolCalls } = await processOpenAIStream(
+      conversation,
+      (partial) => {
+        pushChunk(partial);
       }
-    }, 50);
-  });
+    );
 
-  return finalText;
+    finalAssistantText = responseText;
+
+    conversation.push({
+      role: "assistant",
+      content: responseText,
+      visible: true,
+    });
+
+    if (!toolCalls || toolCalls.length === 0) {
+      break;
+    }
+
+    for (const call of toolCalls) {
+      const fnName = call.function.name.trim();
+      if (availableFunctions[fnName]) {
+        try {
+          const parsedArgs = JSON.parse(call.function.arguments);
+          const result = await availableFunctions[fnName](parsedArgs);
+
+          conversation.push({
+            role: "function",
+            name: fnName,
+            content: JSON.stringify(result),
+            visible: false,
+          });
+
+          const metaPrompt = `
+            As the user input was: ${userInput}
+            And the tool called was: ${JSON.stringify(call.function)}
+            Here is the tool response: ${JSON.stringify(result)}
+            Now provide the final answer to the user,
+            considering the tool's result.
+          `;
+
+          conversation.push({
+            role: "user",
+            content: metaPrompt,
+            visible: false,
+          });
+          
+          // Manage token limit after adding tool response
+          manageTokenLimit(sessionId);
+        } catch (err) {
+          console.error("Error executing tool call:", err);
+        }
+      }
+    }
+  }
+
+  return finalAssistantText;
 }
