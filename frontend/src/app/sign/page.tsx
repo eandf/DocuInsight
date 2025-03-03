@@ -102,7 +102,14 @@ export default async function SignPage({
     }
     documentUrl = recipientView.url;
   } else {
-    documentUrl = jobData.bucket_url;
+    const fileName = jobData.file_name;
+    const storageFilePath = `pdfs/${fileName}`;
+
+    const { data: signedURLData } = await supabase.storage
+      .from("contracts")
+      .createSignedUrl(storageFilePath, 3600);
+
+    documentUrl = signedURLData?.signedUrl as string;
   }
 
   return (
