@@ -21,29 +21,7 @@ export default async function Navbar() {
             DocuInsight
           </Link>
         </div>
-
-        <ul className="flex gap-8">
-          <li>
-            <a
-              href="https://support.docusign.com/s/document-item?bundleId=xry1643227563338&topicId=dqj1578456412286.html&_LANG=enus&language=en_US&rsc_301="
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline inline-flex items-center underline"
-            >
-              Docusign - Working With Templates
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://forms.gle/jYdEvAedLm3Uc8416"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline inline-flex items-center underline"
-            >
-              Contact Us
-            </a>
-          </li>
-        </ul>
+        
         <ul className="flex gap-2">
           <li>
             {session ? (
