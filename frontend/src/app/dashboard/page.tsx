@@ -1,7 +1,10 @@
 import { auth } from "@/auth";
 import Navbar from "@/components/navbar";
-import Dashboard from "@/components/dashboard";
 import { createClient } from "@/utils/supabase/server";
+import FileUploadDialog from "@/components/file-upload-dialog";
+import { uploadDocument } from "@/actions/upload-document";
+import JobTable from "@/components/job-table";
+import EnvelopeSendDialog from "@/components/envelope-send-dialog";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -30,7 +33,14 @@ export default async function DashboardPage() {
   return (
     <>
       <Navbar />
-      <Dashboard jobs={jobsData} />
+      <div className="space-y-4 max-w-screen-xl mx-auto p-4 pt-8">
+        <div className="flex gap-4 items-center">
+          <span className="text-xl font-medium mr-auto">Reports</span>
+          <FileUploadDialog onClose={uploadDocument} />
+          <EnvelopeSendDialog />
+        </div>
+        <JobTable jobs={jobsData} />
+      </div>
     </>
   );
 }
