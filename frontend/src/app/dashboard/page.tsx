@@ -1,9 +1,7 @@
 import { auth } from "@/auth";
 import Navbar from "@/components/navbar";
-import docusign from "docusign-esign";
 import Dashboard from "@/components/dashboard";
-import { DocusignAccountInfo } from "@/types/docusign";
-import { getAccessToken } from "@/lib/docusign";
+import { createClient } from "@/utils/supabase/server";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -17,29 +15,22 @@ export default async function DashboardPage() {
     );
   }
 
-  // TODO: error handling
-  const accessToken = await getAccessToken();
+  const supabase = await createClient();
+  const { data: jobsData, error: getJobsError } = await supabase
+    .schema("public")
+    .from("jobs")
+    .select("*")
+    .eq("user_id", session.user?.id);
 
-  const apiClient = new docusign.ApiClient();
-  apiClient.setBasePath(`${process.env.DOCUSIGN_API_BASE_PATH}/restapi`);
-  apiClient.addDefaultHeader("Authorization", `Bearer ${accessToken}`);
-
-  let userInfo;
-  try {
-    userInfo = await apiClient.getUserInfo(accessToken);
-  } catch (error) {
-    console.error("Error fetching DocuSign user info:", error);
-    throw error;
+  if (getJobsError) {
+    console.error(getJobsError);
+    throw new Error("Failed to get jobs");
   }
-
-  const accounts = userInfo.accounts.map((account: DocusignAccountInfo) => {
-    return { ...account };
-  });
 
   return (
     <>
       <Navbar />
-      <Dashboard accounts={accounts} />
+      <Dashboard jobs={jobsData} />
     </>
   );
 }
