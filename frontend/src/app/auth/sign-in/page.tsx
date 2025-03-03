@@ -6,8 +6,8 @@ import Image from "next/image";
 export default function SignInPage() {
   return (
     <div className="grid min-h-svh grid-cols-1 lg:grid-cols-[1fr_2fr]">
-      <div className="flex flex-col gap-4 p-6 md:p-10">
-        <div className="flex justify-center gap-2 md:justify-start items-center">
+      <div className="flex flex-col p-6 md:p-10 pt-4 md:pt-6 pl-4 md:pl-6">
+        <div className="flex justify-start gap-2 items-center">
           <Image
             src="/logo.png"
             alt=""
@@ -19,7 +19,11 @@ export default function SignInPage() {
             DocuInsight
           </a>
         </div>
-        <div className="flex flex-1 items-center justify-center flex-col ">
+        
+        {/* Spacer element */}
+        <div className="h-8"></div>
+        
+        <div className="flex flex-1 items-center justify-center flex-col mt-8">
           <div className="w-full max-w-xs">
             <LoginForm />
           </div>

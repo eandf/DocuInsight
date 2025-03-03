@@ -5,7 +5,7 @@ export async function getAccessToken(userId?: string): Promise<string> {
   if (!userId) {
     const session = await auth();
     if (!session) {
-      throw new Error("not authenticted");
+      throw new Error("not authenticated");
     }
 
     userId = session.user?.id as string;
