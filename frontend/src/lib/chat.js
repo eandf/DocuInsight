@@ -76,7 +76,7 @@ function manageTokenLimit(sessionId) {
 /**
  * Initializes or retrieves the conversation for a given session.
  */
-function getOrInitConversation(sessionId, userLocation, contractText) {
+function getOrInitConversation(sessionId, userLocation, contractText, finalReport) {
   // Get current UTC time in the requested format
   const now = new Date();
   const utcTime = now.toISOString().replace('T', ' ').substring(0, 16) + ' UTC';
@@ -92,7 +92,10 @@ function getOrInitConversation(sessionId, userLocation, contractText) {
         - ANY TIME you include a URL in your response, use markdown to format it as link with anchor text. Make the anchor text short but descriptive.
 
         CONTRACT TEXT:
-        ${contractText}`,
+        ${contractText}
+
+        FINAL REPORT:
+        ${finalReport}`,
         visible: false,
       },
     ];
@@ -183,13 +186,15 @@ export async function handleUserMessageStream(
   userInput,
   userLocation,
   contractText,
+  finalReport,
   pushChunk
 ) {
   // Retrieve or initialize conversation history.
   const conversation = getOrInitConversation(
     sessionId,
     userLocation,
-    contractText
+    contractText,
+    finalReport
   );
 
   // Append the new user message.

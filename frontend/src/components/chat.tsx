@@ -166,7 +166,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   );
 };
 
-export default function Chat({ contractText }: { contractText: string }) {
+export default function Chat({ contractText, finalReport }: { contractText: string, finalReport: string }) {
   const [sessionId, setSessionId] = React.useState<string>("");
   const [userLocation, setUserLocation] = React.useState<string | null>(null);
   const [messages, setMessages] = React.useState<Message[]>([
@@ -261,6 +261,7 @@ export default function Chat({ contractText }: { contractText: string }) {
           userInput: userText,
           userLocation,
           contractText: contractText,
+          finalReport: finalReport,
         }),
       });
       if (!res.ok || !res.body) {

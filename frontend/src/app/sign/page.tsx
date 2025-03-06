@@ -132,7 +132,10 @@ export default async function SignPage({
             <ResizableHandle withHandle className="bg-slate-600" />
             <ResizablePanel defaultSize={50}>
               <div className="flex h-full items-center justify-center">
-                <Chat contractText={reportData.contract_content} />
+                <Chat 
+                  contractText={reportData.contract_content} 
+                  finalReport={reportData.final_report}
+                />
               </div>
             </ResizablePanel>
           </ResizablePanelGroup>
