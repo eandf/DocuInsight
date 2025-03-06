@@ -19,6 +19,7 @@ const DocusignProvider: Provider = {
   authorization: {
     params: {
       scope: "openid profile email signature extended",
+      prompt: "login",
     },
   },
 };
