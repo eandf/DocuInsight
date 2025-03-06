@@ -20,6 +20,10 @@ DocuInsight leverages the power of the OpenAI API to analyze contracts and provi
 Visit our website: [docuinsight.ai](https://docuinsight.ai)
 Check out our [live demo](https://www.docuinsight.ai/sign?job=a070d50e-11dd-4bdc-b679-4182e7a303f4&invite=aa949bb8-11f0-4c66-a506-8d3946000432)
 
+## Events
+
+OIn Jan 2025, this project was open sourced for the DocuSign hackathon. After the final results came in for the hackathon around late Feb 2025, this project was closed sourced again.
+
 ## Links
 
 - This Repo: https://github.com/MehmetMHY/NextDocuInsight
