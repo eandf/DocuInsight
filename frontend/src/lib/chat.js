@@ -20,9 +20,35 @@ const sessionStore = {};
  * Estimate token count based on text length
  * This is a rough approximation - 1 token is roughly 4 characters or 3/4 of a word
  */
-function estimateTokens(text) {
-  const wordCount = text.trim().split(/\s+/).length;
-  return Math.round(wordCount * 1.33);
+function estimateTokens(text, rounding = 1.15, language = null) {
+  const wordCount = text.split(/\s+/).length;
+
+  // https://gptforwork.com/guides/openai-gpt3-tokens
+  const tokenMultiplier = {
+    english: 1.3,
+    french: 2.0,
+    german: 2.1,
+    spanish: 2.1,
+    chinese: 2.5,
+    russian: 3.3,
+    vietnamese: 3.3,
+    arabic: 4.0,
+    hindi: 6.4,
+  };
+
+  if (language) {
+    language = language.toLowerCase();
+  }
+
+  let multiplier;
+  if (!language || !tokenMultiplier[language]) {
+    const medianValue = Object.values(tokenMultiplier).sort((a, b) => a - b);
+    multiplier = medianValue[Math.floor(medianValue.length / 2)];
+  } else {
+    multiplier = tokenMultiplier[language];
+  }
+
+  return Math.floor(wordCount * multiplier * rounding);
 }
 
 /**

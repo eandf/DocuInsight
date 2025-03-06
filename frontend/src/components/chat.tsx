@@ -289,8 +289,7 @@ export default function Chat({ contractText }: { contractText: string }) {
             )
           );
 
-          // Optional: Log partial chunks for debugging
-          console.log("Partial chunk:", chunk);
+          // console.log("Partial chunk:", chunk);
         }
       }
 
