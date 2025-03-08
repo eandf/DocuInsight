@@ -41,7 +41,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (profile && account && account.provider === "docusign") {
         const supabase = await createClient();
 
-        const { data, error } = await supabase
+        const { error } = await supabase
           .schema("next_auth")
           .from("users")
           .update({
@@ -61,8 +61,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         if (error) {
           console.error("error updating user:", error);
-        } else {
-          console.log("update user data:", data);
         }
       }
 

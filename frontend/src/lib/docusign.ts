@@ -82,8 +82,6 @@ export async function getAccessToken(userId?: string): Promise<string> {
       throw new Error("Error updating DocuSign tokens in database");
     }
 
-    console.log("Access token refreshed successfully.");
-
     return tokenData.access_token;
   }
 

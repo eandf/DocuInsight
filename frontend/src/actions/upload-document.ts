@@ -47,7 +47,7 @@ export async function uploadDocument(file: File | null) {
 
   const jobId = uuidv4();
 
-  const { data: newJob, error: insertError } = await supabase
+  const { error: insertError } = await supabase
     .from("jobs")
     .insert([
       {
@@ -74,6 +74,4 @@ export async function uploadDocument(file: File | null) {
     console.error("Supabase insert error:", insertError);
     throw new Error("failed to create job");
   }
-
-  console.log(newJob);
 }
