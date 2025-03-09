@@ -2905,7 +2905,9 @@ export function generateMartindaleURL(functionParams) {
   return { url, params };
 }
 
-export async function externalWebScraper(url, typeOfScrape = "cleaned") {
+export async function externalWebScraper(params) {
+  let { url } = params
+
   const youtubeRegex = /(youtube\.com\/watch\?v=|youtu\.be\/)/;
   const isYouTube = youtubeRegex.test(url);
 
@@ -2914,7 +2916,7 @@ export async function externalWebScraper(url, typeOfScrape = "cleaned") {
       const output = await fetchYouTubeData(url);
       return JSON.stringify(output);
     } else {
-      const scrapeResult = await scrapeWebsite(url, typeOfScrape);
+      const scrapeResult = await scrapeWebsite(url);
       return JSON.stringify(scrapeResult);
     }
   } catch (err) {
@@ -2949,13 +2951,15 @@ export async function tavilySearch(parameters) {
   );
 }
 
-export async function parseAndAnalyzeTheContract(
-  original_prompt,
-  contract,
-  timeout_ms = 60_000,
-  model_name = "deepseek-r1-distill-llama-70b",
-) {
+export async function parseAndAnalyzeTheContract(params) {
   try {
+    // https://console.groq.com/docs/models
+    // https://groq.com/pricing/
+    const model_name = "deepseek-r1-distill-qwen-32b";
+    const timeout_ms = 60_000;
+
+    let { original_prompt, contract } = params;
+
     let user_prompt = `
 You are an expert analyst tasked with providing the best possible answer to this question:
 
@@ -3042,12 +3046,6 @@ export const externalWebScraperToolDescription = {
           description:
             "The URL to scrape or fetch data from (e.g., https://example.com, https://www.youtube.com/watch?v=abc123).",
         },
-        // typeOfScrape: {
-        //   type: "string",
-        //   description:
-        //     "Specifies how the page content should be returned. 'cleaned' removes extraneous markup, 'html' returns raw HTML (still stripped of scripts/styles). Defaults to 'cleaned' if not provided.",
-        //   enum: ["cleaned", "html"],
-        // },
       },
       required: ["url"],
     },
@@ -3072,16 +3070,6 @@ export const parseAndAnalyzeToolDescription = {
         //   type: "string",
         //   description:
         //     "The full text of the contract or document to be analyzed."
-        // },
-        // timeout_ms: {
-        //   type: "number",
-        //   description:
-        //     "An optional time limit for the request in milliseconds (default is 60000)."
-        // },
-        // model_name: {
-        //   type: "string",
-        //   description:
-        //     "An optional model name for analysis (default is 'deepseek-r1-distill-llama-70b')."
         // },
       },
       required: [

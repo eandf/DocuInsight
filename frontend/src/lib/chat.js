@@ -269,9 +269,11 @@ export async function handleUserMessageStream(
           if (fnName === "parseAndAnalyzeTheContract") {
             parsedArgs["contract"] = contractText
           }
-          
-          // Execute the tool function
+
+          // // Execute the tool function
+          // console.log(`Calling tool ${fnName}(${JSON.stringify(parsedArgs)})`)
           const result = await availableFunctions[fnName](parsedArgs);
+          // console.log("Tool call's output:", result)
 
           // Add the tool's response as a function role message (not visible to the user)
           conversation.push({
