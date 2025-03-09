@@ -1,12 +1,23 @@
-// frontend/src/lib/chat.js
 import OpenAI from "openai";
-import { generateMartindaleURL, tavilySearch } from "@/lib/tools"; // import your tool(s)
-import { martindaleToolDescription, searchToolDescription } from "@/lib/tools";
 
-// Define the available tool functions.
+import {
+  generateMartindaleURL,
+  tavilySearch,
+  externalWebScraper,
+  parseAndAnalyzeTheContract,
+} from "@/lib/tools";
+import {
+  martindaleToolDescription,
+  searchToolDescription,
+  externalWebScraperToolDescription,
+  parseAndAnalyzeToolDescription,
+} from "@/lib/tools";
+
 const availableFunctions = {
   tavilySearch,
   generateMartindaleURL,
+  externalWebScraper,
+  parseAndAnalyzeTheContract,
 };
 
 // --- OpenAI Model Settings ---
@@ -42,8 +53,10 @@ function estimateTokens(text, rounding = 1.15, language = null) {
 
   let multiplier;
   if (!language || !tokenMultiplier[language]) {
-    const medianValue = Object.values(tokenMultiplier).sort((a, b) => a - b);
-    multiplier = medianValue[Math.floor(medianValue.length / 2)];
+    const sortedMultipliers = Object.values(tokenMultiplier).sort(
+      (a, b) => a - b,
+    );
+    multiplier = sortedMultipliers[Math.floor(sortedMultipliers.length / 2)];
   } else {
     multiplier = tokenMultiplier[language];
   }
@@ -52,20 +65,21 @@ function estimateTokens(text, rounding = 1.15, language = null) {
 }
 
 /**
- * Ensure conversation doesn't exceed token limit
- * Removes oldest messages first (except system message)
+ * Ensure conversation doesn't exceed token limit.
+ * Removes oldest messages first (except the main system prompt)
+ * until we're under 75% of the token limit.
  */
 function manageTokenLimit(sessionId) {
   const conversation = sessionStore[sessionId];
   if (!conversation) return;
-  
-  // Keep removing messages until we're under 85% of the token limit
+
+  // Keep removing messages until we're under 75% of the token limit
   while (
     estimateTokens(JSON.stringify(conversation)) >
-    Math.floor(MODEL_TOKEN_LIMIT * 0.85)
+    Math.floor(MODEL_TOKEN_LIMIT * 0.75)
   ) {
+    // Always keep the very first system message
     if (conversation.length > 1) {
-      // Remove the second message (first after system message)
       conversation.splice(1, 1);
     } else {
       break;
@@ -75,27 +89,35 @@ function manageTokenLimit(sessionId) {
 
 /**
  * Initializes or retrieves the conversation for a given session.
+ * We store a refined system prompt as the first message,
+ * then add the contract text as a second system message (so it can be removed if needed).
  */
-function getOrInitConversation(sessionId, userLocation, contractText, finalReport) {
+function getOrInitConversation(
+  sessionId,
+  userLocation,
+  contractText,
+  finalReport,
+) {
   // Get current UTC time in the requested format
   const now = new Date();
-  const utcTime = now.toISOString().replace('T', ' ').substring(0, 16) + ' UTC';
-  
+  const utcTime = now.toISOString().replace("T", " ").substring(0, 16) + " UTC";
+
   if (!sessionStore[sessionId]) {
     sessionStore[sessionId] = [
       {
         role: "system",
-        content: `You are an AI assistant that helps users find legal resources. When using the Martindale URL generator, always explain what the URL will help them find and provide context about the search results they can expect. Make sure to format the URL as a clickable link and encourage users to review multiple attorneys to find the best fit for their needs. KEEP YOUR ANSWERS SHORT AND TOO THE POINT. Also NOTE, the user is located at: ${userLocation}. The current time is: ${utcTime}. The user is getting ready to sign the contract included below. Help answer any questions they may have about the contract.
+        content: `
+You are an AI assistant that helps users understand a contract they are signing. Provide short, concise answers to clarify the contract. If helpful, you may guide users to legal resources or attorneys without revealing any internal tools or steps. When including a link, use a concise, descriptive Markdown link. The user is located at: ${userLocation}. The current time is: ${utcTime}. You have access to a final report for additional context:
 
-        NOTES:
-
-        - ANY TIME you include a URL in your response, use markdown to format it as link with anchor text. Make the anchor text short but descriptive.
-
-        CONTRACT TEXT:
-        ${contractText}
-
-        FINAL REPORT:
-        ${finalReport}`,
+FINAL REPORT:
+${finalReport}`,
+        visible: false,
+      },
+      {
+        // Add the contract text as a separate system message so it can be removed if necessary
+        role: "system",
+        content: `CONTRACT TEXT:
+${contractText}`,
         visible: false,
       },
     ];
@@ -114,15 +136,19 @@ async function processOpenAIStream(conversation, onToken) {
   // Convert conversation to OpenAI's format
   const openAIMessages = conversation.map((msg) => ({
     role: msg.role,
-    content: typeof msg.content === "string" 
-      ? msg.content 
-      : JSON.stringify(msg.content),
+    content:
+      typeof msg.content === "string"
+        ? msg.content
+        : JSON.stringify(msg.content),
     ...(msg.name && { name: msg.name }),
   }));
 
+  // Define the tools we can use in the background.
   const tools = [
     martindaleToolDescription,
     searchToolDescription,
+    externalWebScraperToolDescription,
+    parseAndAnalyzeToolDescription,
   ];
 
   let responseText = "";
@@ -143,6 +169,7 @@ async function processOpenAIStream(conversation, onToken) {
         onToken(partial);
       }
 
+      // Tool calls are captured here but not revealed to user
       if (chunk.choices[0]?.delta?.tool_calls) {
         const deltaToolCalls = chunk.choices[0].delta.tool_calls;
         for (const toolCall of deltaToolCalls) {
@@ -173,13 +200,14 @@ async function processOpenAIStream(conversation, onToken) {
 
 /**
  * Main function called by your API route.
- * It appends the user message, processes the conversation, and then sends the complete response.
+ * It appends the user message, processes the conversation,
+ * handles any tool calls, and then sends the complete response.
  *
  * @param {string} sessionId - The chat session ID.
  * @param {string} userInput - The new message from the user.
  * @param {string|null} userLocation - The user's location.
  * @param {string} contractText - The contract text to include in the context.
- * @param {function} pushChunk - Callback to send the final response to the client.
+ * @param {function} pushChunk - Callback to send the partial response to the client.
  */
 export async function handleUserMessageStream(
   sessionId,
@@ -187,14 +215,14 @@ export async function handleUserMessageStream(
   userLocation,
   contractText,
   finalReport,
-  pushChunk
+  pushChunk,
 ) {
   // Retrieve or initialize conversation history.
   const conversation = getOrInitConversation(
     sessionId,
     userLocation,
     contractText,
-    finalReport
+    finalReport,
   );
 
   // Append the new user message.
@@ -203,8 +231,8 @@ export async function handleUserMessageStream(
     content: userInput,
     visible: true,
   });
-  
-  // Manage token limit before processing
+
+  // Manage token usage before processing
   manageTokenLimit(sessionId);
 
   let finalAssistantText = "";
@@ -214,28 +242,38 @@ export async function handleUserMessageStream(
       conversation,
       (partial) => {
         pushChunk(partial);
-      }
+      },
     );
 
     finalAssistantText = responseText;
 
+    // Store the assistant's response
     conversation.push({
       role: "assistant",
       content: responseText,
       visible: true,
     });
 
+    // If no tool calls, we're done
     if (!toolCalls || toolCalls.length === 0) {
       break;
     }
 
+    // Handle each tool call in the background
     for (const call of toolCalls) {
       const fnName = call.function.name.trim();
       if (availableFunctions[fnName]) {
         try {
-          const parsedArgs = JSON.parse(call.function.arguments);
+          let parsedArgs = JSON.parse(call.function.arguments);
+          
+          if (fnName === "parseAndAnalyzeTheContract") {
+            parsedArgs["contract"] = contractText
+          }
+          
+          // Execute the tool function
           const result = await availableFunctions[fnName](parsedArgs);
 
+          // Add the tool's response as a function role message (not visible to the user)
           conversation.push({
             role: "function",
             name: fnName,
@@ -243,21 +281,23 @@ export async function handleUserMessageStream(
             visible: false,
           });
 
+          // Provide a refined meta prompt to incorporate tool data seamlessly
           const metaPrompt = `
-            As the user input was: ${userInput}
-            And the tool called was: ${JSON.stringify(call.function)}
-            Here is the tool response: ${JSON.stringify(result)}
-            Now provide the final answer to the user,
-            considering the tool's result.
+The user previously said: "${userInput}".
+You have received relevant background data from an external source: ${JSON.stringify(result)}.
+Incorporate this data seamlessly and provide a final answer to the user.
+Do not mention or reveal the external source or that any tool was used.
+Keep your answers short and concise.
           `;
 
+          // This message is not visible to the user; it instructs the model how to integrate the tool data
           conversation.push({
             role: "user",
             content: metaPrompt,
             visible: false,
           });
-          
-          // Manage token limit after adding tool response
+
+          // Manage token usage again after adding tool response
           manageTokenLimit(sessionId);
         } catch (err) {
           console.error("Error executing tool call:", err);

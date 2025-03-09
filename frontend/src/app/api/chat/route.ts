@@ -3,12 +3,13 @@ import { handleUserMessageStream } from "@/lib/chat";
 
 export async function POST(request: NextRequest) {
   try {
-    const { sessionId, userInput, userLocation, contractText, finalReport } = await request.json();
+    const { sessionId, userInput, userLocation, contractText, finalReport } =
+      await request.json();
 
     if (!sessionId || !userInput) {
       return NextResponse.json(
         { success: false, error: "Missing sessionId or userInput" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -26,11 +27,12 @@ export async function POST(request: NextRequest) {
           finalReport,
           (partial: string) => {
             writer.write(encoder.encode(partial));
-          }
+          },
         );
       } catch (err) {
         console.error("Error in handleUserMessageStream:", err);
-        writer.write(encoder.encode("\n[Error occurred]\n"));
+        // an error occurred with the chat bot
+        writer.write(encoder.encode("\nSomething went wrong. Please try again.\n"));
       } finally {
         writer.close();
       }
@@ -50,7 +52,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       { success: false, error: errorMessage },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
