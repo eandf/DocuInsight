@@ -10,7 +10,8 @@ export default auth(async (request) => {
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/sign") ||
     pathname.startsWith("/pdfjs") ||
-    pathname === "/api/chat"
+    pathname === "/api/chat" ||
+    pathname === "/api/docusign/redirect"
   ) {
     return NextResponse.next();
   }

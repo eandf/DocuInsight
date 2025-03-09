@@ -1,3 +1,5 @@
+import { LegalReviewData } from "./report";
+
 export type JobStatus =
   | "queued"
   | "running"
@@ -9,7 +11,7 @@ export type JobStatus =
 export interface Report {
   id: string;
   contract_content: string | null;
-  final_report: unknown;
+  final_report: LegalReviewData;
   trace_back: unknown;
   version: string | null;
   status: JobStatus;

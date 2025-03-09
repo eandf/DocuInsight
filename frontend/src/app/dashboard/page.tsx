@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import Navbar from "@/components/navbar";
 import { createClient } from "@/utils/supabase/server";
 import FileUploadDialog from "@/components/file-upload-dialog";
-import { uploadDocument } from "@/actions/upload-document";
+import { uploadDocument } from "@/actions/database";
 import JobTable from "@/components/job-table";
 import EnvelopeSendDialog from "@/components/envelope-send-dialog";
 

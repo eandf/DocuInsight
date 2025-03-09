@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/accordion";
 import type { LegalReviewData } from "@/types/report";
 
-export default function Report({ data }: { data: LegalReviewData }) {
+export default function ReportView({ data }: { data: LegalReviewData }) {
   return (
     <ScrollArea className="w-full flex-1">
       <Accordion type="multiple" className="w-full">

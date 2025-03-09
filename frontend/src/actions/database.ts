@@ -75,3 +75,32 @@ export async function uploadDocument(file: File | null) {
     throw new Error("failed to create job");
   }
 }
+
+export async function getReport(id: string) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("reports")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    throw new Error("Report not found");
+  }
+
+  return data;
+}
+
+export async function getPdfUrl(fileName: string) {
+  const supabase = await createClient();
+
+  const storageFilePath = `pdfs/${fileName}`;
+  const { data: signedURLData } = await supabase.storage
+    .from("contracts")
+    .createSignedUrl(storageFilePath, 3600);
+
+  const pdfUrl = signedURLData?.signedUrl as string;
+
+  return pdfUrl;
+}

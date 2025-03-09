@@ -28,7 +28,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
-import { getDocusignAccounts } from "@/actions/get-docusign-accounts"; // Import the server action
+import { getDocusignAccounts } from "@/actions/docusign";
 
 export default function EnvelopeSendDialog() {
   const [dialogOpen, setDialogOpen] = useState(false);
