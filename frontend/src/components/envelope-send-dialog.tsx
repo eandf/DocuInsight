@@ -34,8 +34,8 @@ import { signInAction } from "@/actions/auth";
 
 export default function EnvelopeSendDialog() {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [isCheckingConnection, setIsCheckingConnection] = useState(false);
   const [accounts, setAccounts] = useState<DocusignAccountInfo[]>([]);
-  const [accountsLoaded, setAccountsLoaded] = useState(false);
   const [accountsLoading, setAccountsLoading] = useState(false);
   const [selectedAccountId, setSelectedAccountId] = useState<string | null>(
     null
@@ -121,36 +121,40 @@ export default function EnvelopeSendDialog() {
     setErrorMessage(null);
   };
 
-  useEffect(() => {
-    if (dialogOpen && !accountsLoaded) {
-      const loadAccounts = async () => {
-        setAccountsLoading(true);
-        try {
-          const fetchedAccounts = await getDocusignAccounts();
-          setAccounts(fetchedAccounts);
-          if (fetchedAccounts.length > 0) {
-            setSelectedAccountId(fetchedAccounts[0].accountId);
-          }
-          setAccountsLoaded(true); // Mark accounts as loaded
-        } catch (error) {
-          console.error(error);
-          setErrorMessage("Failed to load accounts. Please try again.");
-        } finally {
-          setAccountsLoading(false);
-        }
-      };
-
-      isDocusignAccountConnected().then((accountConnected) => {
-        if (accountConnected) {
-          loadAccounts();
-        } else {
-          signInAction("docusign");
-        }
-      });
+  const loadAccounts = async () => {
+    setAccountsLoading(true);
+    try {
+      const fetchedAccounts = await getDocusignAccounts();
+      setAccounts(fetchedAccounts);
+      if (fetchedAccounts.length > 0) {
+        setSelectedAccountId(fetchedAccounts[0].accountId);
+      }
+    } catch (error) {
+      console.error(error);
+      setErrorMessage("Failed to load accounts. Please try again.");
+    } finally {
+      setAccountsLoading(false);
     }
-  }, [dialogOpen, accountsLoaded]);
+  };
 
-  // Fetch templates when dialog is open, step is "select", and account is selected
+  const checkConnectionAndOpenDialog = async () => {
+    setIsCheckingConnection(true);
+    try {
+      const accountConnected = await isDocusignAccountConnected();
+      if (accountConnected) {
+        await loadAccounts();
+        setDialogOpen(true);
+      } else {
+        await signInAction("docusign");
+      }
+    } catch (error) {
+      console.error("Error checking DocuSign connection:", error);
+      setErrorMessage("Failed to check DocuSign connection. Please try again.");
+    } finally {
+      setIsCheckingConnection(false);
+    }
+  };
+
   useEffect(() => {
     if (dialogOpen && step === "select" && selectedAccountId) {
       void getTemplates(selectedAccountId);
@@ -160,11 +164,11 @@ export default function EnvelopeSendDialog() {
   return (
     <div className="">
       <Button
-        onClick={() => setDialogOpen(true)}
-        disabled={accountsLoading}
+        onClick={checkConnectionAndOpenDialog}
+        disabled={isCheckingConnection || accountsLoading}
         variant="outline"
       >
-        {accountsLoading ? (
+        {isCheckingConnection || accountsLoading ? (
           <Loader2 className="h-4 w-4 animate-spin mr-2" />
         ) : null}
         Send Docusign Envelope
