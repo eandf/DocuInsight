@@ -3,20 +3,17 @@
 import * as React from "react";
 import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
-// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { ArrowUp, ExternalLink } from "lucide-react";
 import type { ComponentPropsWithoutRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 
-// Simple CSS Spinner Component
 const Spinner: React.FC = () => (
   <div className="inline-flex space-x-1 ml-2 text-muted-foreground">
     <span className="w-2 h-2 bg-current rounded-full opacity-0 animate-blink animation-delay-0"></span>
     <span className="w-2 h-2 bg-current rounded-full opacity-0 animate-blink animation-delay-200"></span>
     <span className="w-2 h-2 bg-current rounded-full opacity-0 animate-blink animation-delay-400"></span>
 
-    {/* Tailwind CSS Custom Animations */}
     <style jsx>{`
       @keyframes blink {
         0%,
@@ -58,7 +55,6 @@ interface ChatMessageProps extends Message {
   loading?: boolean;
 }
 
-/** A bubble that displays chat text or a spinner */
 const ChatMessage: React.FC<ChatMessageProps> = ({
   content,
   role,
@@ -73,16 +69,6 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
         role === "user" ? "flex-row-reverse" : ""
       }`}
     >
-      {/* Avatar can be re-enabled if needed */}
-      {/* {role === "assistant" && (
-        <Avatar className="h-10 w-10 border border-border flex items-center justify-center">
-          <AvatarImage src="/logo.png" className="w-6 h-6" />
-          <AvatarFallback className="bg-muted text-muted-foreground">
-            AI
-          </AvatarFallback>
-        </Avatar>
-      )} */}
-
       <div className="flex-1 min-w-0">
         {isAssistantLoading ? (
           // Render Spinner in place of the message bubble
@@ -182,7 +168,6 @@ export default function Chat({ contractText }: { contractText: string }) {
     string | null
   >(null);
 
-  // On mount, get or generate a sessionId
   React.useEffect(() => {
     let existingId = localStorage.getItem("myChatSessionId");
     if (!existingId) {
@@ -197,8 +182,6 @@ export default function Chat({ contractText }: { contractText: string }) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          // For now, just store lat/long. If you want city/state, you'd
-          // need to call a reverse-geocode API from the client or your server.
           setUserLocation(`Lat: ${latitude}, Lon: ${longitude}`);
         },
         (error) => {
@@ -209,7 +192,6 @@ export default function Chat({ contractText }: { contractText: string }) {
     }
   }, []);
 
-  // For auto-scrolling
   const setMessagesEndRef = React.useCallback((node: HTMLDivElement) => {
     if (node) {
       node.scrollIntoView({ behavior: "smooth" });
@@ -226,7 +208,6 @@ export default function Chat({ contractText }: { contractText: string }) {
   async function handleSend() {
     if (!input.trim() || !sessionId) return;
 
-    // 1) Add user's message to local state
     const userMsg: Message = {
       id: Date.now().toString(),
       content: input.trim(),
@@ -235,23 +216,19 @@ export default function Chat({ contractText }: { contractText: string }) {
     setMessages((prev) => [...prev, userMsg]);
     const userText = input.trim();
 
-    // 2) Clear input
     setInput("");
 
-    // 3) Create and add assistant's message with empty content
     const assistantMsg: Message = {
       id: `assistant-${Date.now()}`,
-      content: "", // Start with empty content
+      content: "",
       role: "assistant",
     };
     setMessages((prev) => [...prev, assistantMsg]);
 
-    // Store the assistant message ID for updating
     const assistantId = assistantMsg.id;
     setCurrentAssistantId(assistantId);
     setIsAssistantTyping(true);
 
-    // 4) Call our server route and stream response
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
@@ -277,10 +254,8 @@ export default function Chat({ contractText }: { contractText: string }) {
         const { value, done: isDone } = await reader.read();
         done = isDone;
         if (value) {
-          // Convert Uint8Array into a string
           const chunk = decoder.decode(value, { stream: true });
 
-          // Update the assistant's message with the new chunk
           setMessages((prevMessages) =>
             prevMessages.map((msg) =>
               msg.id === assistantId
@@ -288,17 +263,8 @@ export default function Chat({ contractText }: { contractText: string }) {
                 : msg
             )
           );
-
-          // Optional: Log partial chunks for debugging
-          console.log("Partial chunk:", chunk);
         }
       }
-
-      // Optional: Log the complete message
-      const finalMessage = messages.find(
-        (msg) => msg.id === assistantId
-      )?.content;
-      console.log("Assistant message complete:", finalMessage);
 
       setIsAssistantTyping(false);
       setCurrentAssistantId(null);
@@ -309,7 +275,6 @@ export default function Chat({ contractText }: { contractText: string }) {
     }
   }
 
-  // Scroll to bottom whenever messages change
   React.useEffect(() => {
     const timer = setTimeout(() => {
       scrollToBottom();
@@ -320,7 +285,6 @@ export default function Chat({ contractText }: { contractText: string }) {
   return (
     <div className="flex flex-col w-full h-full">
       <h2 className="pl-4 py-2 font-semibold text-lg border-b">Chat</h2>
-      {/* Chat messages */}
       <div className="overflow-hidden flex-1">
         <div className="h-full overflow-y-auto px-4 py-4 space-y-4 chat-messages-container">
           {messages.map((m) => (
@@ -334,7 +298,6 @@ export default function Chat({ contractText }: { contractText: string }) {
         </div>
       </div>
 
-      {/* Input bar */}
       <div className="border-t-[1.5px] p-4 h-[51px] flex">
         <form
           onSubmit={(e) => {

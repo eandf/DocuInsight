@@ -28,10 +28,13 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
-import { getDocusignAccounts } from "@/actions/get-docusign-accounts"; // Import the server action
+import { getDocusignAccounts } from "@/actions/docusign";
+import { isDocusignAccountConnected } from "@/actions/database";
+import { signInAction } from "@/actions/auth";
 
 export default function EnvelopeSendDialog() {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [isCheckingConnection, setIsCheckingConnection] = useState(false);
   const [accounts, setAccounts] = useState<DocusignAccountInfo[]>([]);
   const [accountsLoading, setAccountsLoading] = useState(false);
   const [selectedAccountId, setSelectedAccountId] = useState<string | null>(
@@ -118,39 +121,54 @@ export default function EnvelopeSendDialog() {
     setErrorMessage(null);
   };
 
-  useEffect(() => {
-    const loadAccounts = async () => {
-      setAccountsLoading(true);
-      try {
-        const fetchedAccounts = await getDocusignAccounts(); // Call the server action
-        setAccounts(fetchedAccounts);
-        if (fetchedAccounts.length > 0) {
-          setSelectedAccountId(fetchedAccounts[0].accountId);
-        }
-      } catch (error) {
-        console.error(error);
-        setErrorMessage("Failed to load accounts. Please try again.");
-      } finally {
-        setAccountsLoading(false);
+  const loadAccounts = async () => {
+    setAccountsLoading(true);
+    try {
+      const fetchedAccounts = await getDocusignAccounts();
+      setAccounts(fetchedAccounts);
+      if (fetchedAccounts.length > 0) {
+        setSelectedAccountId(fetchedAccounts[0].accountId);
       }
-    };
-    loadAccounts();
-  }, []);
+    } catch (error) {
+      console.error(error);
+      setErrorMessage("Failed to load accounts. Please try again.");
+    } finally {
+      setAccountsLoading(false);
+    }
+  };
+
+  const checkConnectionAndOpenDialog = async () => {
+    setIsCheckingConnection(true);
+    try {
+      const accountConnected = await isDocusignAccountConnected();
+      if (accountConnected) {
+        await loadAccounts();
+        setDialogOpen(true);
+      } else {
+        await signInAction("docusign");
+      }
+    } catch (error) {
+      console.error("Error checking DocuSign connection:", error);
+      setErrorMessage("Failed to check DocuSign connection. Please try again.");
+    } finally {
+      setIsCheckingConnection(false);
+    }
+  };
 
   useEffect(() => {
-    if (selectedAccountId && dialogOpen && step === "select") {
+    if (dialogOpen && step === "select" && selectedAccountId) {
       void getTemplates(selectedAccountId);
     }
-  }, [selectedAccountId, dialogOpen, step]);
+  }, [dialogOpen, step, selectedAccountId]);
 
   return (
     <div className="">
       <Button
-        onClick={() => setDialogOpen(true)}
-        disabled={accountsLoading || accounts.length === 0}
+        onClick={checkConnectionAndOpenDialog}
+        disabled={isCheckingConnection || accountsLoading}
         variant="outline"
       >
-        {accountsLoading ? (
+        {isCheckingConnection || accountsLoading ? (
           <Loader2 className="h-4 w-4 animate-spin mr-2" />
         ) : null}
         Send Docusign Envelope
