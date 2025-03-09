@@ -13,11 +13,13 @@ import Chat from "@/components/chat";
 import { JobRecipient } from "@/types/database";
 import { Disclaimer } from "@/components/disclaimer";
 import type { Job } from "@/types/database";
+import PDFViewer from "@/components/pdf-viewer";
+import { buttonVariants } from "@/components/ui/button";
 
-async function getRecipientView(
+async function getRecipientViewUrl(
   jobData: Job,
   inviteId: string
-): Promise<docusign.ViewUrl> {
+): Promise<string> {
   if (!jobData.recipients) {
     throw new Error("job does not have any recipients");
   }
@@ -45,13 +47,13 @@ async function getRecipientView(
     clientUserId: signer.clientUserId,
   };
 
-  let recipientView: docusign.ViewUrl | undefined;
   try {
-    recipientView = await envelopesApi.createRecipientView(
+    const recipientView = await envelopesApi.createRecipientView(
       jobData.docu_sign_account_id as string,
       jobData.docu_sign_envelope_id as string,
       { recipientViewRequest: viewRequest }
     );
+    return recipientView.url as string;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error("Axios error response:", error.response);
@@ -60,8 +62,6 @@ async function getRecipientView(
     }
     throw new Error("Error creating recipient view");
   }
-
-  return recipientView;
 }
 
 export default async function SignPage({
@@ -94,22 +94,17 @@ export default async function SignPage({
     throw new Error("Report not found");
   }
 
-  let documentUrl = "";
+  const fileName = jobData.file_name;
+  const storageFilePath = `pdfs/${fileName}`;
+  const { data: signedURLData } = await supabase.storage
+    .from("contracts")
+    .createSignedUrl(storageFilePath, 3600);
+
+  const pdfUrl = signedURLData?.signedUrl as string;
+
+  let docusignSigningUrl = "";
   if (inviteId) {
-    const recipientView = await getRecipientView(jobData, inviteId as string);
-    if (!recipientView.url) {
-      throw new Error("failed to get recipient view url");
-    }
-    documentUrl = recipientView.url;
-  } else {
-    const fileName = jobData.file_name;
-    const storageFilePath = `pdfs/${fileName}`;
-
-    const { data: signedURLData } = await supabase.storage
-      .from("contracts")
-      .createSignedUrl(storageFilePath, 3600);
-
-    documentUrl = signedURLData?.signedUrl as string;
+    docusignSigningUrl = await getRecipientViewUrl(jobData, inviteId as string);
   }
 
   return (
@@ -120,9 +115,7 @@ export default async function SignPage({
             <ResizablePanel defaultSize={50}>
               <div className="flex h-full items-center justify-center">
                 <div className="w-full h-full flex flex-col">
-                  <div
-                    className={`h-[57px] px-[15px] text-3xl font-medium flex items-center border-b bg-[#1a1d20] text-white`}
-                  >
+                  <div className="h-14 px-4 text-3xl font-medium flex items-center border-b bg-[#1a1d20] text-white">
                     DocuInsight
                   </div>
                   <Report data={reportData.final_report} />
@@ -139,8 +132,19 @@ export default async function SignPage({
         </ResizablePanel>
         <ResizableHandle withHandle className="bg-slate-600" />
         <ResizablePanel defaultSize={70} minSize={20}>
-          <div className="flex h-full items-center justify-center">
-            <iframe className="w-full h-full" src={documentUrl} />
+          <div className="flex flex-col h-full items-center justify-center">
+            <PDFViewer pdfUrl={pdfUrl} />
+
+            {docusignSigningUrl && (
+              <div className="h-[54px] border-t-2 w-full flex items-center px-4">
+                <a
+                  className={`ml-auto ${buttonVariants()}`}
+                  href={docusignSigningUrl}
+                >
+                  Sign with DocuSign
+                </a>
+              </div>
+            )}
           </div>
         </ResizablePanel>
       </ResizablePanelGroup>
