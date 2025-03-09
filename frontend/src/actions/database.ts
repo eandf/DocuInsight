@@ -104,3 +104,35 @@ export async function getPdfUrl(fileName: string) {
 
   return pdfUrl;
 }
+
+export async function isDocusignAccountConnected(): Promise<boolean> {
+  const session = await auth();
+  if (!session) {
+    throw new Error("user is not authenticated");
+  }
+
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .schema("next_auth")
+    .from("accounts")
+    .select("*")
+    .eq("userId", session.user?.id);
+
+  if (error) {
+    console.error(`error getting data for user ${session.user?.id}`);
+    throw error;
+  }
+
+  if (!data.length) {
+    return Promise.resolve(false);
+  }
+
+  for (const account of data) {
+    if (account.provider === "docusign") {
+      return Promise.resolve(true);
+    }
+  }
+
+  return Promise.resolve(false);
+}

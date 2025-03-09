@@ -29,10 +29,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
 import { getDocusignAccounts } from "@/actions/docusign";
+import { isDocusignAccountConnected } from "@/actions/database";
+import { signInAction } from "@/actions/auth";
 
 export default function EnvelopeSendDialog() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [accounts, setAccounts] = useState<DocusignAccountInfo[]>([]);
+  const [accountsLoaded, setAccountsLoaded] = useState(false);
   const [accountsLoading, setAccountsLoading] = useState(false);
   const [selectedAccountId, setSelectedAccountId] = useState<string | null>(
     null
@@ -119,35 +122,46 @@ export default function EnvelopeSendDialog() {
   };
 
   useEffect(() => {
-    const loadAccounts = async () => {
-      setAccountsLoading(true);
-      try {
-        const fetchedAccounts = await getDocusignAccounts(); // Call the server action
-        setAccounts(fetchedAccounts);
-        if (fetchedAccounts.length > 0) {
-          setSelectedAccountId(fetchedAccounts[0].accountId);
+    if (dialogOpen && !accountsLoaded) {
+      const loadAccounts = async () => {
+        setAccountsLoading(true);
+        try {
+          const fetchedAccounts = await getDocusignAccounts();
+          setAccounts(fetchedAccounts);
+          if (fetchedAccounts.length > 0) {
+            setSelectedAccountId(fetchedAccounts[0].accountId);
+          }
+          setAccountsLoaded(true); // Mark accounts as loaded
+        } catch (error) {
+          console.error(error);
+          setErrorMessage("Failed to load accounts. Please try again.");
+        } finally {
+          setAccountsLoading(false);
         }
-      } catch (error) {
-        console.error(error);
-        setErrorMessage("Failed to load accounts. Please try again.");
-      } finally {
-        setAccountsLoading(false);
-      }
-    };
-    loadAccounts();
-  }, []);
+      };
 
+      isDocusignAccountConnected().then((accountConnected) => {
+        if (accountConnected) {
+          loadAccounts();
+        } else {
+          signInAction("docusign");
+        }
+      });
+    }
+  }, [dialogOpen, accountsLoaded]);
+
+  // Fetch templates when dialog is open, step is "select", and account is selected
   useEffect(() => {
-    if (selectedAccountId && dialogOpen && step === "select") {
+    if (dialogOpen && step === "select" && selectedAccountId) {
       void getTemplates(selectedAccountId);
     }
-  }, [selectedAccountId, dialogOpen, step]);
+  }, [dialogOpen, step, selectedAccountId]);
 
   return (
     <div className="">
       <Button
         onClick={() => setDialogOpen(true)}
-        disabled={accountsLoading || accounts.length === 0}
+        disabled={accountsLoading}
         variant="outline"
       >
         {accountsLoading ? (
