@@ -1,7 +1,6 @@
 "use client";
 
 export default function PDFViewer({ pdfUrl }: { pdfUrl: string }) {
-  // console.log(pdfUrl);
   const viewerUrl = `/pdfjs/web/viewer.html?file=${encodeURIComponent(pdfUrl)}`;
 
   return (
