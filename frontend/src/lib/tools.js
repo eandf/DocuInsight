@@ -2745,7 +2745,7 @@ async function fetchYouTubeData(videoUrl) {
     } else if (urlObj.hostname.includes("youtu.be")) {
       videoId = urlObj.pathname.substring(1);
     }
-  } catch (err) {
+  } catch {
     throw new Error("invalid YouTube url");
   }
 
