@@ -317,10 +317,6 @@ Document Under Review:
                     )
                 analysis_text = response.choices[0].message.content
 
-            print("\n\n====================================================\n\n")
-            print(analysis_text)
-            print("\n\n====================================================\n\n")
-
             # Now that we have `analysis_text`, let's extract the JSON from it
             extraction_result = self.extract_json_as_dict(analysis_text)
             extracted_dict = extraction_result["extracted_json"]

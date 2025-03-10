@@ -21,9 +21,11 @@ from supabase.lib.client_options import ClientOptions
 from supabase import create_client, Client
 from dotenv import load_dotenv
 from openai import OpenAI
+from groq import Groq
 
 import file_io
 import o_agent
+import g_agent
 import mail
 
 
@@ -586,7 +588,7 @@ def process_single_job(
             )
 
         # create config for OAgent
-        config = o_agent.OAgentConfig(
+        o_config = o_agent.OAgentConfig(
             big_model=big_model_name,
             small_model=small_model_name,
             document_type="UNKNOWN",
@@ -595,12 +597,50 @@ def process_single_job(
             prices=prices,
         )
 
-        # run analysis
-        _trace("Running contract analysis via OAgent.")
-        oagent = o_agent.OAgent(openai_client=openai_client, config=config)
-        output = oagent.run(contract_path=local_file_path)
-        if output.get("error"):
-            raise Exception(f"OAgent error: {output['error']}")
+        # TODO: (3-10-2025) this sucks, but this works.....
+        g_config = g_agent.GAgentConfig(
+            big_model="deepseek-r1-distill-llama-70b",
+            small_model=small_model_name,
+            document_type="UNKNOWN",
+            specific_concerns="UNKNOWN",
+            last_cost_values_set_date="March 10, 2025",
+            prices={
+                "openai": {
+                    "gpt-4o": {"input": 2.5, "output": 10},
+                    "gpt-4o-mini": {"input": 0.15, "output": 0.6},
+                    "o1": {"input": 15, "output": 60},
+                    "o1-preview": {"input": 15, "output": 60},
+                    "o1-mini": {"input": 3, "output": 12},
+                },
+                "groq": {
+                    "deepseek-r1-distill-llama-70b": {"input": 0.75, "output": 0.99}
+                },
+            },
+        )
+
+        # # TODO: (3-10-2025) commented out
+        # # run analysis
+        # _trace("Running contract analysis via OAgent.")
+        # oagent = o_agent.OAgent(openai_client=openai_client, config=o_config)
+        # output = oagent.run(contract_path=local_file_path)
+        # if output.get("error"):
+        #     raise Exception(f"OAgent error: {output['error']}")
+
+        # Run analysis using GAgent first
+        _trace("Running contract analysis via GAgent.")
+        groq_client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+        gagent = g_agent.GAgent(openai_client=openai_client, groq_client=groq_client, config=g_config)
+        output = gagent.run(contract_path=local_file_path)
+
+        # Check for errors or empty report in GAgent output
+        if output.get("error") or not output.get("report"):
+            _trace("GAgent failed or report is empty, switching to OAgent.")
+
+            # Run analysis using OAgent as a fallback
+            oagent = o_agent.OAgent(openai_client=openai_client, config=o_config)
+            output = oagent.run(contract_path=local_file_path)
+            if output.get("error"):
+                raise Exception(f"OAgent error: {output['error']}")
 
         # Update report
         _trace("Updating report with final analysis data.")
