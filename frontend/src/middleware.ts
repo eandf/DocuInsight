@@ -9,12 +9,13 @@ export default auth(async (request) => {
     pathname.startsWith("/auth") ||
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/sign") ||
-    pathname === "/api/chat"
+    pathname.startsWith("/pdfjs") ||
+    pathname === "/api/chat" ||
+    pathname === "/api/docusign/redirect"
   ) {
     return NextResponse.next();
   }
 
-  // all routes are available to authenticated users
   if (request.auth) {
     return NextResponse.next();
   }
