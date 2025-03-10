@@ -101,7 +101,10 @@ export default function SigningView({
             <ResizableHandle withHandle className="bg-slate-600" />
             <ResizablePanel defaultSize={50}>
               <div className="flex h-full items-center justify-center">
-                <Chat contractText={report.contract_content as string} />
+                <Chat 
+                  contractText={report.contract_content as string} 
+                  finalReport={JSON.stringify(report.final_report)} 
+                />
               </div>
             </ResizablePanel>
           </ResizablePanelGroup>

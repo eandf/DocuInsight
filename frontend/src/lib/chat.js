@@ -102,6 +102,8 @@ function getOrInitConversation(
   const now = new Date();
   const utcTime = now.toISOString().replace("T", " ").substring(0, 16) + " UTC";
 
+  finalReport = JSON.parse(finalReport);
+
   if (!sessionStore[sessionId]) {
     sessionStore[sessionId] = [
       {
