@@ -90,3 +90,19 @@ export interface Job {
   created_at: Date;
   updated_at: Date;
 }
+
+export interface WaitlistSurveyResponse {
+  industry: string;
+  linkedinProfileUrl: string;
+  interest: string;
+  questions: string;
+}
+export interface WaitlistEntry {
+  id: string;
+  name: string;
+  email: string;
+  survey_responses: WaitlistSurveyResponse;
+  approved: boolean;
+  created_at: string;
+  updated_at: string;
+}

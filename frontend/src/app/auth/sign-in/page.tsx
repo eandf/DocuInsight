@@ -1,7 +1,9 @@
-import { LoginForm } from "@/components/login-form";
+// import { LoginForm } from "@/components/login-form";
 import { Disclaimer } from "@/components/disclaimer";
 import { ExternalLink } from "lucide-react";
 import Image from "next/image";
+// import { WaitlistForm } from "@/components/waitlist-form";
+import TestForm from "@/components/test-form";
 
 export default function SignInPage() {
   return (
@@ -19,17 +21,15 @@ export default function SignInPage() {
             DocuInsight
           </a>
         </div>
-        
+
         {/* Spacer element */}
         <div className="h-8"></div>
-        
+
         <div className="flex flex-1 items-center justify-center flex-col mt-8">
-          <div className="w-full max-w-xs">
-            <LoginForm />
-          </div>
+          <TestForm />
         </div>
         <div className="flex flex-col items-start space-y-2 text-sm">
-          <a
+          {/* <a
             href="https://support.docusign.com/s/document-item?bundleId=xry1643227563338&topicId=dqj1578456412286.html&_LANG=enus&language=en_US&rsc_301="
             target="_blank"
             rel="noopener noreferrer"
@@ -37,7 +37,7 @@ export default function SignInPage() {
           >
             Docusign - Working With Templates
             <ExternalLink className="ml-1 h-4 w-4" />
-          </a>
+          </a> */}
           <a
             href="https://forms.gle/jYdEvAedLm3Uc8416"
             target="_blank"
