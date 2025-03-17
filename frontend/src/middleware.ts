@@ -11,7 +11,8 @@ export default auth(async (request) => {
     pathname.startsWith("/sign") ||
     pathname.startsWith("/pdfjs") ||
     pathname === "/api/chat" ||
-    pathname === "/api/docusign/redirect"
+    pathname === "/api/docusign/redirect" ||
+    pathname.startsWith("/demo")
   ) {
     return NextResponse.next();
   }
