@@ -1,7 +1,5 @@
 "use client";
 
-import type React from "react";
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,7 +31,7 @@ const formSchema = z.object({
   questions: z.string().optional(),
 });
 
-export default function TestForm() {
+export default function SigninForm() {
   const [email, setEmail] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isApproved, setIsApproved] = useState(false);

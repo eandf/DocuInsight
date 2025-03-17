@@ -3,7 +3,7 @@ import { Disclaimer } from "@/components/disclaimer";
 import { ExternalLink } from "lucide-react";
 import Image from "next/image";
 // import { WaitlistForm } from "@/components/waitlist-form";
-import TestForm from "@/components/test-form";
+import SigninForm from "@/components/signin-form";
 
 export default function SignInPage() {
   return (
@@ -26,7 +26,7 @@ export default function SignInPage() {
         <div className="h-8"></div>
 
         <div className="flex flex-1 items-center justify-center flex-col mt-8">
-          <TestForm />
+          <SigninForm />
         </div>
         <div className="flex flex-col items-start space-y-2 text-sm">
           {/* <a
