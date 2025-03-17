@@ -1,18 +1,12 @@
 "use client";
 
+import type React from "react";
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { CheckCircle, Mail, FileText, ArrowLeft } from "lucide-react";
 import { z } from "zod";
 import {
@@ -133,12 +127,12 @@ export default function SigninForm() {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle>
+    <div className="w-full max-w-md mx-auto">
+      <div className="space-y-2 p-6">
+        <h2 className="text-2xl font-semibold leading-none tracking-tight">
           {showWaitlistForm ? "Join Our Waitlist" : "Welcome"}
-        </CardTitle>
-        <CardDescription>
+        </h2>
+        <p className="text-sm text-muted-foreground">
           {!isSubmitted
             ? "Enter your email to continue"
             : isApproved
@@ -148,9 +142,9 @@ export default function SigninForm() {
             : showWaitlistForm
             ? "Be one of the first users of DocuInsight"
             : "You're not on our approved list yet"}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+        </p>
+      </div>
+      <div className="p-6 pt-0">
         {!isSubmitted ? (
           <form onSubmit={handleInitialSubmit} className="space-y-4">
             <div className="space-y-2">
@@ -336,21 +330,27 @@ export default function SigninForm() {
             Join Waitlist
           </Button>
         )}
-      </CardContent>
-      {isSubmitted && !showWaitlistForm && (
-        <CardFooter className="flex justify-center">
-          {isApproved ? (
-            <div className="flex items-center text-sm text-green-600">
-              <CheckCircle className="mr-1" size={16} />
-              Your email is approved
-            </div>
-          ) : (
-            <Button variant="link" className="text-sm p-0" onClick={resetForm}>
-              Try a different email
-            </Button>
-          )}
-        </CardFooter>
-      )}
-    </Card>
+      </div>
+      <div className="flex justify-center p-6 pt-0">
+        {isSubmitted && !showWaitlistForm && (
+          <div className="flex justify-center">
+            {isApproved ? (
+              <div className="flex items-center text-sm text-green-600">
+                <CheckCircle className="mr-1" size={16} />
+                Your email is approved
+              </div>
+            ) : (
+              <Button
+                variant="link"
+                className="text-sm p-0"
+                onClick={resetForm}
+              >
+                Try a different email
+              </Button>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
