@@ -196,6 +196,16 @@ CREATE TABLE public.jobs (
         ON DELETE SET NULL
 );
 
+create table public.waitlist (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name text not null,
+  email text not null,
+  survey_responses jsonb,
+  approved boolean default false,
+  created_at timestamptz default current_timestamp,
+  updated_at timestamptz default current_timestamp
+);
+
 --
 -- Done.
 --
