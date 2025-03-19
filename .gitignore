@@ -16,3 +16,4 @@ analyzer/pdfs/*
 *.log
 nohup.out
 pointers/
+analyzer/private/
