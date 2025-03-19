@@ -17,3 +17,5 @@ analyzer/pdfs/*
 nohup.out
 pointers/
 analyzer/private/
+.private/
+private/
