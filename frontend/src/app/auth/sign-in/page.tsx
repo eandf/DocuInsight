@@ -52,7 +52,7 @@ export default function SignInPage() {
       <div className="relative bg-muted flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           <iframe
-            src={process.env.NEXT_PUBLIC_DEMO_VIDEO_URL}
+            src="https://www.youtube.com/embed/XpOqN_SWHrI?si=sjst9bV9L-dnibRy"
             title="YouTube video player"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             referrerPolicy="strict-origin-when-cross-origin"
