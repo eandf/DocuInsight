@@ -66,6 +66,12 @@ To set up and run this project, follow the instructions in the respective compon
 - **Database:** [database/README.md](/database/README.md)
 - **Analyzer:** [analyzer/README.md](/analyzer/README.md)
 
+Also, if you want a quick overview of the **waitlist** table for DocuInsight, you can make sure to setup the [Analyzer](analyzer/README.md) service which includes installing all the Python dependencies and the environment variables. Then, make sure to be in the root directory for this repo/project and run the following script:
+
+```bash
+python3 waitlist_view.py
+```
+
 ## Helpful Resources
 
 - [OpenAI API Reference](https://platform.openai.com/docs/api-reference/introduction)
