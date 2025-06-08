@@ -1,6 +1,5 @@
 // import { LoginForm } from "@/components/login-form";
 import { Disclaimer } from "@/components/disclaimer";
-import { ExternalLink } from "lucide-react";
 import Image from "next/image";
 // import { WaitlistForm } from "@/components/waitlist-form";
 import SigninForm from "@/components/signin-form";
