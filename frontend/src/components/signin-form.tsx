@@ -7,7 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { CheckCircle, Mail, FileText, ArrowLeft } from "lucide-react";
+import {
+  CheckCircle,
+  Mail,
+  FileText,
+  ArrowLeft,
+  ExternalLink,
+} from "lucide-react";
 import { z } from "zod";
 import {
   addToWaitlist,
@@ -128,20 +134,36 @@ export default function SigninForm() {
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className="space-y-2 p-6">
+      <div className="space-y-2 p-6 pb-4">
         <h2 className="text-2xl font-semibold leading-none tracking-tight">
           {showWaitlistForm ? "Join Our Waitlist" : "Welcome"}
         </h2>
         <p className="text-sm text-muted-foreground">
-          {!isSubmitted
-            ? "Enter your email to continue"
-            : isApproved
-            ? "You're approved! Choose how to sign in"
-            : isOnWaitlist
-            ? "You're already on our waitlist"
-            : showWaitlistForm
-            ? "Be one of the first users of DocuInsight"
-            : "You're not on our approved list yet"}
+          {!isSubmitted ? (
+            <>
+              <a
+                href="https://www.docuinsight.ai/sign?job=ad255894-4dd1-4677-b564-c83815f15c53"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline font-bold inline-flex items-center"
+              >
+                Try the live demo!
+                <ExternalLink className="ml-1 h-4 w-4" />
+              </a>
+              <span className="font-bold">
+                {" "}
+                And join the waitlist for early full access!
+              </span>
+            </>
+          ) : isApproved ? (
+            "You're approved! Choose how to sign in"
+          ) : isOnWaitlist ? (
+            "You're already on our waitlist"
+          ) : showWaitlistForm ? (
+            "Be one of the first users of DocuInsight"
+          ) : (
+            "You're not on our approved list yet"
+          )}
         </p>
       </div>
       <div className="p-6 pt-0">
@@ -164,6 +186,17 @@ export default function SigninForm() {
             >
               {isLoading ? "Checking..." : "Continue"}
             </Button>
+            <div>
+              <a
+                href="https://forms.gle/jYdEvAedLm3Uc8416"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline inline-flex items-center text-sm"
+              >
+                Contact Us
+                <ExternalLink className="ml-1 h-4 w-4" />
+              </a>
+            </div>
           </form>
         ) : isApproved ? (
           <div className="space-y-3">

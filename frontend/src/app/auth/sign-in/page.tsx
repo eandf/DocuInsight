@@ -38,15 +38,6 @@ export default function SignInPage() {
             Docusign - Working With Templates
             <ExternalLink className="ml-1 h-4 w-4" />
           </a> */}
-          <a
-            href="https://forms.gle/jYdEvAedLm3Uc8416"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary hover:underline inline-flex items-center"
-          >
-            Contact Us
-            <ExternalLink className="ml-1 h-4 w-4" />
-          </a>
         </div>
       </div>
       <div className="relative bg-muted flex items-center justify-center overflow-hidden">
