@@ -20,3 +20,6 @@ analyzer/private/
 .private/
 private/
 count.txt
+.claude/
+.gemini/
+.cursor/

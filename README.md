@@ -1,4 +1,5 @@
 <h1 align="center">DocuInsight</h1>
+
 <p align="center">
     <img width="200" src="./assets/images/logo.png" alt="DocuInsight Logo">
 </p>
@@ -15,11 +16,7 @@
 
 ## About
 
-DocuInsight leverages the power of the OpenAI API to analyze contracts and provide AI-generated insights, helping signers better understand the agreements they are entering into. Integrated with the DocuSign eSignature API, DocuInsight displays these insights alongside an embedded DocuSign signing session, ensuring that signers have quick and easy access to important information. Additionally, a chatbot is available to answer questions about the contract and assist users in finding legal counsel in real-time.
-
-Visit our website: [docuinsight.ai](https://docuinsight.ai)
-
-Check out our [live demo](https://www.docuinsight.ai/sign?job=a070d50e-11dd-4bdc-b679-4182e7a303f4&invite=aa949bb8-11f0-4c66-a506-8d3946000432)
+DocuInsight leverages the power of the OpenAI API to analyze contracts and provide AI-generated insights, helping signers better understand the agreements they are entering into. Integrated with the DocuSign eSignature API, DocuInsight displays these insights alongside an embedded DocuSign signing session, ensuring that signers have quick and easy access to important information. Additionally, a chatbot is available to answer questions about the contract and assist users in finding legal counsel in real-time. The site is live and you can visit it at [docuinsight.ai](https://docuinsight.ai) and checkout the [live demo](https://www.docuinsight.ai/sign?job=a070d50e-11dd-4bdc-b679-4182e7a303f4&invite=aa949bb8-11f0-4c66-a506-8d3946000432) to get an idea of how DocuInsight works.
 
 ## Events
 
