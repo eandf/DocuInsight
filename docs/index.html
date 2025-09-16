@@ -771,7 +771,7 @@
         </p>
         <div class="status-badge">
           <span class="status-indicator"></span>
-          Project Retired - May 2025
+          Project Retired On May 2025
         </div>
         <div class="hero-buttons">
           <a href="#about" class="btn btn-primary">Learn Our Story</a>
@@ -939,6 +939,58 @@
       </div>
     </section>
 
+    <!-- Open Source -->
+    <section id="opensource" class="section">
+      <div class="container">
+        <div class="section-header fade-in">
+          <h2 class="section-title">Now Open Source</h2>
+          <p class="section-subtitle">
+            Since we're shutting down, we're making the entire DocuInsight
+            codebase open source. Learn from our code and our mistakes.
+          </p>
+        </div>
+
+        <div class="content-grid">
+          <a
+            href="https://github.com/eandf/DocuInsight"
+            class="content-card fade-in"
+            style="text-decoration: none; color: inherit; display: block"
+          >
+            <div class="card-icon">🔓</div>
+            <h3 class="card-title">Full Source Code</h3>
+            <p class="card-text">
+              Complete Next.js frontend, Python analyzer, and database schemas.
+              See how we integrated DocuSign, OpenAI, and built real-time chat.
+            </p>
+          </a>
+          <a
+            href="https://github.com/eandf/DocuInsight/blob/main/README.md"
+            class="content-card fade-in"
+            style="text-decoration: none; color: inherit; display: block"
+          >
+            <div class="card-icon">📚</div>
+            <h3 class="card-title">Documentation</h3>
+            <p class="card-text">
+              Comprehensive setup guides, API documentation, and deployment
+              instructions. Everything you need to run DocuInsight locally.
+            </p>
+          </a>
+          <a
+            href="#about"
+            class="content-card fade-in"
+            style="text-decoration: none; color: inherit; display: block"
+          >
+            <div class="card-icon">🎬</div>
+            <h3 class="card-title">Demo & Videos</h3>
+            <p class="card-text">
+              Watch our demo videos to see the platform in action. Great for
+              understanding the user experience we built.
+            </p>
+          </a>
+        </div>
+      </div>
+    </section>
+
     <!-- Technical Architecture -->
     <section id="tech" class="section">
       <div class="container">
@@ -951,405 +1003,193 @@
         </div>
 
         <div class="content-grid">
-          <div class="content-card fade-in">
-            <div class="card-icon">🌐</div>
-            <h3 class="card-title">Frontend (Next.js)</h3>
-            <p class="card-text">
-              Built with Next.js 15, TypeScript, React, and Tailwind CSS.
-              Handled user authentication, DocuSign integration, and real-time
-              chat interface.
+          <div
+            class="content-card fade-in"
+            style="
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              color: white;
+              position: relative;
+              overflow: hidden;
+            "
+          >
+            <div
+              style="
+                position: absolute;
+                top: -50px;
+                right: -50px;
+                width: 100px;
+                height: 100px;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 50%;
+              "
+            ></div>
+            <div
+              class="card-icon"
+              style="background: rgba(255, 255, 255, 0.2); color: white"
+            >
+              🌐
+            </div>
+            <h3 class="card-title" style="color: white; margin-bottom: 0.5rem">
+              Frontend
+            </h3>
+            <p
+              style="
+                color: rgba(255, 255, 255, 0.9);
+                font-size: 0.95rem;
+                margin-bottom: 1.5rem;
+                font-weight: 500;
+              "
+            >
+              Next.js 15 + TypeScript Application
             </p>
-            <div class="tech-stack">
+            <div class="tech-stack" style="margin-bottom: 1rem">
               <span class="tech-tag">Next.js</span>
               <span class="tech-tag">TypeScript</span>
               <span class="tech-tag">React</span>
               <span class="tech-tag">Tailwind CSS</span>
               <span class="tech-tag">Auth.js</span>
             </div>
+            <div
+              style="
+                background: rgba(255, 255, 255, 0.1);
+                padding: 1rem;
+                border-radius: 0.75rem;
+                backdrop-filter: blur(10px);
+                font-size: 0.9rem;
+                line-height: 1.4;
+              "
+            >
+              <strong>Features:</strong> DocuSign integration, NextAuth with
+              OIDC & magic links, PDF.js viewer, real-time chat interface, file
+              upload handling <br /><br />
+              <strong>Deployed:</strong> Vercel with custom domain
+            </div>
           </div>
-          <div class="content-card fade-in">
-            <div class="card-icon">🔬</div>
-            <h3 class="card-title">Analyzer (Python)</h3>
-            <p class="card-text">
-              Python backend that processed contracts using OpenAI's o1-preview
-              model (with Groq's deepseek-r1-distill-llama-70b as an
-              alternative). Handled document parsing (PDF, DOCX, DOC) and
-              generated insights.
+
+          <div
+            class="content-card fade-in"
+            style="
+              background: linear-gradient(135deg, #8b4513 0%, #cd853f 100%);
+              color: white;
+              position: relative;
+              overflow: hidden;
+            "
+          >
+            <div
+              style="
+                position: absolute;
+                top: -50px;
+                right: -50px;
+                width: 100px;
+                height: 100px;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 50%;
+              "
+            ></div>
+            <div
+              class="card-icon"
+              style="background: rgba(255, 255, 255, 0.2); color: white"
+            >
+              🔬
+            </div>
+            <h3 class="card-title" style="color: white; margin-bottom: 0.5rem">
+              Analyzer
+            </h3>
+            <p
+              style="
+                color: rgba(255, 255, 255, 0.9);
+                font-size: 0.95rem;
+                margin-bottom: 1.5rem;
+                font-weight: 500;
+              "
+            >
+              Python Analysis Service
             </p>
-            <div class="tech-stack">
+            <div class="tech-stack" style="margin-bottom: 1rem">
               <span class="tech-tag">Python</span>
               <span class="tech-tag">OpenAI API</span>
               <span class="tech-tag">Groq API</span>
               <span class="tech-tag">PyMuPDF</span>
               <span class="tech-tag">python-docx</span>
-              <span class="tech-tag">Resend</span>
+            </div>
+            <div
+              style="
+                background: rgba(255, 255, 255, 0.1);
+                padding: 1rem;
+                border-radius: 0.75rem;
+                backdrop-filter: blur(10px);
+                font-size: 0.9rem;
+                line-height: 1.4;
+              "
+            >
+              <strong>AI Models:</strong> OpenAI (o1-preview, gpt-4o,
+              gpt-4o-mini) & Groq (deepseek-r1-distill-llama-70b) <br /><br />
+              <strong>Processing:</strong> PDF/DOCX parsing, contract analysis,
+              Discord alerts <br /><br />
+              <strong>Deployed:</strong> Linode Ubuntu VPS (16GB RAM)
             </div>
           </div>
-          <div class="content-card fade-in">
-            <div class="card-icon">🗄️</div>
-            <h3 class="card-title">Database (Supabase)</h3>
-            <p class="card-text">
-              PostgreSQL database hosted on Supabase with tables for users,
-              jobs, and reports. Used for authentication and storing analysis
-              results.
-            </p>
-            <div class="tech-stack">
-              <span class="tech-tag">PostgreSQL</span>
-              <span class="tech-tag">Supabase</span>
-              <span class="tech-tag">Auth.js</span>
-            </div>
-          </div>
-        </div>
 
-        <div class="fade-in">
-          <h3
+          <div
+            class="content-card fade-in"
             style="
-              margin: 3rem 0 2rem;
-              font-size: 1.75rem;
-              font-weight: 600;
-              text-align: center;
-              color: var(--text-primary);
+              background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+              color: white;
+              position: relative;
+              overflow: hidden;
             "
           >
-            Architecture Overview
-          </h3>
-
-          <!-- Main Architecture Cards -->
-          <div class="content-grid" style="margin-bottom: 3rem">
             <div
-              class="content-card"
               style="
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                color: white;
-                position: relative;
-                overflow: hidden;
+                position: absolute;
+                top: -50px;
+                right: -50px;
+                width: 100px;
+                height: 100px;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 50%;
+              "
+            ></div>
+            <div
+              class="card-icon"
+              style="background: rgba(255, 255, 255, 0.2); color: white"
+            >
+              🗄️
+            </div>
+            <h3 class="card-title" style="color: white; margin-bottom: 0.5rem">
+              Database
+            </h3>
+            <p
+              style="
+                color: rgba(255, 255, 255, 0.9);
+                font-size: 0.95rem;
+                margin-bottom: 1.5rem;
+                font-weight: 500;
               "
             >
-              <div
-                style="
-                  position: absolute;
-                  top: -50px;
-                  right: -50px;
-                  width: 100px;
-                  height: 100px;
-                  background: rgba(255, 255, 255, 0.1);
-                  border-radius: 50%;
-                "
-              ></div>
-              <div
-                class="card-icon"
-                style="background: rgba(255, 255, 255, 0.2); color: white"
-              >
-                🌐
-              </div>
-              <h3
-                class="card-title"
-                style="color: white; margin-bottom: 0.5rem"
-              >
-                Frontend
-              </h3>
-              <p
-                style="
-                  color: rgba(255, 255, 255, 0.9);
-                  font-size: 0.95rem;
-                  margin-bottom: 1.5rem;
-                  font-weight: 500;
-                "
-              >
-                TypeScript + Next.js Application
-              </p>
-              <div
-                style="
-                  background: rgba(255, 255, 255, 0.1);
-                  padding: 1rem;
-                  border-radius: 0.75rem;
-                  backdrop-filter: blur(10px);
-                "
-              >
-                <div
-                  style="
-                    display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-                    gap: 1rem;
-                    font-size: 0.85rem;
-                    line-height: 1.4;
-                  "
-                >
-                  <div>
-                    <strong style="color: rgba(255, 255, 255, 0.9)"
-                      >Authentication</strong
-                    ><br />
-                    NextAuth, DocuSign OIDC, Resend Magic Links
-                  </div>
-                  <div>
-                    <strong style="color: rgba(255, 255, 255, 0.9)">APIs</strong
-                    ><br />
-                    DocuSign, Supabase, OpenAI, Groq, Resend
-                  </div>
-                  <div>
-                    <strong style="color: rgba(255, 255, 255, 0.9)"
-                      >Features</strong
-                    ><br />
-                    PDF.js viewer, Real-time chat, File upload
-                  </div>
-                </div>
-              </div>
-              <div
-                style="
-                  margin-top: 1rem;
-                  text-align: center;
-                  background: rgba(255, 255, 255, 0.1);
-                  padding: 0.5rem;
-                  border-radius: 0.5rem;
-                "
-              >
-                <strong style="font-size: 0.9rem">Deployed on Vercel</strong>
-              </div>
+              PostgreSQL on Supabase
+            </p>
+            <div class="tech-stack" style="margin-bottom: 1rem">
+              <span class="tech-tag">PostgreSQL</span>
+              <span class="tech-tag">Supabase</span>
+              <span class="tech-tag">Auth.js Adapter</span>
             </div>
-
             <div
-              class="content-card"
               style="
-                background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-                color: white;
-                position: relative;
-                overflow: hidden;
+                background: rgba(255, 255, 255, 0.1);
+                padding: 1rem;
+                border-radius: 0.75rem;
+                backdrop-filter: blur(10px);
+                font-size: 0.9rem;
+                line-height: 1.4;
               "
             >
-              <div
-                style="
-                  position: absolute;
-                  top: -50px;
-                  right: -50px;
-                  width: 100px;
-                  height: 100px;
-                  background: rgba(255, 255, 255, 0.1);
-                  border-radius: 50%;
-                "
-              ></div>
-              <div
-                class="card-icon"
-                style="background: rgba(255, 255, 255, 0.2); color: white"
-              >
-                🗄️
-              </div>
-              <h3
-                class="card-title"
-                style="color: white; margin-bottom: 0.5rem"
-              >
-                Database
-              </h3>
-              <p
-                style="
-                  color: rgba(255, 255, 255, 0.9);
-                  font-size: 0.95rem;
-                  margin-bottom: 1.5rem;
-                  font-weight: 500;
-                "
-              >
-                PostgreSQL on Supabase
-              </p>
-              <div
-                style="
-                  background: rgba(255, 255, 255, 0.1);
-                  padding: 1rem;
-                  border-radius: 0.75rem;
-                  backdrop-filter: blur(10px);
-                "
-              >
-                <div
-                  style="
-                    display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-                    gap: 1rem;
-                    font-size: 0.85rem;
-                    line-height: 1.4;
-                  "
-                >
-                  <div>
-                    <strong style="color: rgba(255, 255, 255, 0.9)"
-                      >User Data</strong
-                    ><br />
-                    Accounts, sessions, auth tokens
-                  </div>
-                  <div>
-                    <strong style="color: rgba(255, 255, 255, 0.9)">Jobs</strong
-                    ><br />
-                    Contract analysis queue, status tracking
-                  </div>
-                  <div>
-                    <strong style="color: rgba(255, 255, 255, 0.9)"
-                      >Reports</strong
-                    ><br />
-                    AI-generated insights, analysis results
-                  </div>
-                </div>
-              </div>
-              <div
-                style="
-                  margin-top: 1rem;
-                  text-align: center;
-                  background: rgba(255, 255, 255, 0.1);
-                  padding: 0.5rem;
-                  border-radius: 0.5rem;
-                "
-              >
-                <strong style="font-size: 0.9rem"
-                  >Hosted on Supabase Cloud</strong
-                >
-              </div>
+              <strong>Tables:</strong> Users, accounts, sessions, jobs, reports
+              <br /><br />
+              <strong>Features:</strong> Auth token management, analysis results
+              storage, job queue tracking <br /><br />
+              <strong>Deployed:</strong> Supabase Cloud
             </div>
-
-            <div
-              class="content-card"
-              style="
-                background: linear-gradient(135deg, #8b4513 0%, #cd853f 100%);
-                color: white;
-                position: relative;
-                overflow: hidden;
-              "
-            >
-              <div
-                style="
-                  position: absolute;
-                  top: -50px;
-                  right: -50px;
-                  width: 100px;
-                  height: 100px;
-                  background: rgba(255, 255, 255, 0.1);
-                  border-radius: 50%;
-                "
-              ></div>
-              <div
-                class="card-icon"
-                style="background: rgba(255, 255, 255, 0.2); color: white"
-              >
-                🔬
-              </div>
-              <h3
-                class="card-title"
-                style="color: white; margin-bottom: 0.5rem"
-              >
-                Analyzer
-              </h3>
-              <p
-                style="
-                  color: rgba(255, 255, 255, 0.9);
-                  font-size: 0.95rem;
-                  margin-bottom: 1.5rem;
-                  font-weight: 500;
-                "
-              >
-                Python Analysis Service
-              </p>
-              <div
-                style="
-                  background: rgba(255, 255, 255, 0.1);
-                  padding: 1rem;
-                  border-radius: 0.75rem;
-                  backdrop-filter: blur(10px);
-                "
-              >
-                <div
-                  style="
-                    display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-                    gap: 1rem;
-                    font-size: 0.85rem;
-                    line-height: 1.4;
-                  "
-                >
-                  <div>
-                    <strong style="color: rgba(255, 255, 255, 0.9)"
-                      >AI Models</strong
-                    ><br />
-                    OpenAI, Groq LLMs for analysis
-                  </div>
-                  <div>
-                    <strong style="color: rgba(255, 255, 255, 0.9)"
-                      >Processing</strong
-                    ><br />
-                    PDF, DOCX parsing, text extraction
-                  </div>
-                  <div>
-                    <strong style="color: rgba(255, 255, 255, 0.9)"
-                      >Monitoring</strong
-                    ><br />
-                    Discord alerts, email notifications
-                  </div>
-                </div>
-              </div>
-              <div
-                style="
-                  margin-top: 1rem;
-                  text-align: center;
-                  background: rgba(255, 255, 255, 0.1);
-                  padding: 0.5rem;
-                  border-radius: 0.5rem;
-                "
-              >
-                <strong style="font-size: 0.9rem"
-                  >Running on Linode Ubuntu VPS</strong
-                >
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="content-grid">
-          <div class="content-card fade-in">
-            <div class="card-icon">🤖</div>
-            <h3 class="card-title">LLM Models Used</h3>
-            <p class="card-text">
-              DocuInsight leveraged multiple AI models for contract analysis. We
-              used
-              <strong>OpenAI's models</strong> including gpt-4o, gpt-4o-mini,
-              o1, o1-preview, and o1-mini for comprehensive text analysis and
-              chat functionality. Additionally, we integrated
-              <strong>Groq's deepseek-r1-distill-llama-70b</strong>
-              model for cost-effective processing and faster response times in
-              certain analysis workflows.
-            </p>
-          </div>
-          <div class="content-card fade-in">
-            <div class="card-icon">🔐</div>
-            <h3 class="card-title">Authentication System</h3>
-            <p class="card-text">
-              Authentication was handled using
-              <strong>NextAuth</strong> with two primary providers:
-              <strong>DocuSign OIDC</strong> for seamless integration with
-              DocuSign accounts, and <strong>Resend</strong> for email magic
-              link sign-in. User sessions and authentication data were stored in
-              Supabase using the <code>@auth/supabase-adapter</code>, with
-              automatic DocuSign token refresh managed through the
-              <code>getAccessToken</code> function.
-            </p>
-          </div>
-          <div class="content-card fade-in">
-            <div class="card-icon">🔗</div>
-            <h3 class="card-title">Key Integrations</h3>
-            <p class="card-text">
-              The platform integrated with several external services:
-              <strong>DocuSign eSignature API</strong> for template access and
-              signing workflows, <strong>Supabase</strong> for database
-              operations and auth adapter functionality,
-              <strong>Discord Webhooks</strong> for real-time failure alerts,
-              and <strong>PDF.js</strong> for in-browser PDF document viewing.
-              Email notifications were handled through the
-              <strong>Resend API</strong>.
-            </p>
-          </div>
-          <div class="content-card fade-in">
-            <div class="card-icon">🚀</div>
-            <h3 class="card-title">Deployment & Infrastructure</h3>
-            <p class="card-text">
-              The <strong>frontend</strong> was deployed on Vercel with a custom
-              domain, the <strong>database</strong> was hosted on Supabase Cloud
-              using PostgreSQL, and the <strong>analyzer service</strong> ran on
-              a Linode Ubuntu VPS with 16GB RAM. System monitoring was
-              implemented through Discord webhooks that provided instant failure
-              notifications, allowing for rapid response to any system issues.
-            </p>
           </div>
         </div>
       </div>
@@ -1465,6 +1305,29 @@
             <div class="journey-icon">⚡</div>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- Why We Failed -->
+    <section id="failure" class="section">
+      <div class="container">
+        <div class="section-header fade-in">
+          <h2 class="section-title">Why DocuInsight Failed</h2>
+          <p class="section-subtitle">
+            An honest post-mortem of what went wrong and why we decided to shut
+            down.
+          </p>
+        </div>
+
+        <div class="warning-box fade-in">
+          <div class="warning-title">The Hard Truth</div>
+          <p>
+            DocuInsight wasn't killed because it was bad sense it actually
+            worked well. We killed it because we realized it couldn't become a
+            venture-scale business. Better to cut losses early and reallocate
+            energy to higher-potential projects.
+          </p>
+        </div>
 
         <div class="content-grid">
           <div class="content-card fade-in">
@@ -1506,22 +1369,6 @@
               - Drive Capital
             </p>
           </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Why We Failed -->
-    <section id="failure" class="section">
-      <div class="container">
-        <div class="section-header fade-in">
-          <h2 class="section-title">Why DocuInsight Failed</h2>
-          <p class="section-subtitle">
-            An honest post-mortem of what went wrong and why we decided to shut
-            down.
-          </p>
-        </div>
-
-        <div class="content-grid">
           <div class="content-card fade-in">
             <div class="card-icon">🎯</div>
             <h3 class="card-title">Wrong Market Fit</h3>
@@ -1571,16 +1418,6 @@
               for a hackathon, not mission-driven for the long haul.
             </p>
           </div>
-        </div>
-
-        <div class="warning-box fade-in">
-          <div class="warning-title">The Hard Truth</div>
-          <p>
-            DocuInsight wasn't killed because it was bad sense it actually
-            worked well. We killed it because we realized it couldn't become a
-            venture-scale business. Better to cut losses early and reallocate
-            energy to higher-potential projects.
-          </p>
         </div>
       </div>
     </section>
@@ -1647,92 +1484,6 @@
               Sunk cost fallacy is real and dangerous.
             </p>
           </div>
-        </div>
-
-        <div
-          class="fade-in"
-          style="
-            background: var(--bg-secondary);
-            padding: 2rem;
-            border-radius: 1rem;
-            margin-top: 3rem;
-            text-align: center;
-          "
-        >
-          <h3
-            style="
-              font-size: 1.5rem;
-              margin-bottom: 1rem;
-              color: var(--text-primary);
-            "
-          >
-            Our Biggest Learning
-          </h3>
-          <p
-            style="
-              font-size: 1.2rem;
-              color: var(--text-secondary);
-              font-style: italic;
-              max-width: 600px;
-              margin: 0 auto;
-            "
-          >
-            "Building something people want" is harder than "building something
-            that works". Technical execution is only 20% of the challenge well
-            finding product-market fit is the other 80%.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Open Source -->
-    <section id="opensource" class="section">
-      <div class="container">
-        <div class="section-header fade-in">
-          <h2 class="section-title">Now Open Source</h2>
-          <p class="section-subtitle">
-            Since we're shutting down, we're making the entire DocuInsight
-            codebase open source. Learn from our code and our mistakes.
-          </p>
-        </div>
-
-        <div class="content-grid">
-          <a
-            href="https://github.com/eandf/DocuInsight"
-            class="content-card fade-in"
-            style="text-decoration: none; color: inherit; display: block"
-          >
-            <div class="card-icon">🔓</div>
-            <h3 class="card-title">Full Source Code</h3>
-            <p class="card-text">
-              Complete Next.js frontend, Python analyzer, and database schemas.
-              See how we integrated DocuSign, OpenAI, and built real-time chat.
-            </p>
-          </a>
-          <a
-            href="https://github.com/eandf/DocuInsight/blob/main/README.md"
-            class="content-card fade-in"
-            style="text-decoration: none; color: inherit; display: block"
-          >
-            <div class="card-icon">📚</div>
-            <h3 class="card-title">Documentation</h3>
-            <p class="card-text">
-              Comprehensive setup guides, API documentation, and deployment
-              instructions. Everything you need to run DocuInsight locally.
-            </p>
-          </a>
-          <a
-            href="#about"
-            class="content-card fade-in"
-            style="text-decoration: none; color: inherit; display: block"
-          >
-            <div class="card-icon">🎬</div>
-            <h3 class="card-title">Demo & Videos</h3>
-            <p class="card-text">
-              Watch our demo videos to see the platform in action. Great for
-              understanding the user experience we built.
-            </p>
-          </a>
         </div>
       </div>
     </section>
