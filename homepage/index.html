@@ -1,0 +1,1850 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+    />
+    <title>DocuInsight (Retired)</title>
+    <meta
+      name="description"
+      content="DocuInsight was an AI-powered contract intelligence platform that integrated with DocuSign. Learn about our journey, what we built, why we failed, and lessons learned."
+    />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://docuinsight.ai/" />
+    <meta property="og:title" content="DocuInsight (Retired)" />
+    <meta
+      property="og:description"
+      content="DocuInsight was an AI-powered contract intelligence platform that integrated with DocuSign. Learn about our journey, what we built, why we failed, and lessons learned."
+    />
+    <meta property="og:image" content="https://docuinsight.ai/thumbnail.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://docuinsight.ai/" />
+    <meta property="twitter:title" content="DocuInsight (Retired)" />
+    <meta
+      property="twitter:description"
+      content="DocuInsight was an AI-powered contract intelligence platform that integrated with DocuSign. Learn about our journey, what we built, why we failed, and lessons learned."
+    />
+    <meta
+      property="twitter:image"
+      content="https://docuinsight.ai/thumbnail.png"
+    />
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+    <link rel="manifest" href="site.webmanifest" />
+    <link rel="shortcut icon" href="favicon.ico" />
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --primary-color: #2563eb;
+        --secondary-color: #64748b;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --bg-primary: #ffffff;
+        --bg-secondary: #f8fafc;
+        --border-color: #e2e8f0;
+        --red-color: #dc2626;
+        --green-color: #16a34a;
+        --warning-color: #d97706;
+        --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+          0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+          0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1),
+          0 8px 10px -6px rgb(0 0 0 / 0.1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      /* Hide scrollbar for Chrome, Safari and Opera */
+      ::-webkit-scrollbar {
+        display: none;
+      }
+
+      /* Hide scrollbar for IE, Edge and Firefox */
+      html {
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+      }
+
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        line-height: 1.6;
+        color: var(--text-primary);
+        background-color: var(--bg-primary);
+        overflow-x: hidden;
+      }
+
+      /* Navigation */
+      .nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border-color);
+        z-index: 1000;
+        padding: 0.5rem 0;
+        transition: all 0.3s ease;
+      }
+
+      .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: var(--text-primary);
+        text-decoration: none;
+      }
+
+      .logo img {
+        height: 32px;
+        width: auto;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 0.75rem;
+      }
+
+      .nav-links:last-child {
+        justify-content: flex-end;
+      }
+
+      .nav-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s ease;
+        font-size: 1.14rem;
+        padding: 0.5rem 0;
+        position: relative;
+      }
+
+      .nav-links a:hover {
+        color: var(--primary-color);
+      }
+
+      .nav-links a::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: var(--primary-color);
+        transition: width 0.2s ease;
+      }
+
+      .nav-links a:hover::after {
+        width: 100%;
+      }
+
+      .retired-badge {
+        background: var(--red-color);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      /* Hero Section */
+      .hero {
+        padding: 8rem 2rem 4rem;
+        text-align: center;
+        background: var(--gradient-bg);
+        color: white;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23ffffff" fill-opacity="0.1"><circle cx="30" cy="30" r="2"/></g></g></svg>');
+        opacity: 0.3;
+      }
+
+      .hero-content {
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 2;
+      }
+
+      .hero-logo {
+        max-width: 180px;
+        height: auto;
+        margin: 0 auto 0.5rem;
+        filter: brightness(0) invert(1);
+        transform: scale(0.9);
+      }
+
+      .hero h1 {
+        font-size: 4.5rem;
+        font-weight: 700;
+        margin-top: -1rem;
+        margin-bottom: 1rem;
+        line-height: 1.1;
+      }
+
+      .hero .subtitle {
+        font-size: 1.25rem;
+        opacity: 0.9;
+        margin-bottom: 2rem;
+        font-weight: 400;
+      }
+
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(220, 38, 38, 0.2);
+        border: 2px solid rgba(220, 38, 38, 0.3);
+        color: #fecaca;
+        padding: 0.75rem 1.5rem;
+        border-radius: 9999px;
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .status-indicator {
+        width: 8px;
+        height: 8px;
+        background: #fecaca;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      .hero-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        border: none;
+        font-size: 1rem;
+      }
+
+      .btn-primary {
+        background: white;
+        color: var(--primary-color);
+      }
+
+      .btn-primary:hover {
+        background: #f8fafc;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+
+      /* Sections */
+      .section {
+        padding: 4rem 2rem;
+      }
+
+      .section:nth-child(even) {
+        background: var(--bg-secondary);
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+      }
+
+      .section-header {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+
+      .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+      }
+
+      .section-subtitle {
+        font-size: 1.2rem;
+        color: var(--text-secondary);
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      /* Content Grid */
+      .content-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+
+      .content-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+      }
+
+      .content-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-xl);
+      }
+
+      .card-icon {
+        width: 48px;
+        height: 48px;
+        background: var(--gradient-bg);
+        border-radius: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        font-size: 1.5rem;
+      }
+
+      .card-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+      }
+
+      .card-text {
+        color: var(--text-secondary);
+        line-height: 1.6;
+      }
+
+      /* Video Section */
+      .video-container {
+        position: relative;
+        width: 100%;
+        height: 0;
+        padding-bottom: 56.25%; /* 16:9 aspect ratio */
+        margin: 2rem 0;
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+      }
+
+      .video-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      /* Journey Grid */
+      .journey-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 0;
+      }
+
+      .journey-card {
+        position: relative;
+        padding: 2rem;
+        border-radius: 1rem;
+        color: white;
+        transition: all 0.3s ease;
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+      }
+
+      .journey-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: var(--shadow-xl);
+      }
+
+      .journey-card::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200px;
+        height: 200px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        transition: all 0.3s ease;
+      }
+
+      .journey-card:hover::before {
+        transform: scale(1.2) rotate(45deg);
+      }
+
+      .journey-date {
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        opacity: 0.9;
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 2;
+      }
+
+      .journey-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 2;
+        line-height: 1.2;
+      }
+
+      .journey-text {
+        font-size: 1rem;
+        line-height: 1.6;
+        opacity: 0.95;
+        position: relative;
+        z-index: 2;
+        margin-bottom: 1rem;
+      }
+
+      .journey-icon {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        font-size: 2rem;
+        opacity: 0.7;
+        z-index: 2;
+      }
+
+      /* Stats */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        margin: 3rem 0;
+      }
+
+      .stat-card {
+        text-align: center;
+        padding: 2rem;
+        background: white;
+        border-radius: 1rem;
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--border-color);
+      }
+
+      .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        line-height: 1;
+        word-break: break-all;
+        text-align: center;
+      }
+
+      .stat-label {
+        font-size: 1rem;
+        color: var(--text-secondary);
+        margin-top: 0.5rem;
+      }
+
+      /* Team Section */
+      .team-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 3rem;
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      .team-card {
+        text-align: center;
+        background: white;
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: var(--shadow-md);
+        border: 1px solid var(--border-color);
+      }
+
+      .team-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        margin: 0 auto 1.5rem;
+        object-fit: cover;
+        border: 4px solid var(--border-color);
+      }
+
+      .team-name {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--text-primary);
+      }
+
+      .team-role {
+        color: var(--text-secondary);
+        font-weight: 500;
+        margin-bottom: 1rem;
+      }
+
+      /* Footer */
+      .footer {
+        background: var(--text-primary);
+        color: white;
+        text-align: center;
+        padding: 3rem 2rem 2rem;
+      }
+
+      .footer-content {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .footer-links {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+      }
+
+      .footer-links a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        transition: color 0.2s ease;
+      }
+
+      .footer-links a:hover {
+        color: white;
+      }
+
+      .copyright {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.875rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 2rem;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .nav-container {
+          display: flex;
+          justify-content: center;
+        }
+
+        .nav-links {
+          display: none;
+        }
+
+        .hero h1 {
+          font-size: 2.5rem;
+        }
+
+        .hero {
+          padding: 6rem 1rem 3rem;
+        }
+
+        .section {
+          padding: 3rem 1rem;
+        }
+
+        .section-title {
+          font-size: 2rem;
+        }
+
+        .hero-buttons {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .journey-grid {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+          padding: 1rem 0;
+        }
+
+        .journey-card {
+          padding: 1.5rem;
+        }
+
+        .journey-title {
+          font-size: 1.25rem;
+        }
+
+        .journey-text {
+          font-size: 0.95rem;
+        }
+
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .stats-grid {
+          grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        }
+
+        .stat-number {
+          font-size: 2rem;
+        }
+      }
+
+      /* Scroll animations */
+      .fade-in {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.6s ease;
+      }
+
+      .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* Code blocks */
+      .code-block {
+        background: #1e293b;
+        color: #e2e8f0;
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+        font-size: 0.875rem;
+        overflow-x: auto;
+        margin: 1rem 0;
+        border: 1px solid #334155;
+      }
+
+      .tech-stack {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin: 1rem 0;
+      }
+
+      .tech-tag {
+        background: var(--primary-color);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+
+      .warning-box {
+        background: #fef3c7;
+        border-left: 4px solid var(--warning-color);
+        padding: 1rem 1.5rem;
+        margin: 2rem 0;
+        border-radius: 0 0.5rem 0.5rem 0;
+      }
+
+      .warning-title {
+        font-weight: 600;
+        color: var(--warning-color);
+        margin-bottom: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="nav">
+      <div class="nav-container">
+        <div class="nav-links">
+          <a href="#about">About</a>
+          <a href="#demo">Demo</a>
+          <a href="#tech">Tech</a>
+        </div>
+        <a href="#" class="logo">
+          <img src="logo.png" alt="DocuInsight Logo" />
+          DocuInsight
+        </a>
+        <div class="nav-links">
+          <a href="#journey">Journey</a>
+          <a href="#failure">Lessons</a>
+          <a href="#opensource">Source</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-content">
+        <img src="logo.png" alt="DocuInsight Logo" class="hero-logo" />
+        <h1>DocuInsight</h1>
+        <p class="subtitle">
+          AI-powered contract intelligence platform that integrated with
+          DocuSign to simplify legal agreements
+        </p>
+        <div class="status-badge">
+          <span class="status-indicator"></span>
+          Project Retired - May 2025
+        </div>
+        <div class="hero-buttons">
+          <a href="#about" class="btn btn-primary">Learn Our Story</a>
+          <a
+            href="https://github.com/interup/DocuInsight"
+            class="btn btn-secondary"
+            >View Source Code</a
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section">
+      <div class="container">
+        <div class="section-header fade-in">
+          <h2 class="section-title">What Was DocuInsight?</h2>
+          <p class="section-subtitle">
+            We built an AI-powered platform to solve the "Agreement Trap" where
+            people sign contracts without understanding their rights and
+            obligations.
+          </p>
+        </div>
+
+        <div class="warning-box fade-in">
+          <div class="warning-title">The Problem We Tried to Solve</div>
+          <p>
+            In early 2024, co-founder Mehmet signed startup contracts without
+            fully reviewing them. His business partner later used additional
+            equity to force him out, and Mehmet discovered he had signed away
+            important rights. This experience sparked the idea for DocuInsight.
+          </p>
+        </div>
+
+        <div class="content-grid">
+          <div class="content-card fade-in">
+            <div class="card-icon">🤖</div>
+            <h3 class="card-title">AI Contract Analysis</h3>
+            <p class="card-text">
+              Used OpenAI's advanced models to analyze legal documents,
+              highlighting key clauses, risks, and commitments in plain English.
+            </p>
+          </div>
+          <div class="content-card fade-in">
+            <div class="card-icon">💬</div>
+            <h3 class="card-title">Interactive Chat</h3>
+            <p class="card-text">
+              Users could "talk" with their contracts, asking questions about
+              specific clauses and getting real-time, web-researched answers.
+            </p>
+          </div>
+          <div class="content-card fade-in">
+            <div class="card-icon">⚖️</div>
+            <h3 class="card-title">Legal Counsel Connection</h3>
+            <p class="card-text">
+              Generated optimized search queries to connect users with relevant
+              lawyers based on location and contract type.
+            </p>
+          </div>
+          <div class="content-card fade-in">
+            <div class="card-icon">📝</div>
+            <h3 class="card-title">DocuSign Integration</h3>
+            <p class="card-text">
+              Seamlessly integrated with DocuSign's signing workflow, displaying
+              insights alongside the signature process.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Team -->
+    <section class="section">
+      <div class="container">
+        <div class="section-header fade-in">
+          <h2 class="section-title">The Team</h2>
+          <p class="section-subtitle">
+            Meet the two developers who built DocuInsight in 3 months.
+          </p>
+        </div>
+
+        <div class="team-grid">
+          <div class="team-card fade-in">
+            <img src="mehmet.jpg" alt="Mehmet Yilmaz" class="team-avatar" />
+            <h3 class="team-name">Mehmet Yilmaz</h3>
+            <p class="team-role">Co-founder & Backend Developer</p>
+            <p class="card-text">
+              Software engineer at Charter Communications with 3+ years at eBay
+              building storage management systems processing 1.5M+ metrics per
+              minute. Previously founded Osgil Defense (secured $145K pre-seed),
+              built TARS cybersecurity tool (275+ GitHub stars), and won 1st
+              place at multiple hackathons including the National Security
+              Hackathon ($5K prize). CS degree from Colorado School of Mines
+              with robotics research experience.
+            </p>
+          </div>
+          <div class="team-card fade-in">
+            <img src="dylan.jpg" alt="Dylan Eck" class="team-avatar" />
+            <h3 class="team-name">Dylan Eck</h3>
+            <p class="team-role">Co-founder & Frontend Developer</p>
+            <p class="card-text">
+              Associate Design Engineer at Loren Cook with expertise in product
+              design and development. Holds a Bachelor's in Mechanical
+              Engineering (3.9+ GPA) and Master's in Computer Science (3.9+ GPA)
+              from Colorado School of Mines. Previously conducted Bitcoin
+              transaction analysis research at Boise State University. Co-winner
+              of the 2025 National Security Hackathon with Guardian Grid
+              emergency evacuation system. Certified SOLIDWORKS Associate with
+              experience in design for manufacturing.
+            </p>
+          </div>
+        </div>
+
+        <div
+          class="fade-in"
+          style="
+            text-align: center;
+            margin-top: 3rem;
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 1rem;
+          "
+        >
+          <p
+            style="
+              font-style: italic;
+              color: var(--text-secondary);
+              font-size: 1.1rem;
+            "
+          >
+            "We're proud of what we built, even though the business didn't work
+            out. DocuInsight taught us valuable lessons about customer
+            discovery, product-market fit, and when to pivot."
+          </p>
+          <p
+            style="
+              margin-top: 1rem;
+              color: var(--text-primary);
+              font-weight: 500;
+            "
+          >
+            — E&F Group Inc.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section id="demo" class="section">
+      <div class="container">
+        <div class="section-header fade-in">
+          <h2 class="section-title">See DocuInsight in Action</h2>
+          <p class="section-subtitle">
+            Watch our demo videos to see how the platform worked before we
+            retired it.
+          </p>
+        </div>
+
+        <div class="video-container fade-in">
+          <iframe
+            src="https://www.youtube.com/embed/vechiKAvdDU"
+            title="DocuInsight Demo Video 1"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+        </div>
+
+        <div class="video-container fade-in">
+          <iframe
+            src="https://www.youtube.com/embed/XpOqN_SWHrI"
+            title="DocuInsight Demo Video 2"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card fade-in">
+            <div class="stat-number">3</div>
+            <div class="stat-label">Months Development</div>
+          </div>
+          <div class="stat-card fade-in">
+            <div class="stat-number">2</div>
+            <div class="stat-label">Co-founders</div>
+          </div>
+          <div class="stat-card fade-in">
+            <div class="stat-number">100%</div>
+            <div class="stat-label">Open Source</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Technical Architecture -->
+    <section id="tech" class="section">
+      <div class="container">
+        <div class="section-header fade-in">
+          <h2 class="section-title">How We Built It</h2>
+          <p class="section-subtitle">
+            DocuInsight was a full-stack application with three main components
+            working together.
+          </p>
+        </div>
+
+        <div class="content-grid">
+          <div class="content-card fade-in">
+            <div class="card-icon">🌐</div>
+            <h3 class="card-title">Frontend (Next.js)</h3>
+            <p class="card-text">
+              Built with Next.js 15, TypeScript, React, and Tailwind CSS.
+              Handled user authentication, DocuSign integration, and real-time
+              chat interface.
+            </p>
+            <div class="tech-stack">
+              <span class="tech-tag">Next.js</span>
+              <span class="tech-tag">TypeScript</span>
+              <span class="tech-tag">React</span>
+              <span class="tech-tag">Tailwind CSS</span>
+              <span class="tech-tag">Auth.js</span>
+            </div>
+          </div>
+          <div class="content-card fade-in">
+            <div class="card-icon">🔬</div>
+            <h3 class="card-title">Analyzer (Python)</h3>
+            <p class="card-text">
+              Python backend that processed contracts using OpenAI's o1-preview
+              model (with Groq's deepseek-r1-distill-llama-70b as an
+              alternative). Handled document parsing (PDF, DOCX, DOC) and
+              generated insights.
+            </p>
+            <div class="tech-stack">
+              <span class="tech-tag">Python</span>
+              <span class="tech-tag">OpenAI API</span>
+              <span class="tech-tag">Groq API</span>
+              <span class="tech-tag">PyMuPDF</span>
+              <span class="tech-tag">python-docx</span>
+              <span class="tech-tag">Resend</span>
+            </div>
+          </div>
+          <div class="content-card fade-in">
+            <div class="card-icon">🗄️</div>
+            <h3 class="card-title">Database (Supabase)</h3>
+            <p class="card-text">
+              PostgreSQL database hosted on Supabase with tables for users,
+              jobs, and reports. Used for authentication and storing analysis
+              results.
+            </p>
+            <div class="tech-stack">
+              <span class="tech-tag">PostgreSQL</span>
+              <span class="tech-tag">Supabase</span>
+              <span class="tech-tag">Auth.js</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="fade-in">
+          <h3
+            style="
+              margin: 3rem 0 2rem;
+              font-size: 1.75rem;
+              font-weight: 600;
+              text-align: center;
+              color: var(--text-primary);
+            "
+          >
+            Architecture Overview
+          </h3>
+
+          <!-- Main Architecture Cards -->
+          <div
+            class="content-grid"
+            style="
+              grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+              gap: 2rem;
+              margin-bottom: 3rem;
+            "
+          >
+            <div
+              class="content-card"
+              style="
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                position: relative;
+                overflow: hidden;
+              "
+            >
+              <div
+                style="
+                  position: absolute;
+                  top: -50px;
+                  right: -50px;
+                  width: 100px;
+                  height: 100px;
+                  background: rgba(255, 255, 255, 0.1);
+                  border-radius: 50%;
+                "
+              ></div>
+              <div
+                class="card-icon"
+                style="background: rgba(255, 255, 255, 0.2); color: white"
+              >
+                🌐
+              </div>
+              <h3
+                class="card-title"
+                style="color: white; margin-bottom: 0.5rem"
+              >
+                Frontend
+              </h3>
+              <p
+                style="
+                  color: rgba(255, 255, 255, 0.9);
+                  font-size: 0.95rem;
+                  margin-bottom: 1.5rem;
+                  font-weight: 500;
+                "
+              >
+                TypeScript + Next.js Application
+              </p>
+              <div
+                style="
+                  background: rgba(255, 255, 255, 0.1);
+                  padding: 1rem;
+                  border-radius: 0.75rem;
+                  backdrop-filter: blur(10px);
+                "
+              >
+                <div
+                  style="
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                    gap: 1rem;
+                    font-size: 0.85rem;
+                    line-height: 1.4;
+                  "
+                >
+                  <div>
+                    <strong style="color: rgba(255, 255, 255, 0.9)"
+                      >Authentication</strong
+                    ><br />
+                    NextAuth, DocuSign OIDC, Resend Magic Links
+                  </div>
+                  <div>
+                    <strong style="color: rgba(255, 255, 255, 0.9)">APIs</strong
+                    ><br />
+                    DocuSign, Supabase, OpenAI, Groq, Resend
+                  </div>
+                  <div>
+                    <strong style="color: rgba(255, 255, 255, 0.9)"
+                      >Features</strong
+                    ><br />
+                    PDF.js viewer, Real-time chat, File upload
+                  </div>
+                </div>
+              </div>
+              <div
+                style="
+                  margin-top: 1rem;
+                  text-align: center;
+                  background: rgba(255, 255, 255, 0.1);
+                  padding: 0.5rem;
+                  border-radius: 0.5rem;
+                "
+              >
+                <strong style="font-size: 0.9rem">Deployed on Vercel</strong>
+              </div>
+            </div>
+
+            <div
+              class="content-card"
+              style="
+                background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+                color: white;
+                position: relative;
+                overflow: hidden;
+              "
+            >
+              <div
+                style="
+                  position: absolute;
+                  top: -50px;
+                  right: -50px;
+                  width: 100px;
+                  height: 100px;
+                  background: rgba(255, 255, 255, 0.1);
+                  border-radius: 50%;
+                "
+              ></div>
+              <div
+                class="card-icon"
+                style="background: rgba(255, 255, 255, 0.2); color: white"
+              >
+                🗄️
+              </div>
+              <h3
+                class="card-title"
+                style="color: white; margin-bottom: 0.5rem"
+              >
+                Database
+              </h3>
+              <p
+                style="
+                  color: rgba(255, 255, 255, 0.9);
+                  font-size: 0.95rem;
+                  margin-bottom: 1.5rem;
+                  font-weight: 500;
+                "
+              >
+                PostgreSQL on Supabase
+              </p>
+              <div
+                style="
+                  background: rgba(255, 255, 255, 0.1);
+                  padding: 1rem;
+                  border-radius: 0.75rem;
+                  backdrop-filter: blur(10px);
+                "
+              >
+                <div
+                  style="
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                    gap: 1rem;
+                    font-size: 0.85rem;
+                    line-height: 1.4;
+                  "
+                >
+                  <div>
+                    <strong style="color: rgba(255, 255, 255, 0.9)"
+                      >User Data</strong
+                    ><br />
+                    Accounts, sessions, auth tokens
+                  </div>
+                  <div>
+                    <strong style="color: rgba(255, 255, 255, 0.9)">Jobs</strong
+                    ><br />
+                    Contract analysis queue, status tracking
+                  </div>
+                  <div>
+                    <strong style="color: rgba(255, 255, 255, 0.9)"
+                      >Reports</strong
+                    ><br />
+                    AI-generated insights, analysis results
+                  </div>
+                </div>
+              </div>
+              <div
+                style="
+                  margin-top: 1rem;
+                  text-align: center;
+                  background: rgba(255, 255, 255, 0.1);
+                  padding: 0.5rem;
+                  border-radius: 0.5rem;
+                "
+              >
+                <strong style="font-size: 0.9rem"
+                  >Hosted on Supabase Cloud</strong
+                >
+              </div>
+            </div>
+
+            <div
+              class="content-card"
+              style="
+                background: linear-gradient(135deg, #8b4513 0%, #cd853f 100%);
+                color: white;
+                position: relative;
+                overflow: hidden;
+              "
+            >
+              <div
+                style="
+                  position: absolute;
+                  top: -50px;
+                  right: -50px;
+                  width: 100px;
+                  height: 100px;
+                  background: rgba(255, 255, 255, 0.1);
+                  border-radius: 50%;
+                "
+              ></div>
+              <div
+                class="card-icon"
+                style="background: rgba(255, 255, 255, 0.2); color: white"
+              >
+                🔬
+              </div>
+              <h3
+                class="card-title"
+                style="color: white; margin-bottom: 0.5rem"
+              >
+                Analyzer
+              </h3>
+              <p
+                style="
+                  color: rgba(255, 255, 255, 0.9);
+                  font-size: 0.95rem;
+                  margin-bottom: 1.5rem;
+                  font-weight: 500;
+                "
+              >
+                Python Analysis Service
+              </p>
+              <div
+                style="
+                  background: rgba(255, 255, 255, 0.1);
+                  padding: 1rem;
+                  border-radius: 0.75rem;
+                  backdrop-filter: blur(10px);
+                "
+              >
+                <div
+                  style="
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                    gap: 1rem;
+                    font-size: 0.85rem;
+                    line-height: 1.4;
+                  "
+                >
+                  <div>
+                    <strong style="color: rgba(255, 255, 255, 0.9)"
+                      >AI Models</strong
+                    ><br />
+                    OpenAI, Groq LLMs for analysis
+                  </div>
+                  <div>
+                    <strong style="color: rgba(255, 255, 255, 0.9)"
+                      >Processing</strong
+                    ><br />
+                    PDF, DOCX parsing, text extraction
+                  </div>
+                  <div>
+                    <strong style="color: rgba(255, 255, 255, 0.9)"
+                      >Monitoring</strong
+                    ><br />
+                    Discord alerts, email notifications
+                  </div>
+                </div>
+              </div>
+              <div
+                style="
+                  margin-top: 1rem;
+                  text-align: center;
+                  background: rgba(255, 255, 255, 0.1);
+                  padding: 0.5rem;
+                  border-radius: 0.5rem;
+                "
+              >
+                <strong style="font-size: 0.9rem"
+                  >Running on Linode Ubuntu VPS</strong
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-grid">
+          <div class="content-card fade-in">
+            <div class="card-icon">🤖</div>
+            <h3 class="card-title">LLM Models Used</h3>
+            <p class="card-text">
+              DocuInsight leveraged multiple AI models for contract analysis. We
+              used
+              <strong>OpenAI's models</strong> including gpt-4o, gpt-4o-mini,
+              o1, o1-preview, and o1-mini for comprehensive text analysis and
+              chat functionality. Additionally, we integrated
+              <strong>Groq's deepseek-r1-distill-llama-70b</strong>
+              model for cost-effective processing and faster response times in
+              certain analysis workflows.
+            </p>
+          </div>
+          <div class="content-card fade-in">
+            <div class="card-icon">🔐</div>
+            <h3 class="card-title">Authentication System</h3>
+            <p class="card-text">
+              Authentication was handled using
+              <strong>NextAuth</strong> with two primary providers:
+              <strong>DocuSign OIDC</strong> for seamless integration with
+              DocuSign accounts, and <strong>Resend</strong> for email magic
+              link sign-in. User sessions and authentication data were stored in
+              Supabase using the <code>@auth/supabase-adapter</code>, with
+              automatic DocuSign token refresh managed through the
+              <code>getAccessToken</code> function.
+            </p>
+          </div>
+          <div class="content-card fade-in">
+            <div class="card-icon">🔗</div>
+            <h3 class="card-title">Key Integrations</h3>
+            <p class="card-text">
+              The platform integrated with several external services:
+              <strong>DocuSign eSignature API</strong> for template access and
+              signing workflows, <strong>Supabase</strong> for database
+              operations and auth adapter functionality,
+              <strong>Discord Webhooks</strong> for real-time failure alerts,
+              and <strong>PDF.js</strong> for in-browser PDF document viewing.
+              Email notifications were handled through the
+              <strong>Resend API</strong>.
+            </p>
+          </div>
+          <div class="content-card fade-in">
+            <div class="card-icon">🚀</div>
+            <h3 class="card-title">Deployment & Infrastructure</h3>
+            <p class="card-text">
+              The <strong>frontend</strong> was deployed on Vercel with a custom
+              domain, the <strong>database</strong> was hosted on Supabase Cloud
+              using PostgreSQL, and the <strong>analyzer service</strong> ran on
+              a Linode Ubuntu VPS with 16GB RAM. System monitoring was
+              implemented through Discord webhooks that provided instant failure
+              notifications, allowing for rapid response to any system issues.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Business Journey -->
+    <section id="journey" class="section">
+      <div class="container">
+        <div class="section-header fade-in">
+          <h2 class="section-title">Our Business Journey</h2>
+          <p class="section-subtitle">
+            From hackathon excitement to harsh market realities, here's how our
+            business validation went.
+          </p>
+        </div>
+
+        <div class="journey-grid">
+          <div
+            class="journey-card fade-in"
+            style="background: var(--gradient-bg)"
+          >
+            <div class="journey-date">November 2024</div>
+            <h3 class="journey-title">Research & Discovery</h3>
+            <p class="journey-text">
+              Spent 2 months researching, experimenting, and interviewing
+              potential customers before building anything.
+            </p>
+            <div class="journey-icon">🔍</div>
+          </div>
+          <div
+            class="journey-card fade-in"
+            style="
+              background: linear-gradient(
+                135deg,
+                var(--primary-color) 0%,
+                var(--text-primary) 100%
+              );
+            "
+          >
+            <div class="journey-date">December 2024</div>
+            <h3 class="journey-title">The Idea</h3>
+            <p class="journey-text">
+              Started building for DocuSign Hackathon after 1 month of focused
+              idea validation. Initial excitement about solving contract
+              complexity with AI.
+            </p>
+            <div class="journey-icon">💡</div>
+          </div>
+          <div
+            class="journey-card fade-in"
+            style="background: var(--gradient-bg)"
+          >
+            <div class="journey-date">January 2025</div>
+            <h3 class="journey-title">Hackathon Launch</h3>
+            <p class="journey-text">
+              Successfully deployed production-ready application. Got live
+              traffic and positive initial feedback.
+            </p>
+            <div class="journey-icon">🚀</div>
+          </div>
+          <div
+            class="journey-card fade-in"
+            style="
+              background: linear-gradient(
+                135deg,
+                var(--green-color) 0%,
+                var(--primary-color) 100%
+              );
+            "
+          >
+            <div class="journey-date">February 2025</div>
+            <h3 class="journey-title">Customer Discovery</h3>
+            <p class="journey-text">
+              Talked with lawyers from KO Law and SMB owners. Found mixed
+              signals with polite interest but no urgency to pay.
+            </p>
+            <div class="journey-icon">👥</div>
+          </div>
+          <div
+            class="journey-card fade-in"
+            style="
+              background: linear-gradient(
+                135deg,
+                var(--warning-color) 0%,
+                var(--primary-color) 100%
+              );
+            "
+          >
+            <div class="journey-date">March 2025</div>
+            <h3 class="journey-title">VC Feedback</h3>
+            <p class="journey-text">
+              Pitched to VCs. Got brutal but honest feedback: "This is a
+              feature, not a company"
+            </p>
+            <div class="journey-icon">💼</div>
+          </div>
+          <div
+            class="journey-card fade-in"
+            style="
+              background: linear-gradient(
+                135deg,
+                var(--red-color) 0%,
+                var(--text-primary) 100%
+              );
+            "
+          >
+            <div class="journey-date">May 2025</div>
+            <h3 class="journey-title">Reality Check</h3>
+            <p class="journey-text">
+              Realized the business model was fundamentally flawed. Made the
+              hard decision to shut down and open source everything.
+            </p>
+            <div class="journey-icon">⚡</div>
+          </div>
+        </div>
+
+        <div class="content-grid">
+          <div class="content-card fade-in">
+            <div class="card-icon">👩‍⚖️</div>
+            <h3 class="card-title">What Lawyers Said</h3>
+            <p class="card-text">
+              <em
+                >"Analytics are nice-to-have, but we need help with document
+                drafting, version control, and compliance across various
+                platforms."</em
+              >
+              <br />
+              <br />
+              - KO Law consultation, 2025
+            </p>
+          </div>
+          <div class="content-card fade-in">
+            <div class="card-icon">🏢</div>
+            <h3 class="card-title">What SMBs Said</h3>
+            <p class="card-text">
+              <em
+                >"We only sign 10-20 contracts per month. We need broader
+                pipeline visibility and cash flow insights, not just signature
+                analytics."</em
+              >
+            </p>
+          </div>
+          <div class="content-card fade-in">
+            <div class="card-icon">💰</div>
+            <h3 class="card-title">What VCs Said</h3>
+            <p class="card-text">
+              <em
+                >"Too narrow market, platform risk with DocuSign, no clear
+                expansion path. Where's the billion-dollar wedge? This looks
+                like a vitamin, not a painkiller."</em
+              >
+              <br />
+              <br />
+              - Drive Capital
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why We Failed -->
+    <section id="failure" class="section">
+      <div class="container">
+        <div class="section-header fade-in">
+          <h2 class="section-title">Why DocuInsight Failed</h2>
+          <p class="section-subtitle">
+            An honest post-mortem of what went wrong and why we decided to shut
+            down.
+          </p>
+        </div>
+
+        <div class="content-grid">
+          <div class="content-card fade-in">
+            <div class="card-icon">🎯</div>
+            <h3 class="card-title">Wrong Market Fit</h3>
+            <p class="card-text">
+              We built analytics for a workflow step that wasn't a burning pain
+              point. Lawyers wanted drafting tools, SMBs wanted pipeline
+              visibility.
+            </p>
+          </div>
+          <div class="content-card fade-in">
+            <div class="card-icon">💸</div>
+            <h3 class="card-title">Flawed Business Model</h3>
+            <p class="card-text">
+              Over-reliance on DocuSign platform, pricing misalignment with
+              customer value, and no clear expansion path to grow ACVs.
+            </p>
+          </div>
+          <div class="content-card fade-in">
+            <div class="card-icon">⚠️</div>
+            <h3 class="card-title">Platform Risk</h3>
+            <p class="card-text">
+              Built on DocuSign's APIs. If they changed terms or added similar
+              features, our business could disappear overnight.
+            </p>
+          </div>
+          <div class="content-card fade-in">
+            <div class="card-icon">🎪</div>
+            <h3 class="card-title">Feature, Not Company</h3>
+            <p class="card-text">
+              VCs were right - this was a dashboard feature that DocuSign could
+              build internally, not a defensible standalone business.
+            </p>
+          </div>
+          <div class="content-card fade-in">
+            <div class="card-icon">📈</div>
+            <h3 class="card-title">No Urgent Customer Pull</h3>
+            <p class="card-text">
+              Nobody said "We need this tomorrow." Polite interest doesn't
+              translate to paying customers or sustainable revenue.
+            </p>
+          </div>
+          <div class="content-card fade-in">
+            <div class="card-icon">❤️</div>
+            <h3 class="card-title">No Founder-Market Fit</h3>
+            <p class="card-text">
+              We weren't passionate about legal tech. Built opportunistically
+              for a hackathon, not mission-driven for the long haul.
+            </p>
+          </div>
+        </div>
+
+        <div class="warning-box fade-in">
+          <div class="warning-title">The Hard Truth</div>
+          <p>
+            DocuInsight wasn't killed because it was bad sense it actually
+            worked well. We killed it because we realized it couldn't become a
+            venture-scale business. Better to cut losses early and reallocate
+            energy to higher-potential projects.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Lessons Learned -->
+    <section id="lessons" class="section">
+      <div class="container">
+        <div class="section-header fade-in">
+          <h2 class="section-title">What We Learned</h2>
+          <p class="section-subtitle">
+            Key takeaways from building, validating, and ultimately shutting
+            down DocuInsight.
+          </p>
+        </div>
+
+        <div class="content-grid">
+          <div class="content-card fade-in">
+            <div class="card-icon">🎯</div>
+            <h3 class="card-title">Customer Discovery First</h3>
+            <p class="card-text">
+              Talk to customers before building, not after. "Would this be nice
+              to have?" is very different from "I need this tomorrow."
+            </p>
+          </div>
+          <div class="content-card fade-in">
+            <div class="card-icon">🏗️</div>
+            <h3 class="card-title">Platform Risk is Real</h3>
+            <p class="card-text">
+              Building on someone else's platform means they control your
+              destiny. Always have a plan for what happens if they change the
+              rules.
+            </p>
+          </div>
+          <div class="content-card fade-in">
+            <div class="card-icon">💡</div>
+            <h3 class="card-title">Feature vs. Company</h3>
+            <p class="card-text">
+              Ask "Why can't the platform owner build this themselves?" If you
+              don't have a good answer, you might be building a feature.
+            </p>
+          </div>
+          <div class="content-card fade-in">
+            <div class="card-icon">🎪</div>
+            <h3 class="card-title">Founder-Market Fit Matters</h3>
+            <p class="card-text">
+              Passion and domain expertise matter more than we thought.
+              Opportunistic ventures are harder to sustain through tough
+              periods.
+            </p>
+          </div>
+          <div class="content-card fade-in">
+            <div class="card-icon">💰</div>
+            <h3 class="card-title">Business Model Validation</h3>
+            <p class="card-text">
+              Who pays? How much? Why? When? These questions need clear answers
+              before you build, not after you launch.
+            </p>
+          </div>
+          <div class="content-card fade-in">
+            <div class="card-icon">🚪</div>
+            <h3 class="card-title">Know When to Quit</h3>
+            <p class="card-text">
+              Sometimes the smartest thing is to shut down early and move on.
+              Sunk cost fallacy is real and dangerous.
+            </p>
+          </div>
+        </div>
+
+        <div
+          class="fade-in"
+          style="
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-top: 3rem;
+            text-align: center;
+          "
+        >
+          <h3
+            style="
+              font-size: 1.5rem;
+              margin-bottom: 1rem;
+              color: var(--text-primary);
+            "
+          >
+            Our Biggest Learning
+          </h3>
+          <p
+            style="
+              font-size: 1.2rem;
+              color: var(--text-secondary);
+              font-style: italic;
+              max-width: 600px;
+              margin: 0 auto;
+            "
+          >
+            "Building something people want" is harder than "building something
+            that works". Technical execution is only 20% of the challenge well
+            finding product-market fit is the other 80%.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Open Source -->
+    <section id="opensource" class="section">
+      <div class="container">
+        <div class="section-header fade-in">
+          <h2 class="section-title">Now Open Source</h2>
+          <p class="section-subtitle">
+            Since we're shutting down, we're making the entire DocuInsight
+            codebase open source. Learn from our code and our mistakes.
+          </p>
+        </div>
+
+        <div class="content-grid">
+          <a
+            href="https://github.com/interup/DocuInsight"
+            class="content-card fade-in"
+            style="text-decoration: none; color: inherit; display: block"
+          >
+            <div class="card-icon">🔓</div>
+            <h3 class="card-title">Full Source Code</h3>
+            <p class="card-text">
+              Complete Next.js frontend, Python analyzer, and database schemas.
+              See how we integrated DocuSign, OpenAI, and built real-time chat.
+            </p>
+            <p class="card-text" style="margin-top: 1rem; font-style: italic">
+              Click this card to go to the repository.
+            </p>
+          </a>
+          <div class="content-card fade-in">
+            <div class="card-icon">📚</div>
+            <h3 class="card-title">Documentation</h3>
+            <p class="card-text">
+              Comprehensive setup guides, API documentation, and deployment
+              instructions. Everything you need to run DocuInsight locally.
+            </p>
+          </div>
+          <div class="content-card fade-in">
+            <div class="card-icon">🎬</div>
+            <h3 class="card-title">Demo & Videos</h3>
+            <p class="card-text">
+              Watch our demo videos to see the platform in action. Great for
+              understanding the user experience we built.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div style="margin-bottom: 2rem">
+          <img
+            src="logo.png"
+            alt="DocuInsight Logo"
+            style="
+              height: 40px;
+              filter: brightness(0) invert(1);
+              margin-bottom: 1rem;
+            "
+          />
+        </div>
+
+        <div class="footer-links">
+          <a href="https://github.com/interup/DocuInsight">GitHub Repo</a>
+          <a href="https://devpost.com/software/legalease-07rlgu"
+            >Devpost Submission</a
+          >
+          <a href="https://www.efgroupinc.com/">E&F Group Inc.</a>
+          <a href="https://www.youtube.com/watch?v=vechiKAvdDU">Demo Video</a>
+        </div>
+
+        <div class="copyright" style="border-top: none; padding-top: 1rem">
+          © 2025 E&F Group Inc. MIT License.
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Smooth scrolling for navigation links
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute("href"));
+          if (target) {
+            target.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }
+        });
+      });
+
+      // Fade in animation on scroll
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px",
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+          }
+        });
+      }, observerOptions);
+
+      document.querySelectorAll(".fade-in").forEach((el) => {
+        observer.observe(el);
+      });
+
+      // Update navigation background and visibility on scroll
+      let lastScrollTop = 0;
+      window.addEventListener("scroll", () => {
+        const nav = document.querySelector(".nav");
+        const scrollTop =
+          window.pageYOffset || document.documentElement.scrollTop;
+
+        // Hide/show nav based on scroll direction
+        if (scrollTop > lastScrollTop && scrollTop > 100) {
+          // Scrolling down & past 100px - hide nav
+          nav.style.transform = "translateY(-100%)";
+          nav.style.transition = "transform 0.3s ease-in-out";
+        } else {
+          // Scrolling up or at top - show nav
+          nav.style.transform = "translateY(0)";
+          nav.style.transition = "transform 0.3s ease-in-out";
+        }
+
+        // Update background
+        if (window.scrollY > 100) {
+          nav.style.background = "rgba(255, 255, 255, 0.98)";
+          nav.style.boxShadow = "0 4px 6px -1px rgb(0 0 0 / 0.1)";
+        } else {
+          nav.style.background = "rgba(255, 255, 255, 0.95)";
+          nav.style.boxShadow = "none";
+        }
+
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For Mobile or negative scrolling
+      });
+    </script>
+  </body>
+</html>
