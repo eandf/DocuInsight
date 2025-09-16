@@ -4,10 +4,18 @@
     <img width="200" src="./assets/images/logo.png" alt="DocuInsight Logo">
 </p>
 
+<p align="center">
+  <a href="https://www.docuinsight.ai/" target="_blank" rel="noopener noreferrer">
+    https://www.docuinsight.ai/
+  </a>
+</p>
+
 ## Table of Contents
 
 - [Table of Contents](#table-of-contents)
 - [About](#about)
+- [Events](#events)
+- [Links](#links)
 - [Features](#features)
 - [Datasets](#datasets)
   - [Legal Contracts](#legal-contracts)
