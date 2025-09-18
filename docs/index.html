@@ -573,7 +573,7 @@
         background: var(--text-primary);
         color: white;
         text-align: center;
-        padding: 3rem 2rem 2rem;
+        padding: 1rem 2rem;
       }
 
       .footer-content {
@@ -739,12 +739,12 @@
       }
     </style>
   </head>
-  <body>
+  <body id="top">
     <!-- Navigation -->
     <nav class="nav">
       <div class="nav-container">
         <div class="nav-links">
-          <a href="#about">About</a>
+          <a href="#top">Home</a>
           <a href="#about">Demo</a>
           <a href="#tech">Tech</a>
         </div>
@@ -755,7 +755,7 @@
         <div class="nav-links">
           <a href="#journey">Journey</a>
           <a href="#failure">Lessons</a>
-          <a href="https://github.com/eandf/DocuInsight">Source</a>
+          <a href="https://github.com/eandf/DocuInsight" target="_blank">Source</a>
         </div>
       </div>
     </nav>
@@ -771,7 +771,7 @@
         </p>
         <div class="status-badge">
           <span class="status-indicator"></span>
-          Project Retired On May 2025
+          Retired As Of May 2025
         </div>
         <div class="hero-buttons">
           <a href="#about" class="btn btn-primary">Learn Our Story</a>
@@ -1385,29 +1385,10 @@
     <!-- Footer -->
     <footer class="footer">
       <div class="footer-content">
-        <div style="margin-bottom: 2rem">
-          <img
-            src="logo.png"
-            alt="DocuInsight Logo"
-            style="
-              height: 40px;
-              filter: brightness(0) invert(1);
-              margin-bottom: 1rem;
-            "
-          />
-        </div>
-
-        <div class="footer-links">
-          <a href="https://github.com/eandf/DocuInsight">GitHub Repo</a>
-          <a href="https://devpost.com/software/legalease-07rlgu"
-            >Devpost Submission</a
-          >
-          <a href="https://www.efgroupinc.com/">E&F Group Inc.</a>
-          <a href="https://www.youtube.com/watch?v=vechiKAvdDU">Demo Video</a>
-        </div>
-
-        <div class="copyright" style="border-top: none; padding-top: 1rem">
-          © 2025 E&F Group Inc. MIT License.
+        <div class="copyright" style="border-top: none; padding: 0; display: flex; justify-content: center; align-items: center; gap: 1rem;">
+          <span>© 2025 E&F Group Inc</span>
+          <span>MIT License</span>
+          <a href="#top" style="color: white; text-decoration: underline;">Back To Top</a>
         </div>
       </div>
     </footer>
@@ -1447,20 +1428,44 @@
 
       // Update navigation background and visibility on scroll
       let lastScrollTop = 0;
+      let scrollTimeout;
+      let navClicked = false;
+
+      // Track when nav links are clicked
+      document.querySelectorAll('.nav a[href^="#"]').forEach((link) => {
+        link.addEventListener("click", () => {
+          navClicked = true;
+        });
+      });
+
       window.addEventListener("scroll", () => {
         const nav = document.querySelector(".nav");
         const scrollTop =
           window.pageYOffset || document.documentElement.scrollTop;
 
-        // Hide/show nav based on scroll direction
-        if (scrollTop > lastScrollTop && scrollTop > 100) {
-          // Scrolling down & past 100px - hide nav
-          nav.style.transform = "translateY(-100%)";
-          nav.style.transition = "transform 0.3s ease-in-out";
-        } else {
-          // Scrolling up or at top - show nav
+        // Clear existing timeout
+        clearTimeout(scrollTimeout);
+
+        // If nav was clicked, keep it visible until scrolling stops
+        if (navClicked) {
           nav.style.transform = "translateY(0)";
           nav.style.transition = "transform 0.3s ease-in-out";
+
+          // Set timeout to reset navClicked when scrolling stops
+          scrollTimeout = setTimeout(() => {
+            navClicked = false;
+          }, 150); // 150ms after scrolling stops
+        } else {
+          // Normal hide/show nav based on scroll direction
+          if (scrollTop > lastScrollTop && scrollTop > 100) {
+            // Scrolling down & past 100px - hide nav
+            nav.style.transform = "translateY(-100%)";
+            nav.style.transition = "transform 0.3s ease-in-out";
+          } else {
+            // Scrolling up or at top - show nav
+            nav.style.transform = "translateY(0)";
+            nav.style.transition = "transform 0.3s ease-in-out";
+          }
         }
 
         // Update background
