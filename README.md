@@ -1,13 +1,13 @@
 <h1 align="center">DocuInsight</h1>
 
+> ⚠️ This project has been retired and fully open source as of **May 2025**. The original url [docuinsight.ai](https://www.docuinsight.ai/) will expire in **January 2027** but the tribute page [eandf.github.io/DocuInsight](https://eandf.github.io/DocuInsight/) will remain available.
+
 <p align="center">
     <img width="200" src="./assets/images/logo.png" alt="DocuInsight Logo">
 </p>
 
 <p align="center">
-  <a href="https://www.docuinsight.ai/" target="_blank" rel="noopener noreferrer">
-    https://www.docuinsight.ai/
-  </a>
+  <a href="https://www.docuinsight.ai/" target="_blank" rel="noopener noreferrer">docuinsight.ai</a> <strong><u>or</u></strong> <a href="https://eandf.github.io/DocuInsight/" target="_blank" rel="noopener noreferrer">eandf.github.io/DocuInsight</a>
 </p>
 
 ## Table of Contents
