@@ -14,7 +14,6 @@
 - [Links](#links)
 - [Features](#features)
 - [Datasets](#datasets)
-  - [Legal Contracts](#legal-contracts)
 - [Setup and Running](#setup-and-running)
 - [Helpful Resources](#helpful-resources)
 
@@ -28,16 +27,13 @@ In January 2025, this project was open-sourced for the DocuSign hackathon. After
 
 ## Links
 
-- This Repo: https://github.com/MehmetMHY/NextDocuInsight
-- Original DocuInsight Repos:
-  - Main Repo: https://github.com/MehmetMHY/DocuInsight
-  - Vercel Fork: https://github.com/interup/DocuInsight
-- E&F's Website: https://www.efgroupinc.com/
-- Devpost Submission: https://devpost.com/software/legalease-07rlgu
-- Production Instance: https://www.docuinsight.ai/
-- Live Example: https://www.docuinsight.ai/sign?job=a070d50e-11dd-4bdc-b679-4182e7a303f4&invite=aa949bb8-11f0-4c66-a506-8d3946000432
-- Demo Video #1: https://www.youtube.com/watch?v=vechiKAvdDU
-- Demo Video #2: https://www.youtube.com/watch?v=XpOqN_SWHrI
+- **This Repo** https://github.com/eandf/DocuInsight/
+- **E&F's Website:** https://www.efgroupinc.com/
+- **Devpost Submission:** https://devpost.com/software/legalease-07rlgu
+- **Production Instance:** https://www.docuinsight.ai/
+- **Live Example:** https://www.docuinsight.ai/sign?job=a070d50e-11dd-4bdc-b679-4182e7a303f4&invite=aa949bb8-11f0-4c66-a506-8d3946000432
+- **Demo Video #1:** https://www.youtube.com/watch?v=vechiKAvdDU
+- **Demo Video #2:** https://www.youtube.com/watch?v=XpOqN_SWHrI
 
 ## Features
 
