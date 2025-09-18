@@ -91,4 +91,4 @@ By following these steps, you can ensure the Analyzer is set up and running effe
 
 ### Step 4: Run it
 
-Follow the same steps for running it but now do it in the pod instance of your personal computer
+Follow the same steps for running it but now do it in the cloud instance instead of your personal computer

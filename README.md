@@ -24,11 +24,11 @@
 
 ## About
 
-DocuInsight leverages the power of the OpenAI API to analyze contracts and provide AI-generated insights, helping signers better understand the agreements they are entering into. Integrated with the DocuSign eSignature API, DocuInsight displays these insights alongside an embedded DocuSign signing session, ensuring that signers have quick and easy access to important information. Additionally, a chatbot is available to answer questions about the contract and assist users in finding legal counsel in real-time. The site is live and you can visit it at [docuinsight.ai](https://docuinsight.ai) and checkout the [live demo](https://www.docuinsight.ai/sign?job=a070d50e-11dd-4bdc-b679-4182e7a303f4&invite=aa949bb8-11f0-4c66-a506-8d3946000432) to get an idea of how DocuInsight works.
+DocuInsight leverages the power of the OpenAI API to analyze contracts and provide AI-generated insights, helping signers better understand the agreements they are entering into. Integrated with the DocuSign eSignature API, DocuInsight displays these insights alongside an embedded DocuSign signing session, ensuring that signers have quick and easy access to important information. Additionally, a chatbot is available to answer questions about the contract and assist users in finding legal counsel in real-time. The site is live and you can visit it at [docuinsight.ai](https://docuinsight.ai) and check out the [live demo](https://www.docuinsight.ai/sign?job=a070d50e-11dd-4bdc-b679-4182e7a303f4&invite=aa949bb8-11f0-4c66-a506-8d3946000432) to get an idea of how DocuInsight works.
 
 ## Events
 
-In January 2025, this project was open sourced for the DocuSign hackathon. After the final results came in for the hackathon around late Feb 2025, this project was closed sourced again.
+In January 2025, this project was open-sourced for the DocuSign hackathon. After the final results came in for the hackathon around late February 2025, this project was temporarily closed-sourced. But, as of May 2025, DocuInsight has been retired and the entire codebase is now permanently open source!
 
 ## Links
 
@@ -71,7 +71,7 @@ To set up and run this project, follow the instructions in the respective compon
 - **Database:** [database/README.md](/database/README.md)
 - **Analyzer:** [analyzer/README.md](/analyzer/README.md)
 
-Also, if you want a quick overview of the **waitlist** table for DocuInsight, you can make sure to setup the [Analyzer](analyzer/README.md) service which includes installing all the Python dependencies and the environment variables. Then, make sure to be in the root directory for this repo/project and run the following script:
+Also, if you want a quick overview of the **waitlist** table for DocuInsight, you can make sure to set up the [Analyzer](analyzer/README.md) service which includes installing all the Python dependencies and the environment variables. Then, make sure to be in the root directory for this repo/project and run the following script:
 
 ```bash
 python3 waitlist_view.py

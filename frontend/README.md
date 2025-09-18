@@ -1,6 +1,6 @@
 # DocuInsight Frontend
 
-This sub-directory contains all the frontend code for DocuInsight. To learn how to setup it up, follow the instructions below.
+This sub-directory contains all the frontend code for DocuInsight. To learn how to set it up, follow the instructions below.
 
 ## Setup Instructions
 
@@ -43,7 +43,7 @@ Resend is used by Auth.js to send authentication emails.
 - Create a [Resend account](https://resend.com).
 - Connect a domain to Resend.
 - Generate an API key and add it to `.env.local` as `AUTH_RESEND_KEY`.
-- Set a `AUTH_RESEND_EMAIL` (e.g., `noreply@yourdomain.com`).
+- Set an `AUTH_RESEND_EMAIL` (e.g., `noreply@yourdomain.com`).
 
 #### 3. **DocuSign**
 
