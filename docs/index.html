@@ -62,12 +62,12 @@
         --warning-color: #d97706;
         --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1),
-          0 2px 4px -2px rgb(0 0 0 / 0.1);
-        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
-          0 4px 6px -4px rgb(0 0 0 / 0.1);
-        --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1),
-          0 8px 10px -6px rgb(0 0 0 / 0.1);
+        --shadow-md:
+          0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg:
+          0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --shadow-xl:
+          0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
       }
 
       * {
@@ -759,6 +759,7 @@
         <div class="nav-links">
           <a href="#top">Home</a>
           <a href="#about">Demo</a>
+          <a href="#team">Team</a>
           <a href="#tech">Tech</a>
           <a href="#journey">Journey</a>
           <a href="#failure">Lessons</a>
@@ -881,7 +882,7 @@
     </section>
 
     <!-- Team -->
-    <section class="section">
+    <section id="team" class="section">
       <div class="container">
         <div class="section-header fade-in">
           <h2 class="section-title">The Team</h2>
@@ -893,20 +894,74 @@
         <div class="team-grid">
           <div class="team-card fade-in">
             <img src="mehmet.jpg" alt="Mehmet Yilmaz" class="team-avatar" />
-            <h3 class="team-name">Mehmet Yilmaz</h3>
-            <p class="team-role">Co-founder & Backend Developer</p>
+            <h3 class="team-name" style="margin-bottom: 0.25rem">
+              Mehmet Yilmaz
+            </h3>
+            <p class="team-role" style="margin-bottom: 0.5rem">
+              Co-founder & Backend Developer
+            </p>
+            <p style="margin-bottom: 0.75rem">
+              <a
+                href="https://mehmetmhy.com/"
+                target="_blank"
+                style="
+                  color: var(--text-secondary);
+                  text-decoration: underline;
+                  font-size: 0.9rem;
+                  font-weight: 600;
+                "
+                >Website</a
+              ><span style="display: inline-block; width: 10px"></span
+              ><a
+                href="https://www.linkedin.com/in/mehmet-mhy/"
+                target="_blank"
+                style="
+                  color: var(--text-secondary);
+                  text-decoration: underline;
+                  font-size: 0.9rem;
+                  font-weight: 600;
+                "
+                >LinkedIn</a
+              >
+            </p>
             <p class="card-text">
               Software engineer at Charter/Spectrum, previously at eBay. Founded
               Osgil Defense ($145K pre-seed), built TARS cybersecurity tool
-              (295+ stars) and Notify Cyber news site (17k+ visitors). Won 1st
+              (300+ stars) and Notify Cyber news site (17k+ visitors). Won 1st
               place at National Security Hackathon ($5K prize). CS degree from
               Colorado School of Mines.
             </p>
           </div>
           <div class="team-card fade-in">
             <img src="dylan.jpg" alt="Dylan Eck" class="team-avatar" />
-            <h3 class="team-name">Dylan Eck</h3>
-            <p class="team-role">Co-founder & Frontend Developer</p>
+            <h3 class="team-name" style="margin-bottom: 0.25rem">Dylan Eck</h3>
+            <p class="team-role" style="margin-bottom: 0.5rem">
+              Co-founder & Frontend Developer
+            </p>
+            <p style="margin-bottom: 0.75rem">
+              <a
+                href="https://github.com/dylan-eck"
+                target="_blank"
+                style="
+                  color: var(--text-secondary);
+                  text-decoration: underline;
+                  font-size: 0.9rem;
+                  font-weight: 600;
+                "
+                >GitHub</a
+              ><span style="display: inline-block; width: 10px"></span
+              ><a
+                href="https://www.linkedin.com/in/dylanjeck/"
+                target="_blank"
+                style="
+                  color: var(--text-secondary);
+                  text-decoration: underline;
+                  font-size: 0.9rem;
+                  font-weight: 600;
+                "
+                >LinkedIn</a
+              >
+            </p>
             <p class="card-text">
               Associate Design Engineer at Loren Cook. Bachelor's in Mechanical
               Engineering and Master's in Computer Science from Colorado School
@@ -916,38 +971,44 @@
               Associate.
             </p>
           </div>
-        </div>
-
-        <div
-          class="fade-in"
-          style="
-            text-align: center;
-            margin-top: 3rem;
-            background: var(--bg-secondary);
-            padding: 2rem;
-            border-radius: 1rem;
-          "
-        >
-          <p
-            style="
-              font-style: italic;
-              color: var(--text-secondary);
-              font-size: 1.1rem;
-            "
-          >
-            "We're proud of what we built, even though the business didn't work
-            out. DocuInsight taught us valuable lessons about customer
-            discovery, product-market fit, and when to pivot."
-          </p>
-          <p
-            style="
-              margin-top: 1rem;
-              color: var(--text-primary);
-              font-weight: 500;
-            "
-          >
-            — E&F Group Inc.
-          </p>
+          <div class="team-card fade-in">
+            <img src="berk.jpg" alt="Berk Karaoglu" class="team-avatar" />
+            <h3 class="team-name" style="margin-bottom: 0.25rem">
+              Berk Karaoglu
+            </h3>
+            <p class="team-role" style="margin-bottom: 0.5rem">
+              Videographer & Editor
+            </p>
+            <p style="margin-bottom: 0.75rem">
+              <a
+                href="https://sites.google.com/view/volkanportfolio/"
+                target="_blank"
+                style="
+                  color: var(--text-secondary);
+                  text-decoration: underline;
+                  font-size: 0.9rem;
+                  font-weight: 600;
+                "
+                >Portfolio</a
+              ><span style="display: inline-block; width: 10px"></span
+              ><a
+                href="https://www.instagram.com/thatturkvolkan/"
+                target="_blank"
+                style="
+                  color: var(--text-secondary);
+                  text-decoration: underline;
+                  font-size: 0.9rem;
+                  font-weight: 600;
+                "
+                >Instagram</a
+              >
+            </p>
+            <p class="card-text">
+              Professional videographer and editor who created all demo videos
+              for DocuInsight. Scripted, recorded, and edited the comprehensive
+              product demonstration showcased on this site.
+            </p>
+          </div>
         </div>
       </div>
     </section>
