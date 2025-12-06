@@ -19,7 +19,7 @@
 
 ## About
 
-DocuInsight leverages the power of the OpenAI API to analyze contracts and provide AI-generated insights, helping signers better understand the agreements they are entering into. Integrated with the DocuSign eSignature API, DocuInsight displays these insights alongside an embedded DocuSign signing session, ensuring that signers have quick and easy access to important information. Additionally, a chatbot is available to answer questions about the contract and assist users in finding legal counsel in real-time. The site is live and you can visit it at [docuinsight.ai](https://docuinsight.ai) and check out the [live demo](https://www.docuinsight.ai/sign?job=a070d50e-11dd-4bdc-b679-4182e7a303f4&invite=aa949bb8-11f0-4c66-a506-8d3946000432) to get an idea of how DocuInsight works.
+DocuInsight leverages the power of the OpenAI API to analyze contracts and provide AI-generated insights, helping signers better understand the agreements they are entering into. Integrated with the DocuSign eSignature API, DocuInsight displays these insights alongside an embedded DocuSign signing session, ensuring that signers have quick and easy access to important information. Additionally, a chatbot is available to answer questions about the contract and assist users in finding legal counsel in real-time.
 
 ## Events
 
@@ -27,11 +27,9 @@ In January 2025, this project was open-sourced for the DocuSign hackathon. After
 
 ## Links
 
-- **This Repo** https://github.com/eandf/DocuInsight/
 - **E&F's Website:** https://www.efgroupinc.com/
 - **Devpost Submission:** https://devpost.com/software/legalease-07rlgu
-- **Production Instance:** https://www.docuinsight.ai/
-- **Live Example:** https://www.docuinsight.ai/sign?job=a070d50e-11dd-4bdc-b679-4182e7a303f4&invite=aa949bb8-11f0-4c66-a506-8d3946000432
+- **Tribute Page:** https://www.docuinsight.ai/
 - **Demo Video #1:** https://www.youtube.com/watch?v=vechiKAvdDU
 - **Demo Video #2:** https://www.youtube.com/watch?v=XpOqN_SWHrI
 
