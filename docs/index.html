@@ -370,7 +370,7 @@
       }
 
       .content-card:hover {
-        transform: translateY(-4px);
+        transform: translateY(-4px) scale(1.02);
         box-shadow: var(--shadow-xl);
       }
 
@@ -441,22 +441,6 @@
       .journey-card:hover {
         transform: translateY(-5px) scale(1.02);
         box-shadow: var(--shadow-xl);
-      }
-
-      .journey-card::before {
-        content: "";
-        position: absolute;
-        top: -50%;
-        right: -50%;
-        width: 200px;
-        height: 200px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 50%;
-        transition: all 0.3s ease;
-      }
-
-      .journey-card:hover::before {
-        transform: scale(1.2) rotate(45deg);
       }
 
       .journey-date {
@@ -821,7 +805,14 @@
             src="https://www.youtube.com/embed/vechiKAvdDU"
             title="DocuInsight Demo Video 1"
             frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allow="
+              accelerometer;
+              autoplay;
+              clipboard-write;
+              encrypted-media;
+              gyroscope;
+              picture-in-picture;
+            "
             allowfullscreen
           ></iframe>
         </div>
@@ -831,7 +822,14 @@
             src="https://www.youtube.com/embed/XpOqN_SWHrI"
             title="DocuInsight Demo Video 2"
             frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allow="
+              accelerometer;
+              autoplay;
+              clipboard-write;
+              encrypted-media;
+              gyroscope;
+              picture-in-picture;
+            "
             allowfullscreen
           ></iframe>
         </div>
@@ -1087,17 +1085,6 @@
             "
           >
             <div
-              style="
-                position: absolute;
-                top: -50px;
-                right: -50px;
-                width: 100px;
-                height: 100px;
-                background: rgba(255, 255, 255, 0.1);
-                border-radius: 50%;
-              "
-            ></div>
-            <div
               class="card-icon"
               style="background: rgba(255, 255, 255, 0.2); color: white"
             >
@@ -1148,17 +1135,6 @@
             "
           >
             <div
-              style="
-                position: absolute;
-                top: -50px;
-                right: -50px;
-                width: 100px;
-                height: 100px;
-                background: rgba(255, 255, 255, 0.1);
-                border-radius: 50%;
-              "
-            ></div>
-            <div
               class="card-icon"
               style="background: rgba(255, 255, 255, 0.2); color: white"
             >
@@ -1208,17 +1184,6 @@
               overflow: hidden;
             "
           >
-            <div
-              style="
-                position: absolute;
-                top: -50px;
-                right: -50px;
-                width: 100px;
-                height: 100px;
-                background: rgba(255, 255, 255, 0.1);
-                border-radius: 50%;
-              "
-            ></div>
             <div
               class="card-icon"
               style="background: rgba(255, 255, 255, 0.2); color: white"
