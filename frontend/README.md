@@ -10,7 +10,6 @@ To get started, follow these steps:
 
 1. **Accounts Required**  
    You will need accounts for the following external services:
-
    - [Resend](https://resend.com)
    - [DocuSign Developers](https://developers.docusign.com/)
    - [Supabase](https://supabase.com/)
@@ -98,7 +97,6 @@ Resend is used by Auth.js to send authentication emails.
 To deploy this project to production, follow these steps:
 
 1. **Add Your Code to GitHub**
-
    - Ensure your project code is version-controlled and pushed to a GitHub repository.  
      If your project isn't already a Git repository, initialize it with:
      ```bash
@@ -111,21 +109,17 @@ To deploy this project to production, follow these steps:
      ```
 
 2. **Create a Vercel Account**
-
    - Go to [Vercel](https://vercel.com) and sign up (or log in if you already have an account).
 
 3. **Connect GitHub to Vercel**
-
    - In Vercel, connect your GitHub account by selecting **Add New Project**.
    - Locate and select your repository from the list.
 
 4. **Deploy the Project**
-
    - When prompted, select **Next.js** as the project framework.
    - During the setup, add all environment variables from your `.env.local` file into Vercel's Environment Variables settings.
 
 5. **Complete Deployment**
-
    - Follow the remaining steps in Vercel's guided setup.
    - Once deployment is complete, Vercel will provide a production URL (e.g., `https://your-project-name.vercel.app`).
 

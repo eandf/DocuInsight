@@ -5,7 +5,6 @@
 DocuInsight uses Postgres as its main database. This database consists of two schemas and mainly 4 tables:
 
 - schema: next_auth
-
   - accounts
   - verification_tokens
 

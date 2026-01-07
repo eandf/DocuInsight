@@ -629,7 +629,9 @@ def process_single_job(
         # Run analysis using GAgent first
         _trace("Running contract analysis via GAgent.")
         groq_client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
-        gagent = g_agent.GAgent(openai_client=openai_client, groq_client=groq_client, config=g_config)
+        gagent = g_agent.GAgent(
+            openai_client=openai_client, groq_client=groq_client, config=g_config
+        )
         output = gagent.run(contract_path=local_file_path)
 
         # Check for errors or empty report in GAgent output
