@@ -1673,27 +1673,27 @@
 
       @media (prefers-reduced-motion: reduce) {
         :root {
-          --flip-duration: 240ms;
+          --flip-duration: 360ms;
         }
 
         @keyframes pageFlipOut {
           0% {
-            transform: none;
+            transform: rotateY(0deg);
             opacity: 1;
           }
           100% {
-            transform: none;
+            transform: rotateY(-72deg);
             opacity: 0;
           }
         }
 
         @keyframes pageFlipIn {
           0% {
-            transform: none;
+            transform: rotateY(-72deg);
             opacity: 0;
           }
           100% {
-            transform: none;
+            transform: rotateY(0deg);
             opacity: 1;
           }
         }
