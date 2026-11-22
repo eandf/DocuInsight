@@ -33,6 +33,18 @@ In January 2025, this project was open-sourced for the DocuSign hackathon. After
 - **Demo Video #1:** https://www.youtube.com/watch?v=vechiKAvdDU
 - **Demo Video #2:** https://www.youtube.com/watch?v=XpOqN_SWHrI
 
+## Tribute Site
+
+The static tribute site lives in [`docs/`](docs/). It opens in the book-style view by default; the switch in the top-right corner lets visitors choose the traditional scrolling view. Their choice is saved in the browser and restored on their next visit.
+
+Keep `docs/index.html`, `docs/new.html`, and `docs/old.html` together when deploying. To preview the site locally from the repository root:
+
+```bash
+python3 -m http.server 8000 --directory docs
+```
+
+Then open <http://localhost:8000/>.
+
 ## Features
 
 - **AI-Powered Contract Analysis:** Utilize OpenAI's capabilities to break down and explain contract terms.

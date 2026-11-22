@@ -1,0 +1,3209 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DocuInsight (Retired)</title>
+    <meta
+      name="description"
+      content="DocuInsight was a contract review platform built around DocuSign. Read about what we built, why we shut it down, and what we learned."
+    />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://docuinsight.ai/" />
+    <meta property="og:title" content="DocuInsight (Retired)" />
+    <meta
+      property="og:description"
+      content="DocuInsight was a contract review platform built around DocuSign. Read about what we built, why we shut it down, and what we learned."
+    />
+    <meta property="og:image" content="https://docuinsight.ai/thumbnail.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://docuinsight.ai/" />
+    <meta property="twitter:title" content="DocuInsight (Retired)" />
+    <meta
+      property="twitter:description"
+      content="DocuInsight was a contract review platform built around DocuSign. Read about what we built, why we shut it down, and what we learned."
+    />
+    <meta
+      property="twitter:image"
+      content="https://docuinsight.ai/thumbnail.png"
+    />
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+    <link rel="manifest" href="site.webmanifest" />
+    <link rel="shortcut icon" href="favicon.ico" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --bg-primary: #f8f7f4;
+        --bg-surface: #efece6;
+        --bg-elevated: #ffffff;
+
+        /* 10 full-page book chapter tints */
+        --page-cover: #f8f7f4;
+        --page-overview: #e7f1fb;
+        --page-capabilities: #e3f4f1;
+        --page-team: #eeeffb;
+        --page-tech: #e3f2f6;
+        --page-opensource: #e6f3ea;
+        --page-timeline: #eaf0fb;
+        --page-postmortem: #f4ede3;
+        --page-issues: #ede9f6;
+        --page-lessons: #e3eff5;
+
+        --text-primary: #141413;
+        --text-muted: #54534f;
+        --accent: #245b8d;
+        --accent-hover: #1b456c;
+
+        /* Logo 4-color accents */
+        --logo-blue: #5b95d2;
+        --logo-indigo: #7683ee;
+        --logo-cyan: #71cad6;
+        --logo-mint: #a8d8c8;
+
+        --blue-bg: #dfecf9;
+        --blue-bg-hover: #cbe0f5;
+        --blue-ink: #1c4d7d;
+        --indigo-bg: #e6e8fc;
+        --indigo-bg-hover: #d5d9fa;
+        --indigo-ink: #343c96;
+        --cyan-bg: #d7f0f4;
+        --cyan-bg-hover: #bfe6ec;
+        --cyan-ink: #125461;
+        --mint-bg: #d7e7e1;
+        --mint-bg-hover: #c3dcd3;
+        --mint-ink: #1c5141;
+
+        --accent-surface: #d7e7e1;
+        --accent-surface-hover: #c3dcd3;
+        --accent-ink: #16324a;
+
+        --font-serif: "Newsreader", Georgia, "Times New Roman", serif;
+        --font-sans: "DM Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+        --font-mono:
+          "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+        /* One fluid scale: width and height both influence the page density.
+           Rem-based minimums keep text readable instead of shrinking to fit. */
+        --base-text-label: clamp(
+          0.6875rem,
+          calc(0.625rem + min(0.16vw, 0.24dvh)),
+          0.8125rem
+        );
+        --base-text-small: clamp(
+          0.8125rem,
+          calc(0.75rem + min(0.18vw, 0.27dvh)),
+          0.9375rem
+        );
+        --base-text-body: clamp(
+          1rem,
+          calc(0.875rem + min(0.2vw, 0.3dvh)),
+          1.1875rem
+        );
+        --base-text-lead: clamp(
+          1.0625rem,
+          calc(0.9375rem + min(0.3vw, 0.45dvh)),
+          1.375rem
+        );
+        --base-text-subheading: clamp(
+          1.25rem,
+          calc(1rem + min(0.6vw, 0.9dvh)),
+          1.625rem
+        );
+        --base-text-heading: clamp(
+          1.75rem,
+          calc(1rem + min(2vw, 3dvh)),
+          3.25rem
+        );
+        --base-text-title: clamp(
+          2rem,
+          calc(1rem + min(3.2vw, 4.8dvh)),
+          4.75rem
+        );
+        --text-label: var(--base-text-label);
+        --text-small: var(--base-text-small);
+        --text-body: var(--base-text-body);
+        --text-lead: var(--base-text-lead);
+        --text-subheading: var(--base-text-subheading);
+        --text-heading: var(--base-text-heading);
+        --text-title: var(--base-text-title);
+
+        --base-space-unit: clamp(0.375rem, min(0.65vw, 1dvh), 0.625rem);
+        --space-unit: var(--base-space-unit);
+        --space-1: var(--space-unit);
+        --space-2: calc(var(--space-unit) * 2);
+        --space-3: calc(var(--space-unit) * 3);
+        --space-4: calc(var(--space-unit) * 4);
+        --space-6: calc(var(--space-unit) * 6);
+        --gutter: clamp(1rem, 2.5vw, 2.5rem);
+        --card-padding: var(--space-3);
+        --row-gap: var(--space-2);
+        --avatar-size: clamp(3rem, min(4.5vw, 7dvh), 4.5rem);
+
+        --radius-sm: 0.375rem;
+        --radius-md: 0.625rem;
+        --radius-lg: 0.875rem;
+        --shadow-sm: 0 2px 10px rgba(20, 20, 19, 0.06);
+        --shadow-md:
+          0 12px 32px rgba(20, 20, 19, 0.06), 0 1px 3px rgba(20, 20, 19, 0.04);
+        --max-width: clamp(70rem, 90vw, 90rem);
+        --hud-bottom: max(0.75rem, env(safe-area-inset-bottom));
+        --hud-clearance: calc(4rem + var(--hud-bottom));
+
+        --flip-duration: 760ms;
+        --flip-ease: cubic-bezier(0.32, 0.04, 0.22, 1);
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        overscroll-behavior: none;
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+
+      html::-webkit-scrollbar,
+      body::-webkit-scrollbar {
+        display: none;
+      }
+
+      body {
+        position: fixed;
+        inset: 0;
+        font-family: var(--font-sans);
+        font-size: var(--text-body);
+        line-height: 1.6;
+      }
+
+      img {
+        display: block;
+        max-width: 100%;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+        border-radius: var(--radius-sm);
+      }
+
+      .container {
+        width: 100%;
+        max-width: var(--max-width);
+        margin: 0 auto;
+        padding: 0 var(--gutter);
+        padding-left: max(var(--gutter), env(safe-area-inset-left));
+        padding-right: max(var(--gutter), env(safe-area-inset-right));
+      }
+
+      /* Grid/flex children must be allowed to wrap rather than widen the page. */
+      .container *,
+      .book-hud > * {
+        min-width: 0;
+      }
+
+      h1,
+      h2,
+      h3,
+      p,
+      .dossier-val,
+      .tag {
+        overflow-wrap: anywhere;
+      }
+
+      h1,
+      h2,
+      h3 {
+        text-wrap: balance;
+      }
+
+      p {
+        text-wrap: pretty;
+      }
+
+      .mono-label {
+        font-family: var(--font-mono);
+        font-size: var(--text-label);
+        font-weight: 500;
+        line-height: 1.4;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+      }
+
+      /* 3D Book Stage */
+      .book-stage {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        height: 100dvh;
+        overflow: hidden;
+        perspective: max(2800px, 220vw);
+        perspective-origin: 50% 50%;
+      }
+
+      .book {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transform-style: preserve-3d;
+      }
+
+      .book-page {
+        --page-density: 1;
+        --text-label: max(
+          0.6875rem,
+          calc(var(--base-text-label) * var(--page-density))
+        );
+        --text-small: max(
+          0.75rem,
+          calc(var(--base-text-small) * var(--page-density))
+        );
+        --text-body: max(
+          0.875rem,
+          calc(var(--base-text-body) * var(--page-density))
+        );
+        --text-lead: max(
+          0.9375rem,
+          calc(var(--base-text-lead) * var(--page-density))
+        );
+        --text-subheading: max(
+          1.125rem,
+          calc(var(--base-text-subheading) * var(--page-density))
+        );
+        --text-heading: max(
+          1.5rem,
+          calc(var(--base-text-heading) * var(--page-density))
+        );
+        --text-title: max(
+          1.75rem,
+          calc(var(--base-text-title) * var(--page-density))
+        );
+        --space-unit: max(
+          0.3125rem,
+          calc(var(--base-space-unit) * var(--page-density))
+        );
+        --space-1: var(--space-unit);
+        --space-2: calc(var(--space-unit) * 2);
+        --space-3: calc(var(--space-unit) * 3);
+        --space-4: calc(var(--space-unit) * 4);
+        --space-6: calc(var(--space-unit) * 6);
+        --card-padding: var(--space-3);
+        --row-gap: var(--space-2);
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        transform-origin: left center;
+        transform-style: preserve-3d;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        visibility: hidden;
+        pointer-events: none;
+        z-index: 1;
+        will-change: transform, opacity;
+      }
+
+      /* Subtle left book-spine crease */
+      .book-page::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 28px;
+        background: linear-gradient(
+          90deg,
+          rgba(20, 20, 19, 0.055) 0%,
+          rgba(20, 20, 19, 0.018) 42%,
+          rgba(20, 20, 19, 0) 100%
+        );
+        pointer-events: none;
+        z-index: 5;
+      }
+
+      /* Dynamic page-turn shadow veil */
+      .book-page::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 6;
+        opacity: 0;
+        background: linear-gradient(
+          90deg,
+          rgba(20, 20, 19, 0.14) 0%,
+          rgba(20, 20, 19, 0.05) 38%,
+          rgba(20, 20, 19, 0) 100%
+        );
+      }
+
+      .book-page.is-active {
+        visibility: visible;
+        pointer-events: auto;
+        z-index: 20;
+        transform: rotateY(0deg);
+        opacity: 1;
+      }
+
+      .book-page.is-under {
+        visibility: visible;
+        pointer-events: none;
+        z-index: 15;
+        transform: rotateY(0deg);
+        opacity: 1;
+      }
+
+      .book-page.is-under.is-revealing::after {
+        animation: pageShadowReveal var(--flip-duration) var(--flip-ease)
+          forwards;
+      }
+
+      .book-page.is-under.is-covering::after {
+        animation: pageShadowCover var(--flip-duration) var(--flip-ease)
+          forwards;
+      }
+
+      .book-page.is-flipping-out {
+        visibility: visible;
+        pointer-events: none;
+        z-index: 30;
+        animation: pageFlipOut var(--flip-duration) var(--flip-ease) forwards;
+      }
+
+      .book-page.is-flipping-out::after {
+        animation: pageBendShadeOut var(--flip-duration) var(--flip-ease)
+          forwards;
+      }
+
+      .book-page.is-flipping-in {
+        visibility: visible;
+        pointer-events: none;
+        z-index: 30;
+        animation: pageFlipIn var(--flip-duration) var(--flip-ease) forwards;
+      }
+
+      .book-page.is-flipping-in::after {
+        animation: pageBendShadeIn var(--flip-duration) var(--flip-ease)
+          forwards;
+      }
+
+      @keyframes pageFlipOut {
+        0% {
+          transform: rotateY(0deg);
+          box-shadow: 0 0 0 rgba(20, 20, 19, 0);
+          opacity: 1;
+        }
+        18% {
+          box-shadow: 28px 0 68px rgba(20, 20, 19, 0.16);
+        }
+        82% {
+          opacity: 1;
+        }
+        100% {
+          transform: rotateY(-102deg);
+          box-shadow: 12px 0 36px rgba(20, 20, 19, 0.08);
+          opacity: 0;
+        }
+      }
+
+      @keyframes pageFlipIn {
+        0% {
+          transform: rotateY(-102deg);
+          box-shadow: 12px 0 36px rgba(20, 20, 19, 0.08);
+          opacity: 0;
+        }
+        18% {
+          opacity: 1;
+          box-shadow: 28px 0 68px rgba(20, 20, 19, 0.16);
+        }
+        100% {
+          transform: rotateY(0deg);
+          box-shadow: 0 0 0 rgba(20, 20, 19, 0);
+          opacity: 1;
+        }
+      }
+
+      @keyframes pageShadowReveal {
+        0% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
+
+      @keyframes pageShadowCover {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 0.9;
+        }
+      }
+
+      @keyframes pageBendShadeOut {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 0.55;
+        }
+      }
+
+      @keyframes pageBendShadeIn {
+        0% {
+          opacity: 0.55;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
+
+      /* Pages never scroll. Oversized chapters are paginated to new sheets. */
+      .book-page-scroll {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+        overflow: clip;
+        display: flex;
+        flex-direction: column;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        overscroll-behavior: none;
+        touch-action: pinch-zoom;
+      }
+
+      .book-page-scroll::-webkit-scrollbar {
+        display: none;
+      }
+
+      .book-page-inner {
+        flex: 0 0 auto;
+        margin: auto 0;
+        width: 100%;
+        padding: max(var(--space-3), env(safe-area-inset-top)) 0
+          var(--hud-clearance);
+      }
+
+      .book-page.is-compact
+        :is(
+          .hero-lead,
+          .section-copy,
+          .origin-note p,
+          .editorial-item p,
+          .team-bio,
+          .spec-desc,
+          .directory-desc,
+          .timeline-row p,
+          .postmortem-lead
+        ) {
+        line-height: 1.45;
+      }
+
+      /* Only used when a chapter needs smaller, readable sheets. */
+      .page-flow {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+      }
+
+      .page-flow > * {
+        flex: 0 0 auto;
+        margin-block: 0;
+      }
+
+      .page-flow .editorial-item,
+      .page-flow .timeline-row {
+        display: block;
+      }
+
+      .page-flow .editorial-num,
+      .page-flow .timeline-row > .mono-label {
+        display: block;
+        margin-bottom: var(--space-1);
+      }
+
+      .page-flow .team-row {
+        display: flow-root;
+      }
+
+      .page-flow .team-avatar {
+        float: left;
+        margin: 0 var(--space-2) var(--space-1) 0;
+      }
+
+      .page-flow .video-figure {
+        width: min(
+          100%,
+          calc(
+            (100dvh - var(--hud-clearance) - var(--space-4) - 2rem) * 1.77778
+          )
+        );
+        align-self: center;
+      }
+
+      .page-flow .directory-row {
+        grid-template-columns: minmax(0, 1fr) auto;
+      }
+
+      .page-flow .directory-desc {
+        grid-column: 1 / -1;
+        grid-row: 2;
+      }
+
+      .page-flow .directory-arrow {
+        grid-column: 2;
+        grid-row: 1;
+      }
+
+      /* Page Color Themes */
+      .page--cover,
+      .page--colophon {
+        background-color: var(--page-cover);
+      }
+
+      .page--overview {
+        background-color: var(--page-overview);
+      }
+
+      .page--capabilities {
+        background-color: var(--page-capabilities);
+      }
+
+      .page--team {
+        background-color: var(--page-team);
+      }
+
+      .page--tech {
+        background-color: var(--page-tech);
+      }
+
+      .page--opensource {
+        background-color: var(--page-opensource);
+      }
+
+      .page--timeline {
+        background-color: var(--page-timeline);
+      }
+
+      .page--postmortem {
+        background-color: var(--page-postmortem);
+      }
+
+      .page--issues {
+        background-color: var(--page-issues);
+      }
+
+      .page--lessons {
+        background-color: var(--page-lessons);
+      }
+
+      /* Floating Book Folio Controls */
+      .book-hud {
+        position: fixed;
+        left: 50%;
+        bottom: var(--hud-bottom);
+        transform: translateX(-50%);
+        z-index: 60;
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-1);
+        padding: 0.375rem 0.5rem;
+        border-radius: 999px;
+        background-color: rgba(255, 255, 255, 0.82);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        box-shadow:
+          0 8px 28px rgba(20, 20, 19, 0.08),
+          0 1px 2px rgba(20, 20, 19, 0.06);
+        max-width: calc(100% - 2rem);
+      }
+
+      .hud-btn {
+        display: grid;
+        place-items: center;
+        width: 2rem;
+        height: 2rem;
+        border: none;
+        border-radius: 999px;
+        background-color: transparent;
+        color: var(--text-primary);
+        cursor: pointer;
+        flex-shrink: 0;
+        transition:
+          background-color 0.15s ease,
+          color 0.15s ease,
+          opacity 0.15s ease;
+      }
+
+      .hud-btn:hover:not(:disabled) {
+        background-color: var(--blue-bg);
+        color: var(--blue-ink);
+      }
+
+      .hud-btn:disabled {
+        opacity: 0.28;
+        cursor: default;
+      }
+
+      .hud-btn svg {
+        display: block;
+        width: 1rem;
+        height: 1rem;
+      }
+
+      .hud-folio {
+        display: inline-flex;
+        align-items: center;
+        padding: 0 0.25rem;
+        font-family: var(--font-mono);
+        font-size: var(--text-small);
+        font-variant-numeric: tabular-nums;
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--text-primary);
+        white-space: nowrap;
+      }
+
+      /* Asymmetric 40/60 & 60/40 Splits */
+      .split-40-60 {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+        gap: var(--space-6);
+        align-items: center;
+      }
+
+      .split-40-60--top {
+        align-items: start;
+      }
+
+      .split-60-40 {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+        gap: var(--space-6);
+        align-items: center;
+      }
+
+      .section-heading {
+        font-family: var(--font-serif);
+        font-size: var(--text-heading);
+        font-weight: 400;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+        margin-top: var(--space-1);
+        margin-bottom: var(--space-2);
+      }
+
+      .section-copy {
+        font-size: var(--text-body);
+        line-height: 1.6;
+        color: var(--text-muted);
+        max-width: 36ch;
+      }
+
+      /* Cover / Hero */
+      .hero-kicker {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: var(--space-2);
+        margin-bottom: var(--space-3);
+      }
+
+      .status-stamp {
+        font-family: var(--font-mono);
+        font-size: var(--text-label);
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--indigo-ink);
+        background-color: var(--indigo-bg);
+        border-radius: 999px;
+        padding: 0.4em 1em;
+      }
+
+      .hero-title-row {
+        display: flex;
+        align-items: center;
+        font-size: var(--text-title);
+        gap: 0.25em;
+        margin-bottom: var(--space-3);
+      }
+
+      .hero-logo {
+        width: 0.85em;
+        height: 0.85em;
+        border-radius: var(--radius-md);
+        background-color: var(--bg-elevated);
+        box-shadow: var(--shadow-sm);
+        padding: 0.08em;
+        flex-shrink: 0;
+        transform: translateY(-0.12em);
+      }
+
+      .hero-title-row h1 {
+        font-family: var(--font-serif);
+        font-size: inherit;
+        font-weight: 400;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+      }
+
+      .hero-lead {
+        font-size: var(--text-lead);
+        line-height: 1.6;
+        color: var(--text-muted);
+        max-width: 52ch;
+        margin-bottom: var(--space-4);
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--space-2);
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-1);
+        padding: 0.85em 1.4em;
+        min-height: 2.75rem;
+        border-radius: var(--radius-md);
+        font-family: var(--font-sans);
+        font-size: var(--text-body);
+        font-weight: 600;
+        line-height: 1.2;
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        transition:
+          background-color 0.15s ease,
+          color 0.15s ease,
+          transform 0.15s ease,
+          box-shadow 0.15s ease;
+      }
+
+      .btn-primary {
+        background-color: var(--accent);
+        color: #ffffff;
+        box-shadow: 0 2px 10px rgba(36, 91, 141, 0.22);
+      }
+
+      .btn-primary:hover {
+        background-color: var(--accent-hover);
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(27, 69, 108, 0.28);
+      }
+
+      .btn-secondary {
+        background-color: var(--cyan-bg);
+        color: var(--cyan-ink);
+      }
+
+      .btn-secondary:hover {
+        background-color: var(--cyan-bg-hover);
+        color: var(--cyan-ink);
+        transform: translateY(-1px);
+      }
+
+      /* Project Dossier (Right Cover Column) */
+      .dossier {
+        background:
+          linear-gradient(var(--bg-elevated), var(--bg-elevated)) padding-box,
+          conic-gradient(
+              from 315deg,
+              var(--logo-blue) 0deg,
+              var(--logo-indigo) 90deg,
+              var(--logo-mint) 180deg,
+              var(--logo-cyan) 270deg,
+              var(--logo-blue) 360deg
+            )
+            border-box;
+        border: 3px solid transparent;
+        border-radius: var(--radius-lg);
+        padding: var(--card-padding);
+        box-shadow: var(--shadow-md);
+      }
+
+      .dossier-title {
+        color: var(--blue-ink);
+        margin-bottom: var(--space-2);
+      }
+
+      .dossier-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: var(--space-1);
+        list-style: none;
+        margin-bottom: var(--space-1);
+      }
+
+      .dossier-item {
+        background-color: var(--bg-primary);
+        border-radius: var(--radius-md);
+        padding: var(--space-2);
+        display: flex;
+        flex-direction: column;
+        gap: calc(var(--space-1) / 2);
+      }
+
+      .dossier-item:nth-child(1) .dossier-key {
+        color: var(--blue-ink);
+      }
+
+      .dossier-item:nth-child(2) .dossier-key {
+        color: var(--indigo-ink);
+      }
+
+      .dossier-item:nth-child(3) .dossier-key {
+        color: var(--cyan-ink);
+      }
+
+      .dossier-item:nth-child(4) .dossier-key {
+        color: var(--mint-ink);
+      }
+
+      .dossier-key {
+        font-family: var(--font-mono);
+        font-size: var(--text-label);
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+      }
+
+      .dossier-val {
+        font-size: var(--text-body);
+        line-height: 1.4;
+        color: var(--text-primary);
+        font-weight: 600;
+      }
+
+      .dossier-repo {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-2);
+        background-color: var(--mint-bg);
+        border-radius: var(--radius-md);
+        padding: var(--space-2);
+        text-decoration: none;
+        transition: background-color 0.15s ease;
+      }
+
+      .dossier-repo:hover {
+        background-color: var(--mint-bg-hover);
+      }
+
+      .dossier-repo-meta {
+        display: flex;
+        flex-direction: column;
+        gap: calc(var(--space-1) / 2);
+        min-width: 0;
+      }
+
+      .dossier-repo .dossier-key,
+      .dossier-repo .dossier-val {
+        color: var(--mint-ink);
+      }
+
+      .dossier-repo-arrow {
+        display: grid;
+        place-items: center;
+        width: 1.5rem;
+        height: 1.5rem;
+        color: var(--mint-ink);
+        flex-shrink: 0;
+        transition: transform 0.15s ease;
+      }
+
+      .dossier-repo-arrow svg {
+        display: block;
+        width: 1.125rem;
+        height: 1.125rem;
+      }
+
+      .dossier-repo:hover .dossier-repo-arrow {
+        transform: translate(2px, -2px);
+      }
+
+      /* Editorial Origin / Note Block */
+      .origin-note {
+        background-color: var(--bg-elevated);
+        border-radius: var(--radius-lg);
+        padding: var(--card-padding);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .origin-note p {
+        margin-top: var(--space-1);
+        font-size: var(--text-body);
+        line-height: 1.6;
+        color: var(--text-primary);
+      }
+
+      /* Demo Video Strip */
+      .video-block {
+        margin-top: var(--space-4);
+      }
+
+      .video-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: var(--space-3);
+        max-width: min(100%, calc(112dvh + 8rem));
+        margin-inline: auto;
+      }
+
+      .video-figure {
+        margin: 0;
+      }
+
+      .video-frame {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        background-color: var(--text-primary);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        box-shadow: 0 8px 24px rgba(20, 20, 19, 0.08);
+      }
+
+      .video-frame iframe {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+      }
+
+      .video-caption {
+        margin-top: var(--space-1);
+      }
+
+      /* Editorial Numbered Rows */
+      .editorial-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+      }
+
+      .editorial-item {
+        display: grid;
+        grid-template-columns: 2em minmax(0, 1fr);
+        gap: var(--space-2);
+        align-items: baseline;
+      }
+
+      .editorial-num {
+        font-family: var(--font-mono);
+        font-size: var(--text-small);
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        color: var(--blue-ink);
+      }
+
+      .editorial-item:nth-child(4n + 2) .editorial-num {
+        color: var(--indigo-ink);
+      }
+
+      .editorial-item:nth-child(4n + 3) .editorial-num {
+        color: var(--cyan-ink);
+      }
+
+      .editorial-item:nth-child(4n + 4) .editorial-num {
+        color: var(--mint-ink);
+      }
+
+      .editorial-item h3 {
+        font-family: var(--font-serif);
+        font-size: var(--text-subheading);
+        font-weight: 400;
+        line-height: 1.2;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+        margin-bottom: calc(var(--space-1) / 2);
+      }
+
+      .editorial-item p {
+        font-size: var(--text-body);
+        line-height: 1.55;
+        color: var(--text-muted);
+      }
+
+      /* Team Rows */
+      .team-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--row-gap);
+      }
+
+      .team-row {
+        display: grid;
+        grid-template-columns: var(--avatar-size) minmax(0, 1fr);
+        gap: var(--space-2);
+        padding: var(--card-padding);
+        background-color: var(--bg-elevated);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        align-items: start;
+      }
+
+      .team-avatar {
+        width: var(--avatar-size);
+        height: var(--avatar-size);
+        object-fit: cover;
+        border-radius: var(--radius-md);
+      }
+
+      /* Fit the team together before resorting to continuation pages. */
+      .page--team.is-compact {
+        --avatar-size: clamp(2rem, min(3.6vw, 5dvh), 3.25rem);
+      }
+
+      .page--team.is-compact .split-40-60 {
+        gap: var(--space-2);
+      }
+
+      .page--team.is-compact .team-list {
+        gap: var(--space-1);
+      }
+
+      .page--team.is-compact .team-row {
+        padding: var(--space-1) var(--space-2);
+      }
+
+      .page--team.is-compact .team-name {
+        font-size: max(
+          1rem,
+          calc(var(--base-text-subheading) * var(--page-density))
+        );
+      }
+
+      .page--team.is-compact .team-role {
+        margin-bottom: calc(var(--space-1) / 2);
+      }
+
+      .page--team.is-compact .team-bio {
+        font-size: max(
+          0.75rem,
+          calc(var(--base-text-body) * var(--page-density))
+        );
+        line-height: 1.3;
+      }
+
+      .team-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-1) var(--space-2);
+        margin-bottom: calc(var(--space-1) / 2);
+      }
+
+      .team-name {
+        font-family: var(--font-serif);
+        font-size: var(--text-subheading);
+        font-weight: 400;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+      }
+
+      .team-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-1);
+        font-size: var(--text-small);
+        font-weight: 500;
+      }
+
+      .team-links a {
+        text-decoration: none;
+        color: var(--blue-ink);
+        background-color: var(--blue-bg);
+        padding: 0.35em 0.75em;
+        border-radius: var(--radius-sm);
+        transition:
+          color 0.15s ease,
+          background-color 0.15s ease;
+      }
+
+      .team-links a:hover {
+        background-color: var(--blue-bg-hover);
+      }
+
+      .team-row:nth-child(1) .team-links a:nth-child(2) {
+        color: var(--indigo-ink);
+        background-color: var(--indigo-bg);
+      }
+
+      .team-row:nth-child(1) .team-links a:nth-child(2):hover {
+        background-color: var(--indigo-bg-hover);
+      }
+
+      .team-row:nth-child(2) .team-links a:nth-child(1) {
+        color: var(--cyan-ink);
+        background-color: var(--cyan-bg);
+      }
+
+      .team-row:nth-child(2) .team-links a:nth-child(1):hover {
+        background-color: var(--cyan-bg-hover);
+      }
+
+      .team-row:nth-child(2) .team-links a:nth-child(2) {
+        color: var(--mint-ink);
+        background-color: var(--mint-bg);
+      }
+
+      .team-row:nth-child(2) .team-links a:nth-child(2):hover {
+        background-color: var(--mint-bg-hover);
+      }
+
+      .team-row:nth-child(3) .team-links a:nth-child(1) {
+        color: var(--indigo-ink);
+        background-color: var(--indigo-bg);
+      }
+
+      .team-row:nth-child(3) .team-links a:nth-child(1):hover {
+        background-color: var(--indigo-bg-hover);
+      }
+
+      .team-row:nth-child(3) .team-links a:nth-child(2) {
+        color: var(--cyan-ink);
+        background-color: var(--cyan-bg);
+      }
+
+      .team-row:nth-child(3) .team-links a:nth-child(2):hover {
+        background-color: var(--cyan-bg-hover);
+      }
+
+      .team-role {
+        margin-bottom: var(--space-1);
+      }
+
+      .team-bio {
+        font-size: var(--text-body);
+        line-height: 1.55;
+        color: var(--text-muted);
+      }
+
+      /* Architecture Specification Rows */
+      .spec-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--row-gap);
+      }
+
+      .spec-row {
+        padding: var(--card-padding);
+        background-color: var(--bg-elevated);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .spec-top {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: var(--space-1) var(--space-2);
+        margin-bottom: var(--space-1);
+      }
+
+      .spec-row h3 {
+        font-family: var(--font-serif);
+        font-size: var(--text-subheading);
+        font-weight: 400;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+      }
+
+      .spec-desc {
+        font-size: var(--text-body);
+        line-height: 1.55;
+        color: var(--text-muted);
+        margin-bottom: var(--space-2);
+      }
+
+      .tag-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-1);
+      }
+
+      .tag {
+        font-family: var(--font-mono);
+        font-size: var(--text-label);
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--blue-ink);
+        background-color: var(--blue-bg);
+        border-radius: 999px;
+        padding: 0.35em 0.9em;
+        max-width: 100%;
+      }
+
+      .tag:nth-child(4n + 2) {
+        color: var(--indigo-ink);
+        background-color: var(--indigo-bg);
+      }
+
+      .tag:nth-child(4n + 3) {
+        color: var(--cyan-ink);
+        background-color: var(--cyan-bg);
+      }
+
+      .tag:nth-child(4n + 4) {
+        color: var(--mint-ink);
+        background-color: var(--mint-bg);
+      }
+
+      .spec-row:nth-child(2) .tag:nth-child(4n + 1) {
+        color: var(--indigo-ink);
+        background-color: var(--indigo-bg);
+      }
+
+      .spec-row:nth-child(2) .tag:nth-child(4n + 2) {
+        color: var(--cyan-ink);
+        background-color: var(--cyan-bg);
+      }
+
+      .spec-row:nth-child(2) .tag:nth-child(4n + 3) {
+        color: var(--mint-ink);
+        background-color: var(--mint-bg);
+      }
+
+      .spec-row:nth-child(2) .tag:nth-child(4n + 4) {
+        color: var(--blue-ink);
+        background-color: var(--blue-bg);
+      }
+
+      .spec-row:nth-child(3) .tag:nth-child(4n + 1) {
+        color: var(--cyan-ink);
+        background-color: var(--cyan-bg);
+      }
+
+      .spec-row:nth-child(3) .tag:nth-child(4n + 2) {
+        color: var(--mint-ink);
+        background-color: var(--mint-bg);
+      }
+
+      .spec-row:nth-child(3) .tag:nth-child(4n + 3) {
+        color: var(--blue-ink);
+        background-color: var(--blue-bg);
+      }
+
+      .spec-row:nth-child(3) .tag:nth-child(4n + 4) {
+        color: var(--indigo-ink);
+        background-color: var(--indigo-bg);
+      }
+
+      /* Open Source Directory */
+      .directory-intro {
+        margin-bottom: var(--space-4);
+      }
+
+      .directory {
+        display: flex;
+        flex-direction: column;
+        gap: var(--row-gap);
+      }
+
+      .directory-row {
+        display: grid;
+        grid-template-columns: minmax(10rem, 1fr) minmax(0, 2.5fr) auto;
+        gap: var(--space-2) var(--space-3);
+        align-items: baseline;
+        padding: var(--card-padding);
+        background-color: var(--bg-elevated);
+        box-shadow: var(--shadow-sm);
+        text-decoration: none;
+        border-radius: var(--radius-lg);
+        transition:
+          background-color 0.15s ease,
+          transform 0.15s ease;
+      }
+
+      .directory-row:hover {
+        background-color: var(--blue-bg);
+      }
+
+      .directory-row:hover .directory-title,
+      .directory-row:hover .directory-arrow {
+        color: var(--blue-ink);
+      }
+
+      .directory-row:nth-child(2) .directory-arrow {
+        color: var(--indigo-ink);
+      }
+
+      .directory-row:nth-child(2):hover {
+        background-color: var(--indigo-bg);
+      }
+
+      .directory-row:nth-child(2):hover .directory-title,
+      .directory-row:nth-child(2):hover .directory-arrow {
+        color: var(--indigo-ink);
+      }
+
+      .directory-row:nth-child(3) .directory-arrow {
+        color: var(--cyan-ink);
+      }
+
+      .directory-row:nth-child(3):hover {
+        background-color: var(--cyan-bg);
+      }
+
+      .directory-row:nth-child(3):hover .directory-title,
+      .directory-row:nth-child(3):hover .directory-arrow {
+        color: var(--cyan-ink);
+      }
+
+      .directory-title {
+        font-family: var(--font-serif);
+        font-size: var(--text-subheading);
+        font-weight: 400;
+        line-height: 1.2;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+        transition: color 0.15s ease;
+      }
+
+      .directory-desc {
+        font-size: var(--text-body);
+        line-height: 1.55;
+        color: var(--text-muted);
+      }
+
+      .directory-arrow {
+        font-family: var(--font-mono);
+        font-size: var(--text-label);
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        color: var(--blue-ink);
+        white-space: nowrap;
+        transition: color 0.15s ease;
+      }
+
+      /* Timeline */
+      .timeline {
+        display: flex;
+        flex-direction: column;
+        gap: var(--row-gap);
+      }
+
+      .timeline-row {
+        display: grid;
+        grid-template-columns: max-content minmax(0, 1fr);
+        gap: var(--space-2) var(--space-3);
+        padding: var(--card-padding);
+        background-color: var(--bg-elevated);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        align-items: baseline;
+      }
+
+      .timeline-row .mono-label {
+        display: inline-block;
+        width: fit-content;
+        padding: 0.35em 0.8em;
+        max-width: 100%;
+        border-radius: 999px;
+        color: var(--blue-ink);
+        background-color: var(--blue-bg);
+      }
+
+      .timeline-row:nth-child(2) .mono-label {
+        color: var(--indigo-ink);
+        background-color: var(--indigo-bg);
+      }
+
+      .timeline-row:nth-child(3) .mono-label {
+        color: var(--cyan-ink);
+        background-color: var(--cyan-bg);
+      }
+
+      .timeline-row:nth-child(4) .mono-label {
+        color: var(--mint-ink);
+        background-color: var(--mint-bg);
+      }
+
+      .timeline-row h3 {
+        font-family: var(--font-serif);
+        font-size: var(--text-subheading);
+        font-weight: 400;
+        line-height: 1.2;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+        margin-bottom: calc(var(--space-1) / 2);
+      }
+
+      .timeline-row p {
+        font-size: var(--text-body);
+        line-height: 1.55;
+        color: var(--text-muted);
+      }
+
+      /* Post-mortem Lead & Pull Quote */
+      .postmortem-lead {
+        font-size: var(--text-lead);
+        line-height: 1.6;
+        color: var(--text-primary);
+        margin-bottom: var(--space-3);
+      }
+
+      .pull-quote {
+        margin: 0;
+        padding: var(--card-padding);
+        background-color: var(--accent-surface);
+        border-radius: var(--radius-lg);
+      }
+
+      .pull-quote p {
+        font-family: var(--font-serif);
+        font-style: italic;
+        font-size: var(--text-subheading);
+        line-height: 1.4;
+        letter-spacing: -0.01em;
+        color: var(--accent-ink);
+        margin-bottom: var(--space-1);
+      }
+
+      .pull-quote cite {
+        font-style: normal;
+        color: var(--accent);
+      }
+
+      /* Compact, centered colophon on its own final book page */
+      .page--colophon .container {
+        max-width: none;
+        padding-inline: max(
+          var(--gutter),
+          env(safe-area-inset-left),
+          env(safe-area-inset-right)
+        );
+      }
+
+      .site-footer {
+        width: 100%;
+        padding: var(--space-2);
+      }
+
+      .footer-inner {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-1) var(--space-3);
+        text-align: center;
+      }
+
+      .footer-inner > span,
+      .footer-github {
+        font-size: var(--text-small);
+        white-space: nowrap;
+      }
+
+      .footer-inner > span {
+        color: var(--text-muted);
+      }
+
+      .footer-github {
+        font-weight: 500;
+        text-decoration: none;
+        color: var(--text-primary);
+        transition: color 0.15s ease;
+      }
+
+      .footer-github:hover {
+        color: var(--accent);
+      }
+
+      /* Reflow before columns become cramped, without stretching tablet text. */
+      @media (max-width: 60em) {
+        .split-40-60,
+        .split-60-40 {
+          grid-template-columns: 1fr;
+          gap: var(--space-4);
+        }
+
+        .container {
+          max-width: 48rem;
+        }
+
+        .section-copy {
+          max-width: 60ch;
+        }
+
+        .directory-row {
+          grid-template-columns: 1fr auto;
+          gap: var(--space-1) var(--space-2);
+        }
+
+        .directory-desc {
+          grid-column: 1 / -1;
+          grid-row: 2;
+        }
+
+        .directory-arrow {
+          grid-column: 2;
+          grid-row: 1;
+        }
+
+        .page--team.is-compact .team-row {
+          display: flow-root;
+        }
+
+        .page--team.is-compact .team-avatar {
+          float: left;
+          margin: 0 var(--space-2) var(--space-1) 0;
+        }
+      }
+
+      /* Short laptop/landscape windows: reclaim spacing before reducing text. */
+      @media (min-width: 60em) and (max-height: 45em) {
+        .book-page {
+          --card-padding: var(--space-2);
+          --row-gap: var(--space-1);
+        }
+
+        .split-40-60,
+        .split-60-40 {
+          gap: var(--space-4);
+        }
+
+        .book-page-inner {
+          padding-top: max(var(--space-2), env(safe-area-inset-top));
+        }
+
+        .video-block {
+          margin-top: var(--space-2);
+        }
+      }
+
+      @media (max-width: 40em) {
+        .video-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .hero-actions {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .timeline-row {
+          grid-template-columns: 1fr;
+          gap: var(--space-1);
+        }
+
+        .team-row {
+          grid-template-columns: 1fr;
+          gap: var(--space-2);
+        }
+
+        .editorial-item {
+          gap: var(--space-1);
+        }
+      }
+
+      @media (max-width: 25em) {
+        .dossier-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Keep controls easy to tap even when the visual scale is compact. */
+      @media (pointer: coarse) {
+        .hud-btn {
+          width: 2.75rem;
+          height: 2.75rem;
+        }
+
+        .team-links a {
+          display: inline-flex;
+          align-items: center;
+          min-height: 2.75rem;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        :root {
+          --flip-duration: 240ms;
+        }
+
+        @keyframes pageFlipOut {
+          0% {
+            transform: none;
+            opacity: 1;
+          }
+          100% {
+            transform: none;
+            opacity: 0;
+          }
+        }
+
+        @keyframes pageFlipIn {
+          0% {
+            transform: none;
+            opacity: 0;
+          }
+          100% {
+            transform: none;
+            opacity: 1;
+          }
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="book-stage" id="bookStage">
+      <main class="book" aria-label="DocuInsight Archive">
+        <!-- Page 01 / Cover -->
+        <section id="top" class="book-page page--cover is-active">
+          <div class="book-page-scroll">
+            <div class="book-page-inner">
+              <div class="container split-60-40">
+                <div>
+                  <div class="hero-kicker">
+                    <span class="status-stamp">Retired &middot; May 2025</span>
+                    <span class="mono-label">Dec 2024 &ndash; May 2025</span>
+                  </div>
+
+                  <div class="hero-title-row">
+                    <img
+                      src="logo.png"
+                      alt="DocuInsight logo"
+                      class="hero-logo"
+                    />
+                    <h1>DocuInsight</h1>
+                  </div>
+
+                  <p class="hero-lead">
+                    Contract review software built around DocuSign. We shipped
+                    it in under two months, ran customer and investor discovery,
+                    learned it could not become a standalone business, and
+                    open-sourced the code.
+                  </p>
+
+                  <div class="hero-actions">
+                    <a
+                      href="https://github.com/eandf/DocuInsight"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="btn btn-primary"
+                      >View source on GitHub</a
+                    >
+                    <a href="#failure" class="btn btn-secondary"
+                      >Read the post-mortem</a
+                    >
+                  </div>
+                </div>
+
+                <aside class="dossier" aria-label="Project archive metadata">
+                  <div class="mono-label dossier-title">Project Dossier</div>
+                  <ul class="dossier-grid">
+                    <li class="dossier-item">
+                      <span class="dossier-key">Status</span>
+                      <span class="dossier-val">Shut down, May 2025</span>
+                    </li>
+                    <li class="dossier-item">
+                      <span class="dossier-key">Built in</span>
+                      <span class="dossier-val">Under 2 months</span>
+                    </li>
+                    <li class="dossier-item">
+                      <span class="dossier-key">License</span>
+                      <span class="dossier-val">MIT (Open Source)</span>
+                    </li>
+                    <li class="dossier-item">
+                      <span class="dossier-key">Core stack</span>
+                      <span class="dossier-val"
+                        >Next.js, Python, PostgreSQL</span
+                      >
+                    </li>
+                  </ul>
+                  <a
+                    href="https://github.com/eandf/DocuInsight"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="dossier-repo"
+                  >
+                    <span class="dossier-repo-meta">
+                      <span class="dossier-key">Repository</span>
+                      <span class="dossier-val"
+                        >github.com/eandf/DocuInsight</span
+                      >
+                    </span>
+                    <span class="dossier-repo-arrow" aria-hidden="true">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path
+                          d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+                        />
+                        <path
+                          d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+                        />
+                      </svg>
+                    </span>
+                  </a>
+                </aside>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Page 02 / Overview & Demos -->
+        <section
+          id="about"
+          class="book-page page--overview"
+          aria-hidden="true"
+          inert
+        >
+          <div class="book-page-scroll">
+            <div class="book-page-inner">
+              <div class="container">
+                <div class="split-40-60 split-40-60--top">
+                  <div>
+                    <div class="mono-label">01 / Overview</div>
+                    <h2 class="section-heading">What we built and why</h2>
+                    <p class="section-copy">
+                      DocuInsight was designed to flag risky clauses and
+                      plain-English obligations before someone signed a contract
+                      in DocuSign.
+                    </p>
+                  </div>
+
+                  <div class="origin-note">
+                    <div class="mono-label">Origin of the idea</div>
+                    <p>
+                      In early 2024, co-founder Mehmet signed startup contracts
+                      without fully reviewing them. His business partner later
+                      used additional equity to force him out, and Mehmet
+                      discovered he had signed away important rights. That
+                      experience led directly to building DocuInsight.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="video-block">
+                  <div class="video-grid">
+                    <figure class="video-figure">
+                      <div class="video-frame">
+                        <iframe
+                          src="https://www.youtube.com/embed/vechiKAvdDU"
+                          title="DocuInsight Demo Video 1"
+                          allow="
+                            accelerometer;
+                            autoplay;
+                            clipboard-write;
+                            encrypted-media;
+                            gyroscope;
+                            picture-in-picture;
+                          "
+                          allowfullscreen
+                        ></iframe>
+                      </div>
+                      <figcaption class="mono-label video-caption">
+                        Product walkthrough
+                      </figcaption>
+                    </figure>
+
+                    <figure class="video-figure">
+                      <div class="video-frame">
+                        <iframe
+                          src="https://www.youtube.com/embed/XpOqN_SWHrI"
+                          title="DocuInsight Demo Video 2"
+                          allow="
+                            accelerometer;
+                            autoplay;
+                            clipboard-write;
+                            encrypted-media;
+                            gyroscope;
+                            picture-in-picture;
+                          "
+                          allowfullscreen
+                        ></iframe>
+                      </div>
+                      <figcaption class="mono-label video-caption">
+                        Feature demonstration
+                      </figcaption>
+                    </figure>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Page 03 / Capabilities -->
+        <section
+          id="capabilities"
+          class="book-page page--capabilities"
+          aria-hidden="true"
+          inert
+        >
+          <div class="book-page-scroll">
+            <div class="book-page-inner">
+              <div class="container split-40-60">
+                <div>
+                  <div class="mono-label">01 / Capabilities</div>
+                  <h2 class="section-heading">Five core workflows</h2>
+                  <p class="section-copy">
+                    Five core workflows shipped in the working prototype to keep
+                    contract review inside the signing flow.
+                  </p>
+                </div>
+
+                <ol class="editorial-list">
+                  <li class="editorial-item">
+                    <span class="editorial-num">01</span>
+                    <div>
+                      <h3>Contract analysis</h3>
+                      <p>
+                        Used OpenAI models to read legal documents and pull out
+                        key clauses, risks, and commitments in plain English.
+                      </p>
+                    </div>
+                  </li>
+                  <li class="editorial-item">
+                    <span class="editorial-num">02</span>
+                    <div>
+                      <h3>Interactive contract chat</h3>
+                      <p>
+                        Let signers ask questions about specific clauses and get
+                        answers backed by the document text and live web
+                        lookups.
+                      </p>
+                    </div>
+                  </li>
+                  <li class="editorial-item">
+                    <span class="editorial-num">03</span>
+                    <div>
+                      <h3>Legal counsel search</h3>
+                      <p>
+                        Generated targeted search queries to match users with
+                        relevant attorneys by location and contract type.
+                      </p>
+                    </div>
+                  </li>
+                  <li class="editorial-item">
+                    <span class="editorial-num">04</span>
+                    <div>
+                      <h3>DocuSign integration</h3>
+                      <p>
+                        Connected directly to DocuSign so contract notes
+                        appeared alongside the signing flow rather than in a
+                        separate tool.
+                      </p>
+                    </div>
+                  </li>
+                  <li class="editorial-item">
+                    <span class="editorial-num">05</span>
+                    <div>
+                      <h3>Multiple document formats</h3>
+                      <p>
+                        Parsed PDF, DOCX, DOC, and image uploads for analysis
+                        across standard agreement formats.
+                      </p>
+                    </div>
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Page 04 / Team -->
+        <section
+          id="team"
+          class="book-page page--team"
+          aria-hidden="true"
+          inert
+        >
+          <div class="book-page-scroll">
+            <div class="book-page-inner">
+              <div class="container split-40-60">
+                <div>
+                  <div class="mono-label">02 / People</div>
+                  <h2 class="section-heading">Who built it</h2>
+                  <p class="section-copy">
+                    Built in less than two months by two co-founders, with
+                    product demos scripted and edited by Berk Karaoglu.
+                  </p>
+                </div>
+
+                <div class="team-list">
+                  <article class="team-row">
+                    <img
+                      src="mehmet.jpg"
+                      alt="Mehmet Yilmaz"
+                      class="team-avatar"
+                    />
+                    <div>
+                      <div class="team-header">
+                        <h3 class="team-name">Mehmet Yilmaz</h3>
+                        <div class="team-links">
+                          <a
+                            href="https://mehmetmhy.com/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            >Website</a
+                          >
+                          <a
+                            href="https://www.linkedin.com/in/mehmet-mhy/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            >LinkedIn</a
+                          >
+                        </div>
+                      </div>
+                      <div class="mono-label team-role">
+                        Co-founder &amp; Backend
+                      </div>
+                      <p class="team-bio">
+                        Software engineer at Charter/Spectrum, previously at
+                        eBay. Founded Osgil Defense ($145K pre-seed), built the
+                        TARS cybersecurity tool (300+ stars) and Notify Cyber
+                        news site (17k+ visitors). Won 1st place at the National
+                        Security Hackathon ($5K prize). CS degree from Colorado
+                        School of Mines.
+                      </p>
+                    </div>
+                  </article>
+
+                  <article class="team-row">
+                    <img src="dylan.jpg" alt="Dylan Eck" class="team-avatar" />
+                    <div>
+                      <div class="team-header">
+                        <h3 class="team-name">Dylan Eck</h3>
+                        <div class="team-links">
+                          <a
+                            href="https://github.com/dylan-eck"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            >GitHub</a
+                          >
+                          <a
+                            href="https://www.linkedin.com/in/dylanjeck/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            >LinkedIn</a
+                          >
+                        </div>
+                      </div>
+                      <div class="mono-label team-role">
+                        Co-founder &amp; Frontend
+                      </div>
+                      <p class="team-bio">
+                        Associate Design Engineer at Loren Cook. Bachelor's in
+                        Mechanical Engineering and Master's in Computer Science
+                        from Colorado School of Mines (3.9+ GPA). Built the
+                        Notify Cyber news site (17k+ visitors). Co-winner of the
+                        2025 National Security Hackathon ($5K prize) with the
+                        Guardian Grid system. Certified SOLIDWORKS Associate.
+                      </p>
+                    </div>
+                  </article>
+
+                  <article class="team-row">
+                    <img
+                      src="berk.jpg"
+                      alt="Berk Karaoglu"
+                      class="team-avatar"
+                    />
+                    <div>
+                      <div class="team-header">
+                        <h3 class="team-name">Berk Karaoglu</h3>
+                        <div class="team-links">
+                          <a
+                            href="https://sites.google.com/view/volkanportfolio/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            >Portfolio</a
+                          >
+                          <a
+                            href="https://www.instagram.com/turkishkingpin/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            >Instagram</a
+                          >
+                        </div>
+                      </div>
+                      <div class="mono-label team-role">
+                        Videographer &amp; Editor
+                      </div>
+                      <p class="team-bio">
+                        Videographer and editor who produced the demo videos for
+                        DocuInsight. Scripted, recorded, and cut both product
+                        walkthroughs shown above.
+                      </p>
+                    </div>
+                  </article>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Page 05 / Architecture -->
+        <section
+          id="tech"
+          class="book-page page--tech"
+          aria-hidden="true"
+          inert
+        >
+          <div class="book-page-scroll">
+            <div class="book-page-inner">
+              <div class="container split-40-60">
+                <div>
+                  <div class="mono-label">03 / Architecture</div>
+                  <h2 class="section-heading">Three-part stack</h2>
+                  <p class="section-copy">
+                    DocuInsight ran as three separate components: a web client,
+                    a Python document analyzer, and a hosted Postgres database.
+                  </p>
+                </div>
+
+                <div class="spec-list">
+                  <div class="spec-row">
+                    <div class="spec-top">
+                      <h3>Frontend</h3>
+                      <span class="mono-label">Vercel &middot; Next.js 15</span>
+                    </div>
+                    <p class="spec-desc">
+                      Handled DocuSign OAuth, Auth.js sessions, inline PDF
+                      viewing, and contract chat UI.
+                    </p>
+                    <div class="tag-list">
+                      <span class="tag">Next.js</span>
+                      <span class="tag">TypeScript</span>
+                      <span class="tag">React</span>
+                      <span class="tag">Tailwind CSS</span>
+                      <span class="tag">Auth.js</span>
+                    </div>
+                  </div>
+
+                  <div class="spec-row">
+                    <div class="spec-top">
+                      <h3>Analyzer</h3>
+                      <span class="mono-label">Linode VPS &middot; Python</span>
+                    </div>
+                    <p class="spec-desc">
+                      Extracted text from PDF, DOCX, and image files and ran
+                      OpenAI and Groq models for clause and risk summaries.
+                    </p>
+                    <div class="tag-list">
+                      <span class="tag">Python</span>
+                      <span class="tag">OpenAI API</span>
+                      <span class="tag">Groq API</span>
+                      <span class="tag">PyMuPDF</span>
+                      <span class="tag">python-docx</span>
+                    </div>
+                  </div>
+
+                  <div class="spec-row">
+                    <div class="spec-top">
+                      <h3>Database</h3>
+                      <span class="mono-label"
+                        >Supabase &middot; PostgreSQL</span
+                      >
+                    </div>
+                    <p class="spec-desc">
+                      Stored user authentication records, completed analysis
+                      outputs, and background job status.
+                    </p>
+                    <div class="tag-list">
+                      <span class="tag">PostgreSQL</span>
+                      <span class="tag">Supabase</span>
+                      <span class="tag">Auth.js Adapter</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Page 06 / Open Source Release -->
+        <section
+          id="opensource"
+          class="book-page page--opensource"
+          aria-hidden="true"
+          inert
+        >
+          <div class="book-page-scroll">
+            <div class="book-page-inner">
+              <div class="container">
+                <div class="directory-intro">
+                  <div class="mono-label">
+                    03 / Open-source release &middot; MIT
+                  </div>
+                  <h2 class="section-heading">Public archive</h2>
+                  <p class="section-copy">
+                    The full codebase, setup instructions, and demo recordings
+                    remain public under the MIT license.
+                  </p>
+                </div>
+
+                <div class="directory">
+                  <a
+                    href="https://github.com/eandf/DocuInsight"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="directory-row"
+                  >
+                    <span class="directory-title">Full Source Code</span>
+                    <span class="directory-desc">
+                      Complete Next.js frontend, Python analyzer, and database
+                      schemas, including DocuSign and OpenAI integrations.
+                    </span>
+                    <span class="directory-arrow" aria-hidden="true"
+                      >OPEN &rarr;</span
+                    >
+                  </a>
+
+                  <a
+                    href="https://github.com/eandf/DocuInsight/blob/main/README.md"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="directory-row"
+                  >
+                    <span class="directory-title">Setup Documentation</span>
+                    <span class="directory-desc">
+                      Local setup steps, environment configuration, API routes,
+                      and deployment notes.
+                    </span>
+                    <span class="directory-arrow" aria-hidden="true"
+                      >READ &rarr;</span
+                    >
+                  </a>
+
+                  <a href="#about" class="directory-row">
+                    <span class="directory-title">Demo Recordings</span>
+                    <span class="directory-desc">
+                      Recorded walkthroughs showing how contract analysis and
+                      chat worked inside the app.
+                    </span>
+                    <span class="directory-arrow" aria-hidden="true"
+                      >WATCH &uarr;</span
+                    >
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Page 07 / Timeline -->
+        <section
+          id="journey"
+          class="book-page page--timeline"
+          aria-hidden="true"
+          inert
+        >
+          <div class="book-page-scroll">
+            <div class="book-page-inner">
+              <div class="container split-40-60">
+                <div>
+                  <div class="mono-label">04 / Timeline</div>
+                  <h2 class="section-heading">
+                    Six months from hackathon to shutdown
+                  </h2>
+                  <p class="section-copy">
+                    How the project moved from initial prototype through
+                    customer calls and investor feedback.
+                  </p>
+                </div>
+
+                <div class="timeline">
+                  <div class="timeline-row">
+                    <div class="mono-label">December 2024</div>
+                    <div>
+                      <h3>The idea</h3>
+                      <p>
+                        Built for the DocuSign Hackathon after researching
+                        common contract blind spots.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="timeline-row">
+                    <div class="mono-label">February 2025</div>
+                    <div>
+                      <h3>Customer discovery</h3>
+                      <p>
+                        Spoke with lawyers and SMB owners. Heard polite
+                        interest, but no urgency to pay.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="timeline-row">
+                    <div class="mono-label">March 2025</div>
+                    <div>
+                      <h3>VC feedback</h3>
+                      <p>
+                        Got blunt feedback from investors: "This is a feature,
+                        not a company."
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="timeline-row">
+                    <div class="mono-label">May 2025</div>
+                    <div>
+                      <h3>Shut down</h3>
+                      <p>
+                        Accepted that the business model did not hold up and
+                        decided to wind the project down.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Page 08 / Post-mortem Summary -->
+        <section
+          id="failure"
+          class="book-page page--postmortem"
+          aria-hidden="true"
+          inert
+        >
+          <div class="book-page-scroll">
+            <div class="book-page-inner">
+              <div class="container split-40-60">
+                <div>
+                  <div class="mono-label">05 / Post-mortem</div>
+                  <h2 class="section-heading">Why we shut it down</h2>
+                  <p class="section-copy">
+                    An honest look at what broke on the business side even
+                    though the software worked.
+                  </p>
+                </div>
+
+                <div>
+                  <p class="postmortem-lead">
+                    DocuInsight wasn't killed because the product was broken
+                    &mdash; it actually worked well. We shut it down because we
+                    realized it could not become a venture-scale business.
+                    Cutting losses early was the better call so we could put our
+                    energy into stronger ideas.
+                  </p>
+
+                  <blockquote class="pull-quote">
+                    <p>
+                      "Too narrow market, platform risk with DocuSign, no clear
+                      expansion path. This looks like a vitamin, not a
+                      painkiller."
+                    </p>
+                    <cite class="mono-label"
+                      >Investor feedback, March 2025</cite
+                    >
+                  </blockquote>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Page 09 / Four Core Issues -->
+        <section
+          id="issues"
+          class="book-page page--issues"
+          aria-hidden="true"
+          inert
+        >
+          <div class="book-page-scroll">
+            <div class="book-page-inner">
+              <div class="container split-40-60">
+                <div>
+                  <div class="mono-label">05 / Post-mortem</div>
+                  <h2 class="section-heading">Four core issues</h2>
+                  <p class="section-copy">
+                    The structural gaps that kept a working prototype from
+                    becoming a standalone company.
+                  </p>
+                </div>
+
+                <ol class="editorial-list">
+                  <li class="editorial-item">
+                    <span class="editorial-num">01</span>
+                    <div>
+                      <h3>Narrow venture case</h3>
+                      <p>
+                        Investors saw a point tool with limited expansion room
+                        rather than a defensible standalone platform.
+                      </p>
+                    </div>
+                  </li>
+                  <li class="editorial-item">
+                    <span class="editorial-num">02</span>
+                    <div>
+                      <h3>Wrong market fit</h3>
+                      <p>
+                        We built analysis for a step that wasn't a burning pain
+                        point. Lawyers wanted drafting tools; SMBs wanted
+                        pipeline visibility.
+                      </p>
+                    </div>
+                  </li>
+                  <li class="editorial-item">
+                    <span class="editorial-num">03</span>
+                    <div>
+                      <h3>Platform risk</h3>
+                      <p>
+                        Sitting on top of DocuSign's APIs meant a terms change
+                        or a native DocuSign feature could wipe out the product
+                        overnight.
+                      </p>
+                    </div>
+                  </li>
+                  <li class="editorial-item">
+                    <span class="editorial-num">04</span>
+                    <div>
+                      <h3>No customer urgency</h3>
+                      <p>
+                        Nobody said, "We need this tomorrow." Polite interest
+                        does not turn into paid seats.
+                      </p>
+                    </div>
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Page 10 / Takeaways -->
+        <section
+          id="lessons"
+          class="book-page page--lessons"
+          aria-hidden="true"
+          inert
+        >
+          <div class="book-page-scroll">
+            <div class="book-page-inner">
+              <div class="container">
+                <div class="split-40-60">
+                  <div>
+                    <div class="mono-label">06 / Takeaways</div>
+                    <h2 class="section-heading">Lessons carried forward</h2>
+                    <p class="section-copy">
+                      What building, testing, and shutting down DocuInsight
+                      taught us before starting the next thing.
+                    </p>
+                  </div>
+
+                  <ol class="editorial-list">
+                    <li class="editorial-item">
+                      <span class="editorial-num">01</span>
+                      <div>
+                        <h3>Customer discovery first</h3>
+                        <p>
+                          Talk to users before writing code. "That looks useful"
+                          is very different from "I need this tomorrow."
+                        </p>
+                      </div>
+                    </li>
+                    <li class="editorial-item">
+                      <span class="editorial-num">02</span>
+                      <div>
+                        <h3>Feature vs. company</h3>
+                        <p>
+                          Ask why the platform owner cannot build it themselves.
+                          Without a clear answer, you are building a feature.
+                        </p>
+                      </div>
+                    </li>
+                    <li class="editorial-item">
+                      <span class="editorial-num">03</span>
+                      <div>
+                        <h3>Business model first</h3>
+                        <p>
+                          Who pays, how much, and why? Those questions need
+                          plain answers before spending months on
+                          implementation.
+                        </p>
+                      </div>
+                    </li>
+                    <li class="editorial-item">
+                      <span class="editorial-num">04</span>
+                      <div>
+                        <h3>Know when to quit</h3>
+                        <p>
+                          Sometimes the best move is to stop early and move on.
+                          Sunk cost fallacy is real.
+                        </p>
+                      </div>
+                    </li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Final Page / Colophon -->
+        <section
+          id="colophon"
+          class="book-page page--colophon"
+          aria-hidden="true"
+          inert
+        >
+          <div class="book-page-scroll">
+            <div class="book-page-inner">
+              <div class="container">
+                <footer
+                  class="site-footer"
+                  aria-label="Project credits and links"
+                >
+                  <div class="footer-inner">
+                    <span>&copy; 2025 E&amp;F Group Inc</span>
+                    <span>MIT License</span>
+                    <a
+                      class="footer-github"
+                      href="https://github.com/eandf/DocuInsight"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >GitHub</a
+                    >
+                  </div>
+                </footer>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <nav class="book-hud" aria-label="Page navigation">
+      <button
+        type="button"
+        class="hud-btn"
+        id="prevPageBtn"
+        aria-label="Previous page"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+      </button>
+
+      <div class="hud-folio" aria-live="polite">
+        <span id="hudNum">01 / 11</span>
+      </div>
+
+      <button
+        type="button"
+        class="hud-btn"
+        id="nextPageBtn"
+        aria-label="Next page"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M9 18l6-6-6-6" />
+        </svg>
+      </button>
+    </nav>
+
+    <script>
+      (() => {
+        const book = document.querySelector(".book");
+        const stage = document.getElementById("bookStage");
+        const chapters = Array.from(book.children, (page) =>
+          page.cloneNode(true),
+        );
+        let pages = [];
+        const prevBtn = document.getElementById("prevPageBtn");
+        const nextBtn = document.getElementById("nextPageBtn");
+        const hudNum = document.getElementById("hudNum");
+
+        let total = 0;
+        const reducedMotion = window.matchMedia(
+          "(prefers-reduced-motion: reduce)",
+        );
+        const flipMs = () => (reducedMotion.matches ? 260 : 780);
+
+        let currentIndex = 0;
+        let isFlipping = false;
+        let layoutPending = false;
+        let resizeTimer;
+
+        // Trackpad inertia guard
+        let wheelGestureLocked = false;
+        let gestureEndTimer = null;
+        let lastDir = 0;
+        let accumulatedDelta = 0;
+
+        const pad2 = (n) => String(n).padStart(2, "0");
+
+        // Keep the original desktop layouts when they fit. Otherwise, pack
+        // whole content blocks onto additional sheets at the same readable size.
+        function chapterUnits(chapter) {
+          const select = (selector) =>
+            Array.from(chapter.querySelectorAll(selector));
+          const intro = chapter.querySelector(".split-40-60 > div:first-child");
+          let units;
+          switch (chapter.id) {
+            case "top":
+              units = select(
+                ".hero-kicker, .hero-title-row, .hero-lead, .hero-actions, .dossier",
+              );
+              break;
+            case "about":
+              units = [intro, ...select(".origin-note, .video-figure")];
+              break;
+            case "opensource":
+              units = select(".directory-intro, .directory-row");
+              break;
+            case "failure":
+              units = [intro, ...select(".postmortem-lead, .pull-quote")];
+              break;
+            default:
+              units = [
+                intro,
+                ...select(
+                  ".editorial-item, .team-row, .spec-row, .timeline-row, .site-footer",
+                ),
+              ];
+          }
+          return units.filter(Boolean).map((unit) => {
+            const clone = unit.cloneNode(true);
+            if (clone.matches("li")) {
+              const list = document.createElement("ol");
+              list.className = "editorial-list";
+              list.appendChild(clone);
+              return list;
+            }
+            return clone;
+          });
+        }
+
+        function createSheet(chapter, part, flow = false, density = 1) {
+          const page = chapter.cloneNode(!flow);
+          page.classList.remove("is-active");
+          page.classList.toggle("is-compact", density <= 0.92);
+          page.style.setProperty("--page-density", density);
+          page.id = part ? `${chapter.id}--${part + 1}` : chapter.id;
+          page.dataset.chapter = chapter.id;
+          page.dataset.part = part;
+          page.tabIndex = -1;
+          page.setAttribute("aria-hidden", "true");
+          page.inert = true;
+          if (flow) {
+            const frame = document.createElement("div");
+            frame.className = "book-page-scroll";
+            const inner = document.createElement("div");
+            inner.className = "book-page-inner";
+            const content = document.createElement("div");
+            content.className = "container page-flow";
+            inner.appendChild(content);
+            frame.appendChild(inner);
+            page.appendChild(frame);
+          }
+          book.appendChild(page);
+          return page;
+        }
+
+        function sheetFits(page) {
+          const frame = page.querySelector(".book-page-scroll");
+          const inner = page.querySelector(".book-page-inner");
+          const content = inner.querySelector(".container");
+          return (
+            inner.offsetHeight <= frame.clientHeight - 2 &&
+            content.scrollWidth <= content.clientWidth + 1
+          );
+        }
+
+        // A single long card/paragraph can itself exceed a small landscape
+        // screen. Split its DOM, preserving links and markup, never its text size.
+        function splitUnit(unit, page) {
+          const content = page.querySelector(".page-flow");
+          function fragments(node, offset) {
+            const range = document.createRange();
+            range.selectNodeContents(unit);
+            range.setEnd(node, offset);
+            const first = unit.cloneNode(false);
+            first.appendChild(range.cloneContents());
+            range.selectNodeContents(unit);
+            range.setStart(node, offset);
+            const second = unit.cloneNode(false);
+            second.appendChild(range.cloneContents());
+            // Ranges ending at a node boundary can leave empty ancestor shells
+            // (including empty links). They must not consume space or tab stops.
+            for (const fragment of [first, second]) {
+              for (const el of Array.from(
+                fragment.querySelectorAll("*"),
+              ).reverse()) {
+                if (
+                  !el.textContent.trim() &&
+                  !el.matches("img, iframe, svg") &&
+                  !el.closest("svg") &&
+                  !el.querySelector("img, iframe, svg")
+                )
+                  el.remove();
+              }
+            }
+            const hasContent = (el) =>
+              el.textContent.trim() || el.querySelector("img, iframe, svg");
+            return hasContent(first) && hasContent(second)
+              ? [first, second]
+              : null;
+          }
+          function fits(fragment) {
+            content.appendChild(fragment);
+            const fits = sheetFits(page);
+            fragment.remove();
+            return fits;
+          }
+
+          // Prefer paragraph and metadata boundaries over breaking a sentence.
+          let best = null;
+          for (const block of unit.querySelectorAll(
+            "p, .team-header, .team-role, .tag-list, .dossier-item, .dossier-repo, .footer-meta, .footer-links",
+          )) {
+            const offset =
+              Array.prototype.indexOf.call(block.parentNode.childNodes, block) +
+              1;
+            const pair = fragments(block.parentNode, offset);
+            if (
+              pair &&
+              fits(pair[0]) &&
+              (!best || pair[0].textContent.length > best[0].textContent.length)
+            ) {
+              best = pair;
+            }
+          }
+          if (best) return best;
+
+          const walker = document.createTreeWalker(unit, NodeFilter.SHOW_TEXT);
+          const points = [];
+          while (walker.nextNode()) {
+            const node = walker.currentNode;
+            for (const match of node.textContent.matchAll(/\S+\s*/g)) {
+              points.push([node, match.index + match[0].length]);
+            }
+          }
+          let low = 0;
+          let high = points.length - 2;
+          while (low <= high) {
+            const mid = Math.floor((low + high) / 2);
+            const pair = fragments(...points[mid]);
+            if (pair && fits(pair[0])) {
+              best = pair;
+              low = mid + 1;
+            } else {
+              high = mid - 1;
+            }
+          }
+          return best;
+        }
+
+        // A greedy fit can leave a nearly empty final sheet. Move whole blocks
+        // forward when that balances neighboring sheets without overflowing or
+        // changing the reading order.
+        function balanceChapter(chapterId) {
+          const sheets = Array.from(book.children).filter(
+            (page) => page.dataset.chapter === chapterId,
+          );
+          for (let i = sheets.length - 1; i > 0; i--) {
+            const previous = sheets[i - 1].querySelector(".page-flow");
+            const next = sheets[i].querySelector(".page-flow");
+            while (previous.children.length > 1) {
+              const before = Math.abs(
+                previous.getBoundingClientRect().height -
+                  next.getBoundingClientRect().height,
+              );
+              const block = previous.lastElementChild;
+              next.prepend(block);
+              const after = Math.abs(
+                previous.getBoundingClientRect().height -
+                  next.getBoundingClientRect().height,
+              );
+              if (!sheetFits(sheets[i]) || after >= before) {
+                previous.appendChild(block);
+                break;
+              }
+            }
+          }
+        }
+
+        function paginateChapter(chapter) {
+          const original = createSheet(chapter, 0);
+          if (sheetFits(original)) return;
+
+          // Use the largest comfortable scale that fits before splitting a
+          // chapter. Readable rem-based minimums still apply at every scale.
+          for (const density of [0.96, 0.92, 0.88, 0.84, 0.8, 0.76, 0.72]) {
+            original.style.setProperty("--page-density", density);
+            original.classList.toggle("is-compact", density <= 0.92);
+            if (sheetFits(original)) return;
+          }
+
+          // Keep the complete team together when a modest final reduction is
+          // enough. Extremely short screens still get whole-card continuations.
+          if (chapter.id === "team") {
+            const frame = original.querySelector(".book-page-scroll");
+            const inner = original.querySelector(".book-page-inner");
+            const content = inner.querySelector(".container");
+            const style = getComputedStyle(inner);
+            const available =
+              frame.clientHeight -
+              parseFloat(style.paddingTop) -
+              parseFloat(style.paddingBottom) -
+              2;
+            const height = content.getBoundingClientRect().height;
+            const scale = available / height;
+            if (scale >= 0.85 && scale < 1) {
+              const slot = document.createElement("div");
+              slot.style.height = `${height * scale}px`;
+              content.replaceWith(slot);
+              slot.appendChild(content);
+              content.style.transformOrigin = "top center";
+              content.style.transform = `scale(${scale})`;
+              if (sheetFits(original)) return;
+            }
+          }
+          original.remove();
+
+          let part = 0;
+          const density = 0.72;
+          let page = createSheet(chapter, part, true, density);
+          const pending = chapterUnits(chapter);
+          while (pending.length) {
+            const unit = pending.shift();
+            const content = page.querySelector(".page-flow");
+            content.appendChild(unit);
+            if (sheetFits(page)) continue;
+            unit.remove();
+
+            if (content.children.length) {
+              page = createSheet(chapter, ++part, true, density);
+              pending.unshift(unit);
+              continue;
+            }
+            // Keep each team member's name, links and full bio together.
+            // On exceptionally small screens, fit the whole card instead.
+            const pair =
+              chapter.id === "team" && unit.matches(".team-row")
+                ? null
+                : splitUnit(unit, page);
+            if (pair) {
+              pending.unshift(...pair);
+              continue;
+            }
+
+            // Last resort for an indivisible image/logo on an unusually tiny
+            // viewport. Text blocks normally take the DOM-splitting path above.
+            content.appendChild(unit);
+            const inner = page.querySelector(".book-page-inner");
+            const style = getComputedStyle(inner);
+            const available = Math.max(
+              1,
+              stage.clientHeight -
+                parseFloat(style.paddingTop) -
+                parseFloat(style.paddingBottom) -
+                2,
+            );
+            const rect = unit.getBoundingClientRect();
+            const scale = Math.min(1, available / Math.max(1, rect.height));
+            const slot = document.createElement("div");
+            slot.style.height = `${rect.height * scale}px`;
+            unit.replaceWith(slot);
+            slot.appendChild(unit);
+            unit.style.margin = "0";
+            unit.style.width = `${rect.width}px`;
+            unit.style.transformOrigin = "top left";
+            unit.style.transform = `scale(${scale})`;
+          }
+          balanceChapter(chapter.id);
+        }
+
+        function rebuildPages() {
+          if (isFlipping) {
+            layoutPending = true;
+            return;
+          }
+          layoutPending = false;
+          const previous = pages[currentIndex];
+          const chapter = previous?.dataset.chapter;
+          const part = Number(previous?.dataset.part || 0);
+          const restoreFocus = book.contains(document.activeElement);
+          book.replaceChildren();
+          chapters.forEach(paginateChapter);
+          pages = Array.from(book.children);
+          total = pages.length;
+          const matches = pages.filter(
+            (page) => page.dataset.chapter === chapter,
+          );
+          const target = matches[Math.min(part, matches.length - 1)];
+          setRestingState(target ? pages.indexOf(target) : 0);
+          if (previous) updateLocation(pages[currentIndex]);
+          if (restoreFocus) pages[currentIndex].focus({ preventScroll: true });
+        }
+
+        function scheduleLayout() {
+          window.clearTimeout(resizeTimer);
+          resizeTimer = window.setTimeout(rebuildPages, 120);
+        }
+
+        function updateLocation(page) {
+          const hash = page.id === "top" ? "" : `#${page.id}`;
+          if (window.location.hash !== hash) {
+            history.replaceState(
+              null,
+              "",
+              hash || window.location.pathname + window.location.search,
+            );
+          }
+        }
+
+        function updateHud(index) {
+          hudNum.textContent = `${pad2(index + 1)} / ${pad2(total)}`;
+          prevBtn.disabled = total < 2;
+          nextBtn.disabled = total < 2;
+        }
+
+        function setRestingState(index) {
+          pages.forEach((page, i) => {
+            page.classList.remove(
+              "is-active",
+              "is-under",
+              "is-revealing",
+              "is-covering",
+              "is-flipping-out",
+              "is-flipping-in",
+            );
+            if (i === index) {
+              page.classList.add("is-active");
+              page.removeAttribute("aria-hidden");
+              page.inert = false;
+            } else {
+              page.setAttribute("aria-hidden", "true");
+              page.inert = true;
+            }
+          });
+          currentIndex = index;
+          updateHud(index);
+        }
+
+        function goToPage(targetIndex, options = {}) {
+          const { updateHash = true } = options;
+          if (isFlipping || total < 2) return;
+
+          // Keep the requested turn direction when wrapping around the book.
+          const forward = targetIndex > currentIndex;
+          if (targetIndex === -1) targetIndex = total - 1;
+          else if (targetIndex === total) targetIndex = 0;
+          if (
+            targetIndex < 0 ||
+            targetIndex >= total ||
+            targetIndex === currentIndex
+          )
+            return;
+
+          isFlipping = true;
+          const fromPage = pages[currentIndex];
+          const toPage = pages[targetIndex];
+          const moveFocus = fromPage.contains(document.activeElement);
+          fromPage.inert = true;
+
+          // Clear any lingering animation classes
+          fromPage.classList.remove(
+            "is-active",
+            "is-under",
+            "is-revealing",
+            "is-covering",
+            "is-flipping-out",
+            "is-flipping-in",
+          );
+          toPage.classList.remove(
+            "is-active",
+            "is-under",
+            "is-revealing",
+            "is-covering",
+            "is-flipping-out",
+            "is-flipping-in",
+          );
+
+          // Force reflow so rapid consecutive flips always restart cleanly
+          void toPage.offsetWidth;
+
+          let animatingPage;
+          if (forward) {
+            toPage.classList.add("is-under", "is-revealing");
+            fromPage.classList.add("is-flipping-out");
+            animatingPage = fromPage;
+          } else {
+            fromPage.classList.add("is-under", "is-covering");
+            toPage.classList.add("is-flipping-in");
+            animatingPage = toPage;
+          }
+
+          updateHud(targetIndex);
+
+          let finished = false;
+          const finish = () => {
+            if (finished) return;
+            finished = true;
+            animatingPage.removeEventListener("animationend", onAnimEnd);
+            setRestingState(targetIndex);
+            isFlipping = false;
+            if (updateHash) updateLocation(toPage);
+            if (moveFocus) toPage.focus({ preventScroll: true });
+            if (layoutPending) rebuildPages();
+          };
+
+          const onAnimEnd = (e) => {
+            if (
+              e.target === animatingPage &&
+              (e.animationName === "pageFlipOut" ||
+                e.animationName === "pageFlipIn")
+            )
+              finish();
+          };
+
+          animatingPage.addEventListener("animationend", onAnimEnd);
+          window.setTimeout(finish, flipMs() + 60);
+        }
+
+        // Button controls
+        prevBtn.addEventListener("click", () => goToPage(currentIndex - 1));
+        nextBtn.addEventListener("click", () => goToPage(currentIndex + 1));
+
+        // Internal anchor links (#failure, #about, #top, etc.)
+        document.addEventListener("click", (e) => {
+          const link = e.target.closest('a[href^="#"]');
+          if (!link) return;
+          const id = link.getAttribute("href").slice(1);
+          if (!id) return;
+          const targetIdx = pages.findIndex((p) => p.id === id);
+          if (targetIdx !== -1) {
+            e.preventDefault();
+            goToPage(targetIdx);
+          }
+        });
+
+        // Keyboard navigation
+        document.addEventListener("keydown", (e) => {
+          if (e.metaKey || e.ctrlKey || e.altKey) return;
+          const tag = document.activeElement?.tagName;
+          if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+
+          if (
+            e.key === "ArrowRight" ||
+            e.key === "ArrowDown" ||
+            e.key === "PageDown"
+          ) {
+            e.preventDefault();
+            goToPage(currentIndex + 1);
+          } else if (
+            e.key === "ArrowLeft" ||
+            e.key === "ArrowUp" ||
+            e.key === "PageUp"
+          ) {
+            e.preventDefault();
+            goToPage(currentIndex - 1);
+          } else if (e.key === " " && tag !== "A" && tag !== "BUTTON") {
+            e.preventDefault();
+            goToPage(currentIndex + (e.shiftKey ? -1 : 1));
+          } else if (e.key === "Home") {
+            e.preventDefault();
+            goToPage(0);
+          } else if (e.key === "End") {
+            e.preventDefault();
+            goToPage(total - 1);
+          }
+        });
+
+        // Wheel/trackpad input only turns sheets. Even tiny inertia events are
+        // cancelled so a gesture can never move the page vertically.
+        window.addEventListener(
+          "wheel",
+          (e) => {
+            if (e.ctrlKey) return; // Allow pinch-to-zoom
+            e.preventDefault();
+            const useX = Math.abs(e.deltaX) > Math.abs(e.deltaY) * 1.25;
+            const unit =
+              e.deltaMode === 1
+                ? 16
+                : e.deltaMode === 2
+                  ? stage.clientHeight
+                  : 1;
+            const rawDelta = (useX ? e.deltaX : e.deltaY) * unit;
+            const dir = rawDelta > 0 ? 1 : -1;
+
+            // One turn per gesture, including the entire momentum tail.
+            window.clearTimeout(gestureEndTimer);
+            gestureEndTimer = window.setTimeout(() => {
+              wheelGestureLocked = false;
+              accumulatedDelta = 0;
+            }, 180);
+            if (isFlipping || wheelGestureLocked || !rawDelta) return;
+            if (dir !== lastDir) accumulatedDelta = 0;
+            lastDir = dir;
+            accumulatedDelta += rawDelta;
+
+            if (Math.abs(accumulatedDelta) >= 34) {
+              const flipDir = accumulatedDelta > 0 ? 1 : -1;
+              accumulatedDelta = 0;
+              wheelGestureLocked = true;
+              goToPage(currentIndex + flipDir);
+            }
+          },
+          { passive: false },
+        );
+
+        // Touch swipe navigation
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchStartTime = 0;
+        let singleTouch = false;
+
+        window.addEventListener(
+          "touchstart",
+          (e) => {
+            singleTouch = e.touches.length === 1;
+            if (!singleTouch) return;
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            touchStartTime = Date.now();
+          },
+          { passive: true },
+        );
+
+        window.addEventListener(
+          "touchmove",
+          (e) => {
+            if (e.touches.length !== 1) {
+              singleTouch = false; // Leave multi-touch browser zoom available.
+              return;
+            }
+            if (singleTouch) e.preventDefault();
+          },
+          { passive: false },
+        );
+
+        window.addEventListener("touchcancel", () => {
+          singleTouch = false;
+        });
+
+        window.addEventListener(
+          "touchend",
+          (e) => {
+            const valid = singleTouch;
+            singleTouch = false;
+            if (!valid || e.changedTouches.length !== 1 || isFlipping) return;
+            const dt = Date.now() - touchStartTime;
+            if (dt > 700) return;
+
+            const dx = touchStartX - e.changedTouches[0].clientX;
+            const dy = touchStartY - e.changedTouches[0].clientY;
+            const absX = Math.abs(dx);
+            const absY = Math.abs(dy);
+
+            if (absX > absY && absX > 50) {
+              goToPage(currentIndex + (dx > 0 ? 1 : -1));
+            } else if (absY > 56) {
+              const dir = dy > 0 ? 1 : -1;
+              goToPage(currentIndex + dir);
+            }
+          },
+          { passive: true },
+        );
+
+        // Respect direct hash links on load or browser hashchange
+        function syncFromHash(animate) {
+          const id = window.location.hash.slice(1) || "top";
+          let idx = pages.findIndex((p) => p.id === id);
+          if (idx === -1)
+            idx = pages.findIndex((p) => p.id === id.split("--")[0]);
+          if (idx !== -1 && idx !== currentIndex) {
+            if (animate) {
+              goToPage(idx, { updateHash: false });
+            } else {
+              setRestingState(idx);
+            }
+          }
+        }
+
+        window.addEventListener("hashchange", () => syncFromHash(true));
+        window.addEventListener("resize", scheduleLayout);
+        window.visualViewport?.addEventListener("resize", scheduleLayout);
+        new ResizeObserver(scheduleLayout).observe(stage);
+        document.fonts.ready.then(scheduleLayout);
+        document.fonts.addEventListener("loadingdone", scheduleLayout);
+
+        rebuildPages();
+        syncFromHash(false);
+      })();
+    </script>
+  </body>
+</html>
