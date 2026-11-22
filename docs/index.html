@@ -46,17 +46,27 @@
         border: 0;
       }
 
+      .view-switch,
+      .view-switch * {
+        box-sizing: border-box;
+      }
+
       .view-switch {
         position: fixed;
         z-index: 100;
-        top: max(0.75rem, env(safe-area-inset-top));
-        right: max(0.75rem, env(safe-area-inset-right));
+        top: max(0.5rem, env(safe-area-inset-top));
+        right: max(0.5rem, env(safe-area-inset-right));
         display: flex;
         gap: 0.125rem;
         padding: 0.25rem;
+        border: 1px solid rgba(20, 20, 19, 0.06);
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.94);
-        box-shadow: 0 3px 16px rgba(20, 20, 19, 0.12);
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 3px 16px rgba(20, 20, 19, 0.1);
+      }
+
+      .view-switch[hidden] {
+        display: none;
       }
 
       .view-switch button {
@@ -70,6 +80,9 @@
         background: transparent;
         color: #54534f;
         cursor: pointer;
+        transition:
+          background-color 0.15s ease,
+          color 0.15s ease;
       }
 
       .view-switch button:hover,
@@ -84,6 +97,7 @@
       }
 
       .view-switch svg {
+        display: block;
         width: 1.125rem;
         height: 1.125rem;
       }
@@ -177,9 +191,18 @@
     <script>
       (() => {
         const frame = document.getElementById("layout");
+        const viewSwitch = document.querySelector(".view-switch");
         const buttons = document.querySelectorAll(".view-switch button");
         const storageKey = "docuinsight-view";
         let layout = null;
+
+        function isCoverHash(hash) {
+          return !hash || hash === "#" || hash === "#top";
+        }
+
+        function setSwitchVisible(visible) {
+          viewSwitch.hidden = !visible;
+        }
 
         function savedView() {
           try {
@@ -258,6 +281,7 @@
               String(button.dataset.view === next),
             );
           });
+          setSwitchVisible(next === "old" || isCoverHash(hash));
           if (previous) {
             try {
               frame.contentWindow.location.replace(url.href);
@@ -272,6 +296,7 @@
         // Keep shared links pointing at the index, including the current book
         // page. Both files are same-origin; the switch also works without it.
         frame.addEventListener("load", () => {
+          if (layout === "old") setSwitchVisible(true);
           try {
             const view = frame.contentWindow;
             const syncHash = () => {
@@ -312,6 +337,20 @@
             switchLayout(next);
           });
         });
+
+        window.addEventListener("message", (event) => {
+          if (event.source !== frame.contentWindow) return;
+          if (
+            window.location.origin !== "null" &&
+            event.origin !== window.location.origin
+          )
+            return;
+          const data = event.data || {};
+          if (data.type === "docuinsight:page" && layout === "new") {
+            setSwitchVisible(Boolean(data.isCover));
+          }
+        });
+
         switchLayout(savedView());
       })();
     </script>

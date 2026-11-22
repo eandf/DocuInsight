@@ -719,6 +719,23 @@
         align-items: center;
       }
 
+      .page--cover .split-60-40 {
+        align-items: stretch;
+      }
+
+      .page--cover .split-60-40 > div {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .page--cover .split-60-40 > div .hero-lead {
+        margin-bottom: var(--space-3);
+      }
+
+      .page--cover .split-60-40 > div .hero-actions {
+        margin-top: auto;
+      }
+
       .section-heading {
         font-family: var(--font-serif);
         font-size: var(--text-heading);
@@ -849,6 +866,8 @@
 
       /* Project Dossier (Right Cover Column) */
       .dossier {
+        display: flex;
+        flex-direction: column;
         background:
           linear-gradient(var(--bg-elevated), var(--bg-elevated)) padding-box,
           conic-gradient(
@@ -872,8 +891,10 @@
       }
 
       .dossier-grid {
+        flex: 1 1 auto;
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-auto-rows: 1fr;
         gap: var(--space-1);
         list-style: none;
         margin-bottom: var(--space-1);
@@ -882,9 +903,10 @@
       .dossier-item {
         background-color: var(--bg-primary);
         border-radius: var(--radius-md);
-        padding: var(--space-2);
+        padding: calc(var(--space-2) * 0.85) var(--space-2);
         display: flex;
         flex-direction: column;
+        justify-content: center;
         gap: calc(var(--space-1) / 2);
       }
 
@@ -927,7 +949,7 @@
         gap: var(--space-2);
         background-color: var(--mint-bg);
         border-radius: var(--radius-md);
-        padding: var(--space-2);
+        padding: calc(var(--space-2) * 0.85) var(--space-2);
         text-decoration: none;
         transition: background-color 0.15s ease;
       }
@@ -1544,7 +1566,7 @@
       }
 
       .footer-inner > span,
-      .footer-github {
+      .footer-inner > a {
         font-size: var(--text-small);
         white-space: nowrap;
       }
@@ -1553,14 +1575,14 @@
         color: var(--text-muted);
       }
 
-      .footer-github {
+      .footer-link {
         font-weight: 500;
         text-decoration: none;
         color: var(--text-primary);
         transition: color 0.15s ease;
       }
 
-      .footer-github:hover {
+      .footer-link:hover {
         color: var(--accent);
       }
 
@@ -1570,6 +1592,14 @@
         .split-60-40 {
           grid-template-columns: 1fr;
           gap: var(--space-4);
+        }
+
+        .page--cover .split-60-40 > div .hero-lead {
+          margin-bottom: var(--space-4);
+        }
+
+        .page--cover .split-60-40 > div .hero-actions {
+          margin-top: 0;
         }
 
         .container {
@@ -2511,10 +2541,22 @@
                   aria-label="Project credits and links"
                 >
                   <div class="footer-inner">
-                    <span>&copy; 2025 E&amp;F Group Inc</span>
-                    <span>MIT License</span>
                     <a
-                      class="footer-github"
+                      class="footer-link"
+                      href="https://www.efgroupinc.com/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >&copy; 2025 E&amp;F Group Inc.</a
+                    >
+                    <a
+                      class="footer-link"
+                      href="https://github.com/eandf/DocuInsight/blob/main/LICENSE"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >MIT License</a
+                    >
+                    <a
+                      class="footer-link"
                       href="https://github.com/eandf/DocuInsight"
                       target="_blank"
                       rel="noopener noreferrer"
@@ -2886,7 +2928,7 @@
           balanceChapter(chapter.id);
         }
 
-        function rebuildPages() {
+        function rebuildPages(notify = true) {
           if (isFlipping) {
             layoutPending = true;
             return;
@@ -2904,7 +2946,7 @@
             (page) => page.dataset.chapter === chapter,
           );
           const target = matches[Math.min(part, matches.length - 1)];
-          setRestingState(target ? pages.indexOf(target) : 0);
+          setRestingState(target ? pages.indexOf(target) : 0, notify);
           if (previous) updateLocation(pages[currentIndex]);
           if (restoreFocus) pages[currentIndex].focus({ preventScroll: true });
         }
@@ -2931,7 +2973,16 @@
           nextBtn.disabled = total < 2;
         }
 
-        function setRestingState(index) {
+        function notifyParentPage(isCover) {
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage(
+              { type: "docuinsight:page", isCover: Boolean(isCover) },
+              "*",
+            );
+          }
+        }
+
+        function setRestingState(index, notify = true) {
           pages.forEach((page, i) => {
             page.classList.remove(
               "is-active",
@@ -2952,6 +3003,7 @@
           });
           currentIndex = index;
           updateHud(index);
+          if (notify) notifyParentPage(index === 0);
         }
 
         function goToPage(targetIndex, options = {}) {
@@ -2970,6 +3022,7 @@
             return;
 
           isFlipping = true;
+          if (targetIndex !== 0) notifyParentPage(false);
           const fromPage = pages[currentIndex];
           const toPage = pages[targetIndex];
           const moveFocus = fromPage.contains(document.activeElement);
@@ -3201,8 +3254,9 @@
         document.fonts.ready.then(scheduleLayout);
         document.fonts.addEventListener("loadingdone", scheduleLayout);
 
-        rebuildPages();
+        rebuildPages(false);
         syncFromHash(false);
+        notifyParentPage(currentIndex === 0);
       })();
     </script>
   </body>

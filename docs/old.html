@@ -597,6 +597,15 @@
         padding-top: 2rem;
       }
 
+      .copyright .footer-link {
+        color: inherit;
+        text-decoration: underline;
+      }
+
+      .copyright .footer-link:hover {
+        color: white;
+      }
+
       /* Responsive Design */
       @media (max-width: 768px) {
         .nav {
@@ -1627,8 +1636,20 @@
             gap: 1rem;
           "
         >
-          <span>© 2025 E&F Group Inc</span>
-          <span>MIT License</span>
+          <a
+            class="footer-link"
+            href="https://www.efgroupinc.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            >© 2025 E&amp;F Group Inc.</a
+          >
+          <a
+            class="footer-link"
+            href="https://github.com/eandf/DocuInsight/blob/main/LICENSE"
+            target="_blank"
+            rel="noopener noreferrer"
+            >MIT License</a
+          >
           <a href="#top" style="color: white; text-decoration: underline"
             >Back To Top</a
           >
