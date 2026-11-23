@@ -12,6 +12,7 @@
 - [About](#about)
 - [Events](#events)
 - [Links](#links)
+- [Tribute Site](#tribute-site)
 - [Features](#features)
 - [Datasets](#datasets)
 - [Setup and Running](#setup-and-running)
@@ -37,13 +38,20 @@ In January 2025, this project was open-sourced for the DocuSign hackathon. After
 
 The static tribute site lives in [`docs/`](docs/). It opens in the book-style view by default; the switch in the top-right corner lets visitors choose the traditional scrolling view. Their choice is saved in the browser and restored on their next visit.
 
-Keep `docs/index.html`, `docs/new.html`, and `docs/old.html` together when deploying. To preview the site locally from the repository root:
+The frontend is organized by responsibility:
+
+- `docs/index.html` is the entry point and persistent view switch.
+- `docs/views/book.html` and `docs/views/scrolling.html` contain the two layouts.
+- `docs/assets/css/` and `docs/assets/js/` contain the view-specific and shared styles/scripts.
+- `docs/assets/images/` and `docs/assets/icons/` contain the site imagery and icons.
+
+Keep the entire `docs/` directory together when deploying. To preview from the repository root:
 
 ```bash
 python3 -m http.server 8000 --directory docs
 ```
 
-Then open <http://localhost:8000/>.
+Then open <http://localhost:8000/>. Alternatively, run `./run.sh` from inside `docs/` to use the included preview script.
 
 ## Features
 
@@ -69,14 +77,14 @@ These contracts are publicly accessible and are ideal for thoroughly testing the
 
 To set up and run this project, follow the instructions in the respective component directories:
 
-- **Frontend:** [frontend/README.md](/frontend/README.md)
-- **Database:** [database/README.md](/database/README.md)
-- **Analyzer:** [analyzer/README.md](/analyzer/README.md)
+- **Frontend:** [frontend/README.md](frontend/README.md)
+- **Database:** [database/README.md](database/README.md)
+- **Analyzer:** [analyzer/README.md](analyzer/README.md)
 
-Also, if you want a quick overview of the **waitlist** table for DocuInsight, you can make sure to set up the [Analyzer](analyzer/README.md) service which includes installing all the Python dependencies and the environment variables. Then, make sure to be in the root directory for this repo/project and run the following script:
+For a quick overview of the **waitlist** table, set up the Analyzer dependencies and environment variables, then run the helper from the repository root:
 
 ```bash
-python3 waitlist_view.py
+python3 assets/tools/view_waitlist.py
 ```
 
 ## Helpful Resources

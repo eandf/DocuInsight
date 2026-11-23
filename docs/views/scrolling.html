@@ -20,7 +20,10 @@
       property="og:description"
       content="DocuInsight was an AI-powered contract intelligence platform that integrated with DocuSign. Learn about our journey, what we built, why we failed, and lessons learned."
     />
-    <meta property="og:image" content="https://docuinsight.ai/thumbnail.png" />
+    <meta
+      property="og:image"
+      content="https://docuinsight.ai/assets/images/social-preview.png"
+    />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
@@ -32,15 +35,29 @@
     />
     <meta
       property="twitter:image"
-      content="https://docuinsight.ai/thumbnail.png"
+      content="https://docuinsight.ai/assets/images/social-preview.png"
     />
 
     <!-- Favicons -->
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
-    <link rel="manifest" href="site.webmanifest" />
-    <link rel="shortcut icon" href="favicon.ico" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="../assets/icons/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="../assets/icons/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="../assets/icons/favicon-16x16.png"
+    />
+    <link rel="manifest" href="../site.webmanifest" />
+    <link rel="shortcut icon" href="../assets/icons/favicon.ico" />
 
     <!-- Google Fonts -->
     <link
@@ -48,702 +65,7 @@
       rel="stylesheet"
     />
 
-    <style>
-      :root {
-        --primary-color: #2563eb;
-        --secondary-color: #64748b;
-        --text-primary: #1e293b;
-        --text-secondary: #64748b;
-        --bg-primary: #ffffff;
-        --bg-secondary: #f8fafc;
-        --border-color: #e2e8f0;
-        --red-color: #dc2626;
-        --green-color: #16a34a;
-        --warning-color: #d97706;
-        --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-        --shadow-md:
-          0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        --shadow-lg:
-          0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-        --shadow-xl:
-          0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      html {
-        scroll-behavior: smooth;
-      }
-
-      /* Hide scrollbar for Chrome, Safari and Opera */
-      ::-webkit-scrollbar {
-        display: none;
-      }
-
-      /* Hide scrollbar for IE, Edge and Firefox */
-      html {
-        -ms-overflow-style: none; /* IE and Edge */
-        scrollbar-width: none; /* Firefox */
-      }
-
-      body {
-        font-family:
-          "Inter",
-          -apple-system,
-          BlinkMacSystemFont,
-          sans-serif;
-        line-height: 1.6;
-        color: var(--text-primary);
-        background-color: var(--bg-primary);
-        overflow-x: hidden;
-      }
-
-      /* Navigation */
-      .nav {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        border-bottom: 1px solid var(--border-color);
-        z-index: 1000;
-        padding: 0.5rem 0;
-        transition: all 0.3s ease;
-      }
-
-      .nav-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 2rem;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 0.5rem;
-      }
-
-      .logo {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.75rem;
-        font-weight: 700;
-        font-size: 1.6rem;
-        color: var(--text-primary);
-        text-decoration: none;
-      }
-
-      .logo img {
-        height: 32px;
-        width: auto;
-      }
-
-      .nav-links {
-        display: flex;
-        gap: 1.5rem;
-      }
-
-      .nav-links a {
-        color: var(--text-secondary);
-        text-decoration: none;
-        font-weight: 500;
-        transition: color 0.2s ease;
-        font-size: 1.14rem;
-        padding: 0.5rem 0;
-        position: relative;
-      }
-
-      .nav-links a:hover {
-        color: var(--primary-color);
-      }
-
-      .nav-links a::after {
-        content: "";
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 0;
-        height: 2px;
-        background: var(--primary-color);
-        transition: width 0.2s ease;
-      }
-
-      .nav-links a:hover::after {
-        width: 100%;
-      }
-
-      .retired-badge {
-        background: var(--red-color);
-        color: white;
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-
-      /* Hero Section */
-      .hero {
-        padding: 8rem 2rem 4rem;
-        text-align: center;
-        background: var(--gradient-bg);
-        color: white;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .hero::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23ffffff" fill-opacity="0.1"><circle cx="30" cy="30" r="2"/></g></g></svg>');
-        opacity: 0.3;
-      }
-
-      .hero-content {
-        max-width: 800px;
-        margin: 0 auto;
-        position: relative;
-        z-index: 2;
-      }
-
-      .hero-logo {
-        max-width: 180px;
-        height: auto;
-        margin: 0 auto 0.5rem;
-        transform: scale(0.9);
-        border: 8px solid white;
-        border-radius: 1rem;
-        box-shadow: inset 0 0 0 6px white;
-        box-sizing: border-box;
-        background: white;
-      }
-
-      .hero h1 {
-        font-size: 4.5rem;
-        font-weight: 700;
-        margin-top: -1rem;
-        margin-bottom: 1rem;
-        line-height: 1.1;
-      }
-
-      .hero .subtitle {
-        font-size: 1.25rem;
-        opacity: 0.9;
-        margin-bottom: 2rem;
-        font-weight: 400;
-      }
-
-      .status-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        background: rgba(220, 38, 38, 0.2);
-        border: 2px solid rgba(220, 38, 38, 0.3);
-        color: #fecaca;
-        padding: 0.75rem 1.5rem;
-        border-radius: 9999px;
-        font-weight: 600;
-        font-size: 1rem;
-        margin-bottom: 2rem;
-      }
-
-      .status-indicator {
-        width: 8px;
-        height: 8px;
-        background: #fecaca;
-        border-radius: 50%;
-        animation: pulse 2s infinite;
-      }
-
-      @keyframes pulse {
-        0%,
-        100% {
-          opacity: 1;
-        }
-        50% {
-          opacity: 0.5;
-        }
-      }
-
-      .hero-buttons {
-        display: flex;
-        gap: 1rem;
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-
-      .btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.5rem;
-        font-weight: 600;
-        text-decoration: none;
-        transition: all 0.2s ease;
-        cursor: pointer;
-        border: none;
-        font-size: 1rem;
-      }
-
-      .btn-primary {
-        background: white;
-        color: var(--primary-color);
-      }
-
-      .btn-primary:hover {
-        background: #f8fafc;
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-lg);
-      }
-
-      .btn-secondary {
-        background: rgba(255, 255, 255, 0.1);
-        color: white;
-        border: 2px solid rgba(255, 255, 255, 0.2);
-      }
-
-      .btn-secondary:hover {
-        background: rgba(255, 255, 255, 0.2);
-        border-color: rgba(255, 255, 255, 0.3);
-      }
-
-      /* Sections */
-      .section {
-        padding: 4rem 2rem;
-      }
-
-      .section:nth-child(even) {
-        background: var(--bg-secondary);
-      }
-
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 2rem;
-      }
-
-      .section-header {
-        text-align: center;
-        margin-bottom: 3rem;
-      }
-
-      .section-title {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-        color: var(--text-primary);
-      }
-
-      .section-subtitle {
-        font-size: 1.2rem;
-        color: var(--text-secondary);
-        max-width: 600px;
-        margin: 0 auto;
-      }
-
-      /* Content Grid */
-      .content-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 2rem;
-        margin-top: 2rem;
-      }
-
-      .content-card {
-        background: white;
-        padding: 2rem;
-        border-radius: 1rem;
-        box-shadow: var(--shadow-md);
-        border: 1px solid var(--border-color);
-        transition: all 0.3s ease;
-      }
-
-      .content-card:hover {
-        transform: translateY(-4px) scale(1.02);
-        box-shadow: var(--shadow-xl);
-      }
-
-      .card-icon {
-        width: 48px;
-        height: 48px;
-        background: var(--gradient-bg);
-        border-radius: 0.75rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 1.5rem;
-        font-size: 1.5rem;
-      }
-
-      .card-title {
-        font-size: 1.5rem;
-        font-weight: 600;
-        margin-bottom: 1rem;
-        color: var(--text-primary);
-      }
-
-      .card-text {
-        color: var(--text-secondary);
-        line-height: 1.6;
-      }
-
-      /* Video Section */
-      .video-container {
-        position: relative;
-        width: 100%;
-        height: 0;
-        padding-bottom: 56.25%; /* 16:9 aspect ratio */
-        margin: 2rem 0;
-        border-radius: 1rem;
-        overflow: hidden;
-        box-shadow: var(--shadow-lg);
-      }
-
-      .video-container iframe {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-      }
-
-      /* Journey Grid */
-      .journey-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 2rem;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem 0;
-      }
-
-      .journey-card {
-        position: relative;
-        padding: 2rem;
-        border-radius: 1rem;
-        color: white;
-        transition: all 0.3s ease;
-        overflow: hidden;
-        box-shadow: var(--shadow-lg);
-      }
-
-      .journey-card:hover {
-        transform: translateY(-5px) scale(1.02);
-        box-shadow: var(--shadow-xl);
-      }
-
-      .journey-date {
-        font-size: 0.875rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        opacity: 0.9;
-        margin-bottom: 1rem;
-        position: relative;
-        z-index: 2;
-      }
-
-      .journey-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-        position: relative;
-        z-index: 2;
-        line-height: 1.2;
-      }
-
-      .journey-text {
-        font-size: 1rem;
-        line-height: 1.6;
-        opacity: 0.95;
-        position: relative;
-        z-index: 2;
-        margin-bottom: 1rem;
-      }
-
-      .journey-icon {
-        position: absolute;
-        top: 1.5rem;
-        right: 1.5rem;
-        font-size: 2rem;
-        opacity: 0.7;
-        z-index: 2;
-      }
-
-      /* Stats */
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 2rem;
-        margin: 3rem 0;
-      }
-
-      .stat-card {
-        text-align: center;
-        padding: 2rem;
-        background: white;
-        border-radius: 1rem;
-        box-shadow: var(--shadow-md);
-        border: 1px solid var(--border-color);
-      }
-
-      .stat-number {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: var(--primary-color);
-        line-height: 1;
-        word-break: break-all;
-        text-align: center;
-      }
-
-      .stat-label {
-        font-size: 1rem;
-        color: var(--text-secondary);
-        margin-top: 0.5rem;
-      }
-
-      /* Team Section */
-      .team-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-        gap: 3rem;
-        max-width: 1000px;
-        margin: 0 auto;
-      }
-
-      .team-card {
-        text-align: center;
-        background: white;
-        padding: 2rem;
-        border-radius: 1rem;
-        box-shadow: var(--shadow-md);
-        border: 1px solid var(--border-color);
-      }
-
-      .team-avatar {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        margin: 0 auto 1.5rem;
-        object-fit: cover;
-        border: 4px solid var(--border-color);
-      }
-
-      .team-name {
-        font-size: 1.5rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        color: var(--text-primary);
-      }
-
-      .team-role {
-        color: var(--text-secondary);
-        font-weight: 500;
-        margin-bottom: 1rem;
-      }
-
-      /* Footer */
-      .footer {
-        background: var(--text-primary);
-        color: white;
-        text-align: center;
-        padding: 1rem 2rem;
-        font-size: 0.75rem;
-      }
-
-      .footer * {
-        font-size: 0.75rem !important;
-        text-align: center !important;
-      }
-
-      .footer-content {
-        max-width: 800px;
-        margin: 0 auto;
-      }
-
-      .footer-links {
-        display: flex;
-        justify-content: center;
-        gap: 2rem;
-        margin-bottom: 2rem;
-        flex-wrap: wrap;
-      }
-
-      .footer-links a {
-        color: rgba(255, 255, 255, 0.8);
-        text-decoration: none;
-        transition: color 0.2s ease;
-      }
-
-      .footer-links a:hover {
-        color: white;
-      }
-
-      .copyright {
-        color: rgba(255, 255, 255, 0.6);
-        font-size: 0.875rem;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        padding-top: 2rem;
-      }
-
-      .copyright .footer-link {
-        color: inherit;
-        text-decoration: underline;
-      }
-
-      .copyright .footer-link:hover {
-        color: white;
-      }
-
-      /* Responsive Design */
-      @media (max-width: 768px) {
-        .nav {
-          display: none;
-        }
-
-        .hero h1 {
-          font-size: 2.5rem;
-        }
-
-        .hero {
-          padding: 3rem 1rem 3rem;
-        }
-
-        .section {
-          padding: 3rem 1rem;
-        }
-
-        .section-title {
-          font-size: 2rem;
-        }
-
-        .hero-buttons {
-          flex-direction: row;
-          justify-content: center;
-          gap: 0.75rem;
-        }
-
-        .btn {
-          padding: 0.5rem 1rem;
-          font-size: 0.9rem;
-          flex: 1;
-          max-width: 150px;
-          text-align: center;
-          white-space: normal;
-          line-height: 1.3;
-        }
-
-        .journey-grid {
-          grid-template-columns: 1fr;
-          gap: 1.5rem;
-          padding: 1rem 0;
-        }
-
-        .journey-card {
-          padding: 1.5rem;
-        }
-
-        .journey-title {
-          font-size: 1.25rem;
-        }
-
-        .journey-text {
-          font-size: 0.95rem;
-        }
-
-        .content-grid {
-          grid-template-columns: 1fr;
-        }
-
-        .stats-grid {
-          grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        }
-
-        .stat-number {
-          font-size: 2rem;
-        }
-
-        .team-grid {
-          grid-template-columns: 1fr;
-          gap: 2rem;
-        }
-
-        .team-card {
-          padding: 1.5rem;
-        }
-
-        .team-card .card-text {
-          font-size: 0.9rem;
-          line-height: 1.5;
-        }
-      }
-
-      /* Scroll animations */
-      .fade-in {
-        opacity: 0;
-        transform: translateY(30px);
-        transition: all 0.6s ease;
-      }
-
-      .fade-in.visible {
-        opacity: 1;
-        transform: translateY(0);
-      }
-
-      /* Code blocks */
-      .code-block {
-        background: #1e293b;
-        color: #e2e8f0;
-        padding: 1.5rem;
-        border-radius: 0.75rem;
-        font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
-        font-size: 0.875rem;
-        overflow-x: auto;
-        margin: 1rem 0;
-        border: 1px solid #334155;
-      }
-
-      .tech-stack {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin: 1rem 0;
-      }
-
-      .tech-tag {
-        background: var(--primary-color);
-        color: white;
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
-        font-size: 0.875rem;
-        font-weight: 500;
-      }
-
-      .warning-box {
-        background: #fef3c7;
-        border-left: 4px solid var(--warning-color);
-        padding: 1rem 1.5rem;
-        margin: 2rem 0;
-        border-radius: 0 0.5rem 0.5rem 0;
-      }
-
-      .warning-title {
-        font-weight: 600;
-        color: var(--warning-color);
-        margin-bottom: 0.5rem;
-      }
-    </style>
+    <link rel="stylesheet" href="../assets/css/scrolling.css" />
   </head>
   <body id="top">
     <!-- Navigation -->
@@ -766,7 +88,11 @@
     <!-- Hero Section -->
     <section class="hero">
       <div class="hero-content">
-        <img src="logo.png" alt="DocuInsight Logo" class="hero-logo" />
+        <img
+          src="../assets/images/docuinsight-logo.png"
+          alt="DocuInsight Logo"
+          class="hero-logo"
+        />
         <h1>DocuInsight</h1>
         <p class="subtitle">
           AI-powered contract intelligence platform that integrated with
@@ -955,7 +281,11 @@
 
         <div class="team-grid">
           <div class="team-card fade-in">
-            <img src="mehmet.jpg" alt="Mehmet Yilmaz" class="team-avatar" />
+            <img
+              src="../assets/images/team/mehmet-yilmaz.jpg"
+              alt="Mehmet Yilmaz"
+              class="team-avatar"
+            />
             <h3 class="team-name" style="margin-bottom: 0.25rem">
               Mehmet Yilmaz
             </h3>
@@ -995,7 +325,11 @@
             </p>
           </div>
           <div class="team-card fade-in">
-            <img src="dylan.jpg" alt="Dylan Eck" class="team-avatar" />
+            <img
+              src="../assets/images/team/dylan-eck.jpg"
+              alt="Dylan Eck"
+              class="team-avatar"
+            />
             <h3 class="team-name" style="margin-bottom: 0.25rem">Dylan Eck</h3>
             <p class="team-role" style="margin-bottom: 0.5rem">
               Co-founder & Frontend Developer
@@ -1034,7 +368,11 @@
             </p>
           </div>
           <div class="team-card fade-in">
-            <img src="berk.jpg" alt="Berk Karaoglu" class="team-avatar" />
+            <img
+              src="../assets/images/team/berk-karaoglu.jpg"
+              alt="Berk Karaoglu"
+              class="team-avatar"
+            />
             <h3 class="team-name" style="margin-bottom: 0.25rem">
               Berk Karaoglu
             </h3>
@@ -1657,92 +995,6 @@
       </div>
     </footer>
 
-    <script>
-      // Smooth scrolling for navigation links
-      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-        anchor.addEventListener("click", function (e) {
-          e.preventDefault();
-          const target = document.querySelector(this.getAttribute("href"));
-          if (target) {
-            target.scrollIntoView({
-              behavior: "smooth",
-              block: "start",
-            });
-          }
-        });
-      });
-
-      // Fade in animation on scroll
-      const observerOptions = {
-        threshold: 0.1,
-        rootMargin: "0px 0px -50px 0px",
-      };
-
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("visible");
-          }
-        });
-      }, observerOptions);
-
-      document.querySelectorAll(".fade-in").forEach((el) => {
-        observer.observe(el);
-      });
-
-      // Update navigation background and visibility on scroll
-      let lastScrollTop = 0;
-      let scrollTimeout;
-      let navClicked = false;
-
-      // Track when nav links are clicked
-      document.querySelectorAll('.nav a[href^="#"]').forEach((link) => {
-        link.addEventListener("click", () => {
-          navClicked = true;
-        });
-      });
-
-      window.addEventListener("scroll", () => {
-        const nav = document.querySelector(".nav");
-        const scrollTop =
-          window.pageYOffset || document.documentElement.scrollTop;
-
-        // Clear existing timeout
-        clearTimeout(scrollTimeout);
-
-        // If nav was clicked, keep it visible until scrolling stops
-        if (navClicked) {
-          nav.style.transform = "translateY(0)";
-          nav.style.transition = "transform 0.3s ease-in-out";
-
-          // Set timeout to reset navClicked when scrolling stops
-          scrollTimeout = setTimeout(() => {
-            navClicked = false;
-          }, 150); // 150ms after scrolling stops
-        } else {
-          // Normal hide/show nav based on scroll direction
-          if (scrollTop > lastScrollTop && scrollTop > 100) {
-            // Scrolling down & past 100px - hide nav
-            nav.style.transform = "translateY(-100%)";
-            nav.style.transition = "transform 0.3s ease-in-out";
-          } else {
-            // Scrolling up or at top - show nav
-            nav.style.transform = "translateY(0)";
-            nav.style.transition = "transform 0.3s ease-in-out";
-          }
-        }
-
-        // Update background
-        if (window.scrollY > 100) {
-          nav.style.background = "rgba(255, 255, 255, 0.98)";
-          nav.style.boxShadow = "0 4px 6px -1px rgb(0 0 0 / 0.1)";
-        } else {
-          nav.style.background = "rgba(255, 255, 255, 0.95)";
-          nav.style.boxShadow = "none";
-        }
-
-        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For Mobile or negative scrolling
-      });
-    </script>
+    <script src="../assets/js/scrolling.js" defer></script>
   </body>
 </html>

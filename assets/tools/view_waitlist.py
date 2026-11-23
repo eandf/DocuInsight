@@ -8,6 +8,7 @@ import logging
 import time
 import json
 import os
+from pathlib import Path
 
 
 # underline text for printing
@@ -24,7 +25,7 @@ logging.getLogger("httpcore").setLevel(logging.WARNING)
 logging.getLogger("supabase_py").setLevel(logging.WARNING)
 
 # load env variables
-env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "analyzer", ".env")
+env_path = Path(__file__).resolve().parents[2] / "analyzer" / ".env"
 load_dotenv(dotenv_path=env_path)
 
 # main function calls

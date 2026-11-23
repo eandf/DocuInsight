@@ -1,0 +1,79 @@
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+iframe {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  border: 0;
+}
+
+.view-switch,
+.view-switch * {
+  box-sizing: border-box;
+}
+
+.view-switch {
+  position: fixed;
+  z-index: 100;
+  top: max(0.5rem, env(safe-area-inset-top));
+  right: max(0.5rem, env(safe-area-inset-right));
+  display: flex;
+  gap: 0.125rem;
+  padding: 0.25rem;
+  border: 1px solid rgba(20, 20, 19, 0.06);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 3px 16px rgba(20, 20, 19, 0.1);
+}
+
+.view-switch[hidden] {
+  display: none;
+}
+
+.view-switch button {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #54534f;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.view-switch button:hover,
+.view-switch button[aria-pressed="true"] {
+  background: #dfecf9;
+  color: #1c4d7d;
+}
+
+.view-switch button:focus-visible {
+  outline: 2px solid #245b8d;
+  outline-offset: 2px;
+}
+
+.view-switch svg {
+  display: block;
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+@media (pointer: coarse) {
+  .view-switch button {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+}

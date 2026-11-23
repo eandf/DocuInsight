@@ -1,0 +1,956 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DocuInsight (Retired)</title>
+    <meta
+      name="description"
+      content="DocuInsight was a contract review platform built around DocuSign. Read about what we built, why we shut it down, and what we learned."
+    />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://docuinsight.ai/" />
+    <meta property="og:title" content="DocuInsight (Retired)" />
+    <meta
+      property="og:description"
+      content="DocuInsight was a contract review platform built around DocuSign. Read about what we built, why we shut it down, and what we learned."
+    />
+    <meta
+      property="og:image"
+      content="https://docuinsight.ai/assets/images/social-preview.png"
+    />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://docuinsight.ai/" />
+    <meta property="twitter:title" content="DocuInsight (Retired)" />
+    <meta
+      property="twitter:description"
+      content="DocuInsight was a contract review platform built around DocuSign. Read about what we built, why we shut it down, and what we learned."
+    />
+    <meta
+      property="twitter:image"
+      content="https://docuinsight.ai/assets/images/social-preview.png"
+    />
+
+    <!-- Favicons -->
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="../assets/icons/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="../assets/icons/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="../assets/icons/favicon-16x16.png"
+    />
+    <link rel="manifest" href="../site.webmanifest" />
+    <link rel="shortcut icon" href="../assets/icons/favicon.ico" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="../assets/css/book.css" />
+  </head>
+  <body>
+    <div class="book-stage" id="bookStage">
+      <main class="book" aria-label="DocuInsight Archive">
+        <!-- Page 01 / Cover -->
+        <section id="top" class="book-page page--cover is-active">
+          <div class="book-page-scroll">
+            <div class="book-page-inner">
+              <div class="container split-60-40">
+                <div>
+                  <div class="hero-kicker">
+                    <span class="status-stamp">Retired</span>
+                    <span class="mono-label">Dec 2024 &ndash; May 2025</span>
+                  </div>
+
+                  <div class="hero-title-row">
+                    <img
+                      src="../assets/images/docuinsight-logo.png"
+                      alt="DocuInsight logo"
+                      class="hero-logo"
+                    />
+                    <h1>DocuInsight</h1>
+                  </div>
+
+                  <p class="hero-lead">
+                    Contract review software built around DocuSign. We shipped
+                    it in under two months, ran customer and investor discovery,
+                    learned it could not become a standalone business, and
+                    open-sourced the code.
+                  </p>
+
+                  <div class="hero-actions">
+                    <a
+                      href="https://github.com/eandf/DocuInsight"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="btn btn-primary"
+                      >View source on GitHub</a
+                    >
+                    <a href="#failure" class="btn btn-secondary"
+                      >Read the post-mortem</a
+                    >
+                  </div>
+                </div>
+
+                <aside class="dossier" aria-label="Project archive metadata">
+                  <div class="mono-label dossier-title">Project Dossier</div>
+                  <ul class="dossier-grid">
+                    <li class="dossier-item">
+                      <span class="dossier-key">Status</span>
+                      <span class="dossier-val">Shut down, May 2025</span>
+                    </li>
+                    <li class="dossier-item">
+                      <span class="dossier-key">Built in</span>
+                      <span class="dossier-val">Under 2 months</span>
+                    </li>
+                    <li class="dossier-item">
+                      <span class="dossier-key">License</span>
+                      <span class="dossier-val">MIT (Open Source)</span>
+                    </li>
+                    <li class="dossier-item">
+                      <span class="dossier-key">Core stack</span>
+                      <span class="dossier-val"
+                        >Next.js, Python, PostgreSQL</span
+                      >
+                    </li>
+                  </ul>
+                  <a
+                    href="https://github.com/eandf/DocuInsight"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="dossier-repo"
+                  >
+                    <span class="dossier-repo-meta">
+                      <span class="dossier-key">Repository</span>
+                      <span class="dossier-val"
+                        >github.com/eandf/DocuInsight</span
+                      >
+                    </span>
+                    <span class="dossier-repo-arrow" aria-hidden="true">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path
+                          d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+                        />
+                        <path
+                          d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+                        />
+                      </svg>
+                    </span>
+                  </a>
+                </aside>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Page 02 / Overview & Demos -->
+        <section
+          id="about"
+          class="book-page page--overview"
+          aria-hidden="true"
+          inert
+        >
+          <div class="book-page-scroll">
+            <div class="book-page-inner">
+              <div class="container">
+                <div class="split-40-60 split-40-60--top">
+                  <div>
+                    <div class="mono-label">01 / Overview</div>
+                    <h2 class="section-heading">What we built and why</h2>
+                    <p class="section-copy">
+                      DocuInsight was designed to flag risky clauses and
+                      plain-English obligations before someone signed a contract
+                      in DocuSign.
+                    </p>
+                  </div>
+
+                  <div class="origin-note">
+                    <div class="mono-label">Origin of the idea</div>
+                    <p>
+                      In early 2024, co-founder Mehmet signed startup contracts
+                      without fully reviewing them. His business partner later
+                      used additional equity to force him out, and Mehmet
+                      discovered he had signed away important rights. That
+                      experience led directly to building DocuInsight.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="video-block">
+                  <div class="video-grid">
+                    <figure class="video-figure">
+                      <div class="video-frame">
+                        <iframe
+                          src="https://www.youtube.com/embed/vechiKAvdDU"
+                          title="DocuInsight Demo Video 1"
+                          allow="
+                            accelerometer;
+                            autoplay;
+                            clipboard-write;
+                            encrypted-media;
+                            gyroscope;
+                            picture-in-picture;
+                          "
+                          allowfullscreen
+                        ></iframe>
+                      </div>
+                      <figcaption class="mono-label video-caption">
+                        Product walkthrough
+                      </figcaption>
+                    </figure>
+
+                    <figure class="video-figure">
+                      <div class="video-frame">
+                        <iframe
+                          src="https://www.youtube.com/embed/XpOqN_SWHrI"
+                          title="DocuInsight Demo Video 2"
+                          allow="
+                            accelerometer;
+                            autoplay;
+                            clipboard-write;
+                            encrypted-media;
+                            gyroscope;
+                            picture-in-picture;
+                          "
+                          allowfullscreen
+                        ></iframe>
+                      </div>
+                      <figcaption class="mono-label video-caption">
+                        Feature demonstration
+                      </figcaption>
+                    </figure>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Page 03 / Capabilities -->
+        <section
+          id="capabilities"
+          class="book-page page--capabilities"
+          aria-hidden="true"
+          inert
+        >
+          <div class="book-page-scroll">
+            <div class="book-page-inner">
+              <div class="container split-40-60">
+                <div>
+                  <div class="mono-label">01 / Capabilities</div>
+                  <h2 class="section-heading">Five core workflows</h2>
+                  <p class="section-copy">
+                    Five core workflows shipped in the working prototype to keep
+                    contract review inside the signing flow.
+                  </p>
+                </div>
+
+                <ol class="editorial-list">
+                  <li class="editorial-item">
+                    <span class="editorial-num">01</span>
+                    <div>
+                      <h3>Contract analysis</h3>
+                      <p>
+                        Used OpenAI models to read legal documents and pull out
+                        key clauses, risks, and commitments in plain English.
+                      </p>
+                    </div>
+                  </li>
+                  <li class="editorial-item">
+                    <span class="editorial-num">02</span>
+                    <div>
+                      <h3>Interactive contract chat</h3>
+                      <p>
+                        Let signers ask questions about specific clauses and get
+                        answers backed by the document text and live web
+                        lookups.
+                      </p>
+                    </div>
+                  </li>
+                  <li class="editorial-item">
+                    <span class="editorial-num">03</span>
+                    <div>
+                      <h3>Legal counsel search</h3>
+                      <p>
+                        Generated targeted search queries to match users with
+                        relevant attorneys by location and contract type.
+                      </p>
+                    </div>
+                  </li>
+                  <li class="editorial-item">
+                    <span class="editorial-num">04</span>
+                    <div>
+                      <h3>DocuSign integration</h3>
+                      <p>
+                        Connected directly to DocuSign so contract notes
+                        appeared alongside the signing flow rather than in a
+                        separate tool.
+                      </p>
+                    </div>
+                  </li>
+                  <li class="editorial-item">
+                    <span class="editorial-num">05</span>
+                    <div>
+                      <h3>Multiple document formats</h3>
+                      <p>
+                        Parsed PDF, DOCX, DOC, and image uploads for analysis
+                        across standard agreement formats.
+                      </p>
+                    </div>
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Page 04 / Team -->
+        <section
+          id="team"
+          class="book-page page--team"
+          aria-hidden="true"
+          inert
+        >
+          <div class="book-page-scroll">
+            <div class="book-page-inner">
+              <div class="container split-40-60">
+                <div>
+                  <div class="mono-label">02 / People</div>
+                  <h2 class="section-heading">Who built it</h2>
+                  <p class="section-copy">
+                    Built in less than two months by two co-founders, with
+                    product demos scripted and edited by Berk Karaoglu.
+                  </p>
+                </div>
+
+                <div class="team-list">
+                  <article class="team-row">
+                    <img
+                      src="../assets/images/team/mehmet-yilmaz.jpg"
+                      alt="Mehmet Yilmaz"
+                      class="team-avatar"
+                    />
+                    <div>
+                      <div class="team-header">
+                        <h3 class="team-name">Mehmet Yilmaz</h3>
+                        <div class="team-links">
+                          <a
+                            href="https://mehmetmhy.com/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            >Website</a
+                          >
+                          <a
+                            href="https://www.linkedin.com/in/mehmet-mhy/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            >LinkedIn</a
+                          >
+                        </div>
+                      </div>
+                      <div class="mono-label team-role">
+                        Co-founder &amp; Backend
+                      </div>
+                      <p class="team-bio">
+                        Software engineer at Charter/Spectrum, previously at
+                        eBay. Founded Osgil Defense ($145K pre-seed), built the
+                        TARS cybersecurity tool (300+ stars) and Notify Cyber
+                        news site (17k+ visitors). Won 1st place at the National
+                        Security Hackathon ($5K prize). CS degree from Colorado
+                        School of Mines.
+                      </p>
+                    </div>
+                  </article>
+
+                  <article class="team-row">
+                    <img
+                      src="../assets/images/team/dylan-eck.jpg"
+                      alt="Dylan Eck"
+                      class="team-avatar"
+                    />
+                    <div>
+                      <div class="team-header">
+                        <h3 class="team-name">Dylan Eck</h3>
+                        <div class="team-links">
+                          <a
+                            href="https://github.com/dylan-eck"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            >GitHub</a
+                          >
+                          <a
+                            href="https://www.linkedin.com/in/dylanjeck/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            >LinkedIn</a
+                          >
+                        </div>
+                      </div>
+                      <div class="mono-label team-role">
+                        Co-founder &amp; Frontend
+                      </div>
+                      <p class="team-bio">
+                        Associate Design Engineer at Loren Cook. Bachelor's in
+                        Mechanical Engineering and Master's in Computer Science
+                        from Colorado School of Mines (3.9+ GPA). Built the
+                        Notify Cyber news site (17k+ visitors). Co-winner of the
+                        2025 National Security Hackathon ($5K prize) with the
+                        Guardian Grid system. Certified SOLIDWORKS Associate.
+                      </p>
+                    </div>
+                  </article>
+
+                  <article class="team-row">
+                    <img
+                      src="../assets/images/team/berk-karaoglu.jpg"
+                      alt="Berk Karaoglu"
+                      class="team-avatar"
+                    />
+                    <div>
+                      <div class="team-header">
+                        <h3 class="team-name">Berk Karaoglu</h3>
+                        <div class="team-links">
+                          <a
+                            href="https://sites.google.com/view/volkanportfolio/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            >Portfolio</a
+                          >
+                          <a
+                            href="https://www.instagram.com/turkishkingpin/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            >Instagram</a
+                          >
+                        </div>
+                      </div>
+                      <div class="mono-label team-role">
+                        Videographer &amp; Editor
+                      </div>
+                      <p class="team-bio">
+                        Videographer and editor who produced the demo videos for
+                        DocuInsight. Scripted, recorded, and cut both product
+                        walkthroughs shown above.
+                      </p>
+                    </div>
+                  </article>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Page 05 / Architecture -->
+        <section
+          id="tech"
+          class="book-page page--tech"
+          aria-hidden="true"
+          inert
+        >
+          <div class="book-page-scroll">
+            <div class="book-page-inner">
+              <div class="container split-40-60">
+                <div>
+                  <div class="mono-label">03 / Architecture</div>
+                  <h2 class="section-heading">Three-part stack</h2>
+                  <p class="section-copy">
+                    DocuInsight ran as three separate components: a web client,
+                    a Python document analyzer, and a hosted Postgres database.
+                  </p>
+                </div>
+
+                <div class="spec-list">
+                  <div class="spec-row">
+                    <div class="spec-top">
+                      <h3>Frontend</h3>
+                      <span class="mono-label">Vercel &middot; Next.js 15</span>
+                    </div>
+                    <p class="spec-desc">
+                      Handled DocuSign OAuth, Auth.js sessions, inline PDF
+                      viewing, and contract chat UI.
+                    </p>
+                    <div class="tag-list">
+                      <span class="tag">Next.js</span>
+                      <span class="tag">TypeScript</span>
+                      <span class="tag">React</span>
+                      <span class="tag">Tailwind CSS</span>
+                      <span class="tag">Auth.js</span>
+                    </div>
+                  </div>
+
+                  <div class="spec-row">
+                    <div class="spec-top">
+                      <h3>Analyzer</h3>
+                      <span class="mono-label">Linode VPS &middot; Python</span>
+                    </div>
+                    <p class="spec-desc">
+                      Extracted text from PDF, DOCX, and image files and ran
+                      OpenAI and Groq models for clause and risk summaries.
+                    </p>
+                    <div class="tag-list">
+                      <span class="tag">Python</span>
+                      <span class="tag">OpenAI API</span>
+                      <span class="tag">Groq API</span>
+                      <span class="tag">PyMuPDF</span>
+                      <span class="tag">python-docx</span>
+                    </div>
+                  </div>
+
+                  <div class="spec-row">
+                    <div class="spec-top">
+                      <h3>Database</h3>
+                      <span class="mono-label"
+                        >Supabase &middot; PostgreSQL</span
+                      >
+                    </div>
+                    <p class="spec-desc">
+                      Stored user authentication records, completed analysis
+                      outputs, and background job status.
+                    </p>
+                    <div class="tag-list">
+                      <span class="tag">PostgreSQL</span>
+                      <span class="tag">Supabase</span>
+                      <span class="tag">Auth.js Adapter</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Page 06 / Open Source Release -->
+        <section
+          id="opensource"
+          class="book-page page--opensource"
+          aria-hidden="true"
+          inert
+        >
+          <div class="book-page-scroll">
+            <div class="book-page-inner">
+              <div class="container">
+                <div class="directory-intro">
+                  <div class="mono-label">
+                    03 / Open-source release &middot; MIT
+                  </div>
+                  <h2 class="section-heading">Public archive</h2>
+                  <p class="section-copy">
+                    The full codebase, setup instructions, and demo recordings
+                    remain public under the MIT license.
+                  </p>
+                </div>
+
+                <div class="directory">
+                  <a
+                    href="https://github.com/eandf/DocuInsight"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="directory-row"
+                  >
+                    <span class="directory-title">Full Source Code</span>
+                    <span class="directory-desc">
+                      Complete Next.js frontend, Python analyzer, and database
+                      schemas, including DocuSign and OpenAI integrations.
+                    </span>
+                    <span class="directory-arrow" aria-hidden="true">OPEN</span>
+                  </a>
+
+                  <a
+                    href="https://github.com/eandf/DocuInsight/blob/main/README.md"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="directory-row"
+                  >
+                    <span class="directory-title">Setup Documentation</span>
+                    <span class="directory-desc">
+                      Local setup steps, environment configuration, API routes,
+                      and deployment notes.
+                    </span>
+                    <span class="directory-arrow" aria-hidden="true">READ</span>
+                  </a>
+
+                  <a href="#about" class="directory-row">
+                    <span class="directory-title">Demo Recordings</span>
+                    <span class="directory-desc">
+                      Recorded walkthroughs showing how contract analysis and
+                      chat worked inside the app.
+                    </span>
+                    <span class="directory-arrow" aria-hidden="true"
+                      >WATCH</span
+                    >
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Page 07 / Timeline -->
+        <section
+          id="journey"
+          class="book-page page--timeline"
+          aria-hidden="true"
+          inert
+        >
+          <div class="book-page-scroll">
+            <div class="book-page-inner">
+              <div class="container split-40-60">
+                <div>
+                  <div class="mono-label">04 / Timeline</div>
+                  <h2 class="section-heading">
+                    Six months from hackathon to shutdown
+                  </h2>
+                  <p class="section-copy">
+                    How the project moved from initial prototype through
+                    customer calls and investor feedback.
+                  </p>
+                </div>
+
+                <div class="timeline">
+                  <div class="timeline-row">
+                    <div class="mono-label">December 2024</div>
+                    <div>
+                      <h3>The idea</h3>
+                      <p>
+                        Built for the DocuSign Hackathon after researching
+                        common contract blind spots.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="timeline-row">
+                    <div class="mono-label">February 2025</div>
+                    <div>
+                      <h3>Customer discovery</h3>
+                      <p>
+                        Spoke with lawyers and SMB owners. Heard polite
+                        interest, but no urgency to pay.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="timeline-row">
+                    <div class="mono-label">March 2025</div>
+                    <div>
+                      <h3>VC feedback</h3>
+                      <p>
+                        Got blunt feedback from investors: "This is a feature,
+                        not a company."
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="timeline-row">
+                    <div class="mono-label">May 2025</div>
+                    <div>
+                      <h3>Shut down</h3>
+                      <p>
+                        Accepted that the business model did not hold up and
+                        decided to wind the project down.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Page 08 / Post-mortem Summary -->
+        <section
+          id="failure"
+          class="book-page page--postmortem"
+          aria-hidden="true"
+          inert
+        >
+          <div class="book-page-scroll">
+            <div class="book-page-inner">
+              <div class="container split-40-60">
+                <div>
+                  <div class="mono-label">05 / Post-mortem</div>
+                  <h2 class="section-heading">Why we shut it down</h2>
+                  <p class="section-copy">
+                    An honest look at what broke on the business side even
+                    though the software worked.
+                  </p>
+                </div>
+
+                <div>
+                  <p class="postmortem-lead">
+                    DocuInsight wasn't killed because the product was broken, it
+                    actually worked well. We shut it down because we realized it
+                    could not become a venture-scale business. Cutting losses
+                    early was the better call so we could put our energy into
+                    stronger ideas.
+                  </p>
+
+                  <blockquote class="pull-quote">
+                    <p>
+                      "Too narrow market, platform risk with DocuSign, no clear
+                      expansion path. This looks like a vitamin, not a
+                      painkiller."
+                    </p>
+                    <cite class="mono-label"
+                      >Investor feedback, March 2025</cite
+                    >
+                  </blockquote>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Page 09 / Four Core Issues -->
+        <section
+          id="issues"
+          class="book-page page--issues"
+          aria-hidden="true"
+          inert
+        >
+          <div class="book-page-scroll">
+            <div class="book-page-inner">
+              <div class="container split-40-60">
+                <div>
+                  <div class="mono-label">05 / Post-mortem</div>
+                  <h2 class="section-heading">Four core issues</h2>
+                  <p class="section-copy">
+                    The structural gaps that kept a working prototype from
+                    becoming a standalone company.
+                  </p>
+                </div>
+
+                <ol class="editorial-list">
+                  <li class="editorial-item">
+                    <span class="editorial-num">01</span>
+                    <div>
+                      <h3>Narrow venture case</h3>
+                      <p>
+                        Investors saw a point tool with limited expansion room
+                        rather than a defensible standalone platform.
+                      </p>
+                    </div>
+                  </li>
+                  <li class="editorial-item">
+                    <span class="editorial-num">02</span>
+                    <div>
+                      <h3>Wrong market fit</h3>
+                      <p>
+                        We built analysis for a step that wasn't a burning pain
+                        point. Lawyers wanted drafting tools; SMBs wanted
+                        pipeline visibility.
+                      </p>
+                    </div>
+                  </li>
+                  <li class="editorial-item">
+                    <span class="editorial-num">03</span>
+                    <div>
+                      <h3>Platform risk</h3>
+                      <p>
+                        Sitting on top of DocuSign's APIs meant a terms change
+                        or a native DocuSign feature could wipe out the product
+                        overnight.
+                      </p>
+                    </div>
+                  </li>
+                  <li class="editorial-item">
+                    <span class="editorial-num">04</span>
+                    <div>
+                      <h3>No customer urgency</h3>
+                      <p>
+                        Nobody said, "We need this tomorrow." Polite interest
+                        does not turn into paid seats.
+                      </p>
+                    </div>
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Page 10 / Takeaways -->
+        <section
+          id="lessons"
+          class="book-page page--lessons"
+          aria-hidden="true"
+          inert
+        >
+          <div class="book-page-scroll">
+            <div class="book-page-inner">
+              <div class="container">
+                <div class="split-40-60">
+                  <div>
+                    <div class="mono-label">06 / Takeaways</div>
+                    <h2 class="section-heading">Lessons carried forward</h2>
+                    <p class="section-copy">
+                      What building, testing, and shutting down DocuInsight
+                      taught us before starting the next thing.
+                    </p>
+                  </div>
+
+                  <ol class="editorial-list">
+                    <li class="editorial-item">
+                      <span class="editorial-num">01</span>
+                      <div>
+                        <h3>Customer discovery first</h3>
+                        <p>
+                          Talk to users before writing code. "That looks useful"
+                          is very different from "I need this tomorrow."
+                        </p>
+                      </div>
+                    </li>
+                    <li class="editorial-item">
+                      <span class="editorial-num">02</span>
+                      <div>
+                        <h3>Feature vs. company</h3>
+                        <p>
+                          Ask why the platform owner cannot build it themselves.
+                          Without a clear answer, you are building a feature.
+                        </p>
+                      </div>
+                    </li>
+                    <li class="editorial-item">
+                      <span class="editorial-num">03</span>
+                      <div>
+                        <h3>Business model first</h3>
+                        <p>
+                          Who pays, how much, and why? Those questions need
+                          plain answers before spending months on
+                          implementation.
+                        </p>
+                      </div>
+                    </li>
+                    <li class="editorial-item">
+                      <span class="editorial-num">04</span>
+                      <div>
+                        <h3>Know when to quit</h3>
+                        <p>
+                          Sometimes the best move is to stop early and move on.
+                          Sunk cost fallacy is real.
+                        </p>
+                      </div>
+                    </li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Final Page / Colophon -->
+        <section
+          id="colophon"
+          class="book-page page--colophon"
+          aria-hidden="true"
+          inert
+        >
+          <div class="book-page-scroll">
+            <div class="book-page-inner">
+              <div class="container">
+                <footer
+                  class="site-footer"
+                  aria-label="Project credits and links"
+                >
+                  <div class="footer-inner">
+                    <a
+                      class="footer-link"
+                      href="https://www.efgroupinc.com/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >&copy; 2025 E&amp;F Group Inc.</a
+                    >
+                    <a
+                      class="footer-link"
+                      href="https://github.com/eandf/DocuInsight/blob/main/LICENSE"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >MIT License</a
+                    >
+                    <a
+                      class="footer-link"
+                      href="https://github.com/eandf/DocuInsight"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >GitHub</a
+                    >
+                  </div>
+                </footer>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <nav class="book-hud" aria-label="Page navigation">
+      <button
+        type="button"
+        class="hud-btn"
+        id="prevPageBtn"
+        aria-label="Previous page"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+      </button>
+
+      <div class="hud-folio" aria-live="polite">
+        <span id="hudNum">01 / 11</span>
+      </div>
+
+      <button
+        type="button"
+        class="hud-btn"
+        id="nextPageBtn"
+        aria-label="Next page"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M9 18l6-6-6-6" />
+        </svg>
+      </button>
+    </nav>
+
+    <script src="../assets/js/book.js" defer></script>
+  </body>
+</html>
