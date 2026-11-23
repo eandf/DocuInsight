@@ -910,6 +910,22 @@
         gap: calc(var(--space-1) / 2);
       }
 
+      .dossier-item:nth-child(1) {
+        background-color: var(--blue-bg);
+      }
+
+      .dossier-item:nth-child(2) {
+        background-color: var(--indigo-bg);
+      }
+
+      .dossier-item:nth-child(3) {
+        background-color: var(--cyan-bg);
+      }
+
+      .dossier-item:nth-child(4) {
+        background-color: var(--mint-bg);
+      }
+
       .dossier-item:nth-child(1) .dossier-key {
         color: var(--blue-ink);
       }
@@ -947,7 +963,7 @@
         align-items: center;
         justify-content: space-between;
         gap: var(--space-2);
-        background-color: var(--mint-bg);
+        background-color: var(--indigo-bg);
         border-radius: var(--radius-md);
         padding: calc(var(--space-2) * 0.85) var(--space-2);
         text-decoration: none;
@@ -955,7 +971,7 @@
       }
 
       .dossier-repo:hover {
-        background-color: var(--mint-bg-hover);
+        background-color: var(--indigo-bg-hover);
       }
 
       .dossier-repo-meta {
@@ -967,7 +983,7 @@
 
       .dossier-repo .dossier-key,
       .dossier-repo .dossier-val {
-        color: var(--mint-ink);
+        color: var(--indigo-ink);
       }
 
       .dossier-repo-arrow {
@@ -1522,8 +1538,9 @@
       .pull-quote {
         margin: 0;
         padding: var(--card-padding);
-        background-color: var(--accent-surface);
+        background-color: var(--bg-elevated);
         border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
       }
 
       .pull-quote p {
@@ -1740,7 +1757,7 @@
               <div class="container split-60-40">
                 <div>
                   <div class="hero-kicker">
-                    <span class="status-stamp">Retired &middot; May 2025</span>
+                    <span class="status-stamp">Retired</span>
                     <span class="mono-label">Dec 2024 &ndash; May 2025</span>
                   </div>
 
@@ -2237,9 +2254,7 @@
                       Complete Next.js frontend, Python analyzer, and database
                       schemas, including DocuSign and OpenAI integrations.
                     </span>
-                    <span class="directory-arrow" aria-hidden="true"
-                      >OPEN &rarr;</span
-                    >
+                    <span class="directory-arrow" aria-hidden="true">OPEN</span>
                   </a>
 
                   <a
@@ -2253,9 +2268,7 @@
                       Local setup steps, environment configuration, API routes,
                       and deployment notes.
                     </span>
-                    <span class="directory-arrow" aria-hidden="true"
-                      >READ &rarr;</span
-                    >
+                    <span class="directory-arrow" aria-hidden="true">READ</span>
                   </a>
 
                   <a href="#about" class="directory-row">
@@ -2264,9 +2277,7 @@
                       Recorded walkthroughs showing how contract analysis and
                       chat worked inside the app.
                     </span>
-                    <span class="directory-arrow" aria-hidden="true"
-                      >WATCH &uarr;</span
-                    >
+                    <span class="directory-arrow" aria-hidden="true">WATCH</span>
                   </a>
                 </div>
               </div>
@@ -2366,8 +2377,8 @@
 
                 <div>
                   <p class="postmortem-lead">
-                    DocuInsight wasn't killed because the product was broken
-                    &mdash; it actually worked well. We shut it down because we
+                    DocuInsight wasn't killed because the product was broken,
+                    it actually worked well. We shut it down because we
                     realized it could not become a venture-scale business.
                     Cutting losses early was the better call so we could put our
                     energy into stronger ideas.
